@@ -289,7 +289,7 @@
             
             {{-- GOOGLE REGISTER --}}
             <div class="divider"><span>atau daftar dengan</span></div>
-            <a href="{{ route('google.login', ['mode' => 'register']) }}" class="btn-google">
+            <a href="{{ route('auth.google', ['mode' => 'register']) }}" class="btn-google">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23.52 12.29C23.52 11.46 23.45 10.66 23.32 9.9H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.1L19.94 21.1C22.2 19.01 23.52 15.92 23.52 12.29Z" fill="#4285F4"/>
                     <path d="M12 24C15.24 24 17.96 22.92 19.94 21.1L16.08 18.1C15 18.83 13.62 19.26 12 19.26C8.87 19.26 6.22 17.15 5.28 14.29L1.29 17.38C3.26 21.3 7.31 24 12 24Z" fill="#34A853"/>
@@ -328,7 +328,7 @@
 
             {{-- GOOGLE LOGIN --}}
             <div class="divider"><span>atau</span></div>
-            <a href="{{ route('google.login', ['mode' => 'login']) }}" class="btn-google">
+            <a href="{{ route('auth.google', ['mode' => 'login']) }}" class="btn-google">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23.52 12.29C23.52 11.46 23.45 10.66 23.32 9.9H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.1L19.94 21.1C22.2 19.01 23.52 15.92 23.52 12.29Z" fill="#4285F4"/>
                     <path d="M12 24C15.24 24 17.96 22.92 19.94 21.1L16.08 18.1C15 18.83 13.62 19.26 12 19.26C8.87 19.26 6.22 17.15 5.28 14.29L1.29 17.38C3.26 21.3 7.31 24 12 24Z" fill="#34A853"/>

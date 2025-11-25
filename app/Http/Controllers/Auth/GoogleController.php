@@ -33,12 +33,14 @@ class GoogleController extends Controller
      */
     public function handleGoogleCallback()
     {
+        // Ambil mode dari session (login/register) - deklarasi di luar try-catch
+        $mode = session('google_auth_mode', 'login');
+        
         try {
             $googleUser = Socialite::driver('google')->user();
             
-            // Ambil mode dari session (login/register)
-            $mode = session('google_auth_mode', 'login');
-            session()->forget('google_auth_mode'); // Bersihkan session
+            // Bersihkan session setelah mengambil mode
+            session()->forget('google_auth_mode');
 
             // Cari user di database berdasarkan google_id atau email
             $user = User::where('google_id', $googleUser->id)

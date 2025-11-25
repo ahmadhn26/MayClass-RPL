@@ -61,6 +61,15 @@ Route::get('/', function () {
 
 Route::get('/gabung', [AuthController::class, 'join'])->name('join');
 
+// Temporary debug route - REMOVE AFTER TESTING
+Route::get('/debug-google', function () {
+    return response()->json([
+        'client_id' => config('services.google.client_id'),
+        'client_secret' => config('services.google.client_secret') ? 'SET' : 'NOT SET',
+        'redirect' => config('services.google.redirect'),
+    ]);
+});
+
 Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/packages/{slug}', [PackageController::class, 'show'])->name('packages.show');
 
@@ -72,10 +81,12 @@ Route::middleware('guest')->group(function () {
     Route::get('/register/password', [AuthController::class, 'showPasswordStep'])->name('register.password');
     Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
     Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
-    Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
-    Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-
     
+    // Login Google
+    Route::controller(GoogleController::class)->group(function () {
+        Route::get('auth/google', 'redirectToGoogle')->name('auth.google');
+        Route::get('auth/google/callback', 'handleGoogleCallback');
+    });
 });
 
 Route::middleware('auth')->group(function () {
