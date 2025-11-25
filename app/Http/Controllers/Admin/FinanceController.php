@@ -27,8 +27,24 @@ class FinanceController extends BaseAdminController
             'stats' => $stats,
             'monthlyRevenue' => $this->monthlyRevenue(),
             'statusSummary' => $this->paymentStatusSummary(),
+            'packageDistribution' => $this->packageSalesDistribution(),
             'orders' => $this->ordersForReview(),
         ]);
+    }
+
+    private function packageSalesDistribution()
+    {
+        if (!Schema::hasTable('orders')) {
+            return collect();
+        }
+
+        return Order::query()
+            ->join('packages', 'orders.package_id', '=', 'packages.id')
+            ->selectRaw('packages.detail_title as label, COUNT(*) as value')
+            ->where('orders.status', 'paid')
+            ->groupBy('packages.id', 'packages.detail_title')
+            ->orderByDesc('value')
+            ->get();
     }
 
     public function approve(Order $order): RedirectResponse
@@ -94,7 +110,7 @@ class FinanceController extends BaseAdminController
 
     private function sumPaidOrders(?int $year = null): float
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return 0.0;
         }
 
@@ -108,7 +124,7 @@ class FinanceController extends BaseAdminController
 
     private function monthlyRevenue()
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return collect();
         }
 
@@ -145,7 +161,7 @@ class FinanceController extends BaseAdminController
 
     private function countStudents(): int
     {
-        if (! Schema::hasTable('users')) {
+        if (!Schema::hasTable('users')) {
             return 0;
         }
 
@@ -161,7 +177,7 @@ class FinanceController extends BaseAdminController
             'failed' => ['label' => __('Kedaluwarsa'), 'count' => 0, 'description' => __('Checkout hangus otomatis karena melewati batas waktu.')],
         ];
 
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return $default;
         }
 
@@ -169,7 +185,7 @@ class FinanceController extends BaseAdminController
             ->selectRaw('status, COUNT(*) as aggregate')
             ->groupBy('status')
             ->pluck('aggregate', 'status')
-            ->map(fn ($value) => (int) $value)
+            ->map(fn($value) => (int) $value)
             ->all();
 
         foreach ($default as $status => &$entry) {
@@ -181,7 +197,7 @@ class FinanceController extends BaseAdminController
 
     private function ordersForReview()
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return collect();
         }
 
@@ -223,13 +239,13 @@ class FinanceController extends BaseAdminController
     {
         $user = $order->user;
 
-        if (! $user || $user->role !== 'visitor') {
+        if (!$user || $user->role !== 'visitor') {
             return;
         }
 
         $attributes = ['role' => 'student'];
 
-        if (! $user->student_id) {
+        if (!$user->student_id) {
             $attributes['student_id'] = StudentIdGenerator::next();
         }
 

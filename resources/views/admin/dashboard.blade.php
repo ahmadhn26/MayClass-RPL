@@ -93,9 +93,21 @@
             align-items: center;
             gap: 4px;
         }
-        .trend-up { background: #dcfce7; color: #15803d; }
-        .trend-down { background: #fee2e2; color: #b91c1c; }
-        .trend-neutral { background: #f1f5f9; color: #64748b; }
+
+        .trend-up {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .trend-down {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .trend-neutral {
+            background: #f1f5f9;
+            color: #64748b;
+        }
 
         .hero-mini-stats {
             display: grid;
@@ -111,6 +123,7 @@
             font-size: 1.1rem;
             color: var(--text-main);
         }
+
         .mini-stat-item span {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -197,7 +210,7 @@
             align-items: center;
             margin-bottom: 24px;
         }
-        
+
         .card-title h3 {
             font-size: 1.1rem;
             font-weight: 700;
@@ -208,71 +221,6 @@
         .card-title span {
             font-size: 0.85rem;
             color: var(--text-muted);
-        }
-
-        /* CSS Chart */
-        .chart-container {
-            height: 250px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 12px;
-            padding-top: 20px;
-        }
-
-        .chart-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            height: 100%;
-            justify-content: flex-end;
-            group: hover;
-        }
-
-        .chart-bar {
-            width: 100%;
-            background: linear-gradient(180deg, #0f766e 0%, #2dd4bf 100%);
-            border-radius: 6px 6px 2px 2px;
-            opacity: 0.85;
-            transition: height 0.4s ease, opacity 0.2s;
-            position: relative;
-            min-height: 4px;
-        }
-
-        .chart-col:hover .chart-bar {
-            opacity: 1;
-            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
-        }
-
-        /* Tooltip sederhana pakai CSS */
-        .chart-bar::before {
-            content: attr(data-value);
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            white-space: nowrap;
-        }
-
-        .chart-col:hover .chart-bar::before {
-            opacity: 1;
-        }
-
-        .chart-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
         }
 
         /* Pipeline List */
@@ -354,10 +302,26 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .status-paid { background: #dcfce7; color: #15803d; }
-        .status-pending { background: #fef9c3; color: #a16207; }
-        .status-failed { background: #fee2e2; color: #b91c1c; }
-        .status-default { background: #f1f5f9; color: #475569; }
+
+        .status-paid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-pending {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .status-default {
+            background: #f1f5f9;
+            color: #475569;
+        }
 
         .list-group {
             display: flex;
@@ -372,11 +336,27 @@
             padding: 12px 0;
             border-bottom: 1px solid #f1f5f9;
         }
-        .list-item:last-child { border-bottom: none; }
 
-        .item-main strong { display: block; font-size: 0.95rem; color: var(--text-main); }
-        .item-main span { font-size: 0.85rem; color: var(--text-muted); }
-        .item-side { font-weight: 700; font-size: 0.95rem; color: var(--primary); }
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-main strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .item-main span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .item-side {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
 
         .empty-state {
             text-align: center;
@@ -389,7 +369,10 @@
         }
 
         @media (max-width: 1024px) {
-            .hero-panel, .insights-section, .details-section {
+
+            .hero-panel,
+            .insights-section,
+            .details-section {
                 grid-template-columns: 1fr;
             }
         }
@@ -397,248 +380,324 @@
 @endpush
 
 @section('content')
-<div class="dashboard-container">
+    <div class="dashboard-container">
 
-    {{-- 1. Hero Section --}}
-    <section class="hero-panel">
-        <div class="hero-content">
-            <h2>Halo Admin, Selamat Datang!</h2>
-            <p>
-                Berikut adalah ringkasan performa platform MayClass hari ini. 
-                Pantau pendapatan, pendaftaran siswa, dan status pembayaran secara real-time.
-            </p>
-        </div>
-        
-        <div class="hero-stats-sidebar">
-            @php
-                $direction = $monthComparison['direction'];
-                $trendClass = $direction === 1 ? 'trend-up' : ($direction === -1 ? 'trend-down' : 'trend-neutral');
-                $trendIcon = $direction === 1 ? '▲' : ($direction === -1 ? '▼' : '•');
-            @endphp
-            
-            <div class="hero-trend-box">
-                <div>
-                    <label>Pendapatan Bulan Ini</label>
-                    <div class="amount">{{ $monthComparison['formatted'] }}</div>
+        {{-- 1. Hero Section --}}
+        <section class="hero-panel">
+            <div class="hero-content">
+                <h2>Halo Admin, Selamat Datang!</h2>
+                <p>
+                    Berikut adalah ringkasan performa platform MayClass hari ini.
+                    Pantau pendapatan, pendaftaran siswa, dan status pembayaran secara real-time.
+                </p>
+            </div>
+
+            <div class="hero-stats-sidebar">
+                @php
+                    $direction = $monthComparison['direction'];
+                    $trendClass = $direction === 1 ? 'trend-up' : ($direction === -1 ? 'trend-down' : 'trend-neutral');
+                    $trendIcon = $direction === 1 ? '▲' : ($direction === -1 ? '▼' : '•');
+                @endphp
+
+                <div class="hero-trend-box">
+                    <div>
+                        <label>Pendapatan Bulan Ini</label>
+                        <div class="amount">{{ $monthComparison['formatted'] }}</div>
+                    </div>
+                    <div class="trend-badge {{ $trendClass }}">
+                        {{ $trendIcon }} {{ number_format(abs($monthComparison['delta']), 1, ',', '.') }}%
+                    </div>
                 </div>
-                <div class="trend-badge {{ $trendClass }}">
-                    {{ $trendIcon }} {{ number_format(abs($monthComparison['delta']), 1, ',', '.') }}%
+
+                <div class="hero-mini-stats">
+                    <div class="mini-stat-item">
+                        <strong>{{ number_format($stats['totalStudents']) }}</strong>
+                        <span>Total Siswa</span>
+                    </div>
+                    <div class="mini-stat-item">
+                        <strong>{{ number_format($stats['pendingPayments']) }}</strong>
+                        <span>Menunggu Verifikasi</span>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div class="hero-mini-stats">
-                <div class="mini-stat-item">
-                    <strong>{{ number_format($stats['totalStudents']) }}</strong>
-                    <span>Total Siswa</span>
+        {{-- 2. KPI Cards --}}
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">Rp</div>
+                    <span>Tahun Ini</span>
                 </div>
-                <div class="mini-stat-item">
-                    <strong>{{ number_format($stats['pendingPayments']) }}</strong>
-                    <span>Menunggu Verifikasi</span>
+                <div class="kpi-value">{{ $stats['yearRevenue'] }}</div>
+                <div class="kpi-desc">Total pendapatan bersih 2025</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">Σ</div>
+                    <span>Total</span>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- 2. KPI Cards --}}
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-header">
-                <div class="kpi-icon">Rp</div>
-                <span>Tahun Ini</span>
-            </div>
-            <div class="kpi-value">{{ $stats['yearRevenue'] }}</div>
-            <div class="kpi-desc">Total pendapatan bersih 2025</div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-header">
-                <div class="kpi-icon">Σ</div>
-                <span>Total</span>
-            </div>
-            <div class="kpi-value">{{ $stats['totalRevenue'] }}</div>
-            <div class="kpi-desc">Akumulasi sejak awal</div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-header">
-                <div class="kpi-icon">Ø</div>
-                <span>Rata-rata</span>
-            </div>
-            <div class="kpi-value">{{ $stats['averageTicket'] }}</div>
-            <div class="kpi-desc">Per transaksi sukses</div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-header">
-                <div class="kpi-icon">✓</div>
-                <span>Transaksi</span>
-            </div>
-            <div class="kpi-value">{{ number_format($stats['paidOrders']) }}</div>
-            <div class="kpi-desc">Pembayaran berhasil</div>
-        </div>
-    </section>
-
-    {{-- 3. Charts & Pipeline --}}
-    <section class="insights-section">
-        {{-- Chart --}}
-        <div class="section-card">
-            <div class="card-title">
-                <h3>Grafik Pendapatan</h3>
-                <span>{{ now()->year }}</span>
+                <div class="kpi-value">{{ $stats['totalRevenue'] }}</div>
+                <div class="kpi-desc">Akumulasi sejak awal</div>
             </div>
 
-            @if ($monthlyRevenue->sum('value') === 0)
-                <div class="empty-state">Belum ada data transaksi untuk ditampilkan</div>
-            @else
-                @php $maxValue = max($monthlyRevenue->pluck('value')->all() ?: [1]); @endphp
-                <div class="chart-container">
-                    @foreach ($monthlyRevenue as $entry)
-                        @php $h = $maxValue > 0 ? max(($entry['value'] / $maxValue) * 100, 5) : 5; @endphp
-                        <div class="chart-col">
-                            {{-- Tooltip data-value added --}}
-                            <div class="chart-bar" style="height: {{ $h }}%;" data-value="{{ $entry['formatted'] }}"></div>
-                            <span class="chart-label">{{ $entry['label'] }}</span>
-                        </div>
-                    @endforeach
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">Ø</div>
+                    <span>Rata-rata</span>
                 </div>
-            @endif
-        </div>
-
-        {{-- Pipeline --}}
-        <div class="section-card">
-            <div class="card-title">
-                <h3>Status Pembayaran</h3>
-                <span>Distribusi Order</span>
+                <div class="kpi-value">{{ $stats['averageTicket'] }}</div>
+                <div class="kpi-desc">Per transaksi sukses</div>
             </div>
 
-            @if ($paymentPipeline['total'] === 0)
-                <div class="empty-state">Data tidak tersedia</div>
-            @else
-                <div class="pipeline-list">
-                    @foreach ($paymentPipeline['rows'] as $row)
-                        @php
-                            $color = match($row['status']) {
-                                'paid' => '#22c55e',
-                                'pending' => '#eab308',
-                                'failed' => '#ef4444',
-                                default => '#3b82f6'
-                            };
-                        @endphp
-                        <div class="pipeline-item">
-                            <div class="pipeline-info">
-                                <span>{{ $row['label'] }}</span>
-                                <span>{{ number_format($row['count']) }} ({{ $row['percentage'] }}%)</span>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">✓</div>
+                    <span>Transaksi</span>
+                </div>
+                <div class="kpi-value">{{ number_format($stats['paidOrders']) }}</div>
+                <div class="kpi-desc">Pembayaran berhasil</div>
+            </div>
+        </section>
+
+        {{-- 3. Charts & Pipeline --}}
+        <section class="insights-section">
+            {{-- Chart --}}
+            <div class="section-card">
+                <div class="card-title">
+                    <h3>Grafik Pendapatan</h3>
+                    <span>{{ now()->year }}</span>
+                </div>
+
+                @if ($monthlyRevenue->sum('value') === 0)
+                    <div class="empty-state">Belum ada data transaksi untuk ditampilkan</div>
+                @else
+                    <div id="revenueChart"></div>
+                @endif
+            </div>
+
+            {{-- Pipeline --}}
+            <div class="section-card">
+                <div class="card-title">
+                    <h3>Status Pembayaran</h3>
+                    <span>Distribusi Order</span>
+                </div>
+
+                @if ($paymentPipeline['total'] === 0)
+                    <div class="empty-state">Data tidak tersedia</div>
+                @else
+                    <div class="pipeline-list">
+                        @foreach ($paymentPipeline['rows'] as $row)
+                            @php
+                                $color = match ($row['status']) {
+                                    'paid' => '#22c55e',
+                                    'pending' => '#eab308',
+                                    'failed' => '#ef4444',
+                                    default => '#3b82f6'
+                                };
+                            @endphp
+                            <div class="pipeline-item">
+                                <div class="pipeline-info">
+                                    <span>{{ $row['label'] }}</span>
+                                    <span>{{ number_format($row['count']) }} ({{ $row['percentage'] }}%)</span>
+                                </div>
+                                <div class="pipeline-bar-bg">
+                                    <div class="pipeline-bar-fill"
+                                        style="width: {{ $row['percentage'] }}%; background: {{ $color }};"></div>
+                                </div>
                             </div>
-                            <div class="pipeline-bar-bg">
-                                <div class="pipeline-bar-fill" style="width: {{ $row['percentage'] }}%; background: {{ $color }};"></div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </section>
-
-    {{-- 4. Tables & Lists --}}
-    <section class="details-section">
-        {{-- Recent Transactions --}}
-        <div class="section-card">
-            <div class="card-title">
-                <h3>Transaksi Terbaru</h3>
-                <a href="#" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">Lihat Semua &rarr;</a>
+                        @endforeach
+                    </div>
+                @endif
             </div>
+        </section>
 
-            @if ($recentPayments->isEmpty())
-                <div class="empty-state">Belum ada transaksi</div>
-            @else
-                <div class="table-wrapper">
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th>Invoice</th>
-                                <th>Siswa</th>
-                                <th>Paket</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recentPayments as $payment)
-                                @php
-                                    $badgeClass = match($payment['status']) {
-                                        'paid' => 'status-paid',
-                                        'pending' => 'status-pending',
-                                        'failed' => 'status-failed',
-                                        default => 'status-default'
-                                    };
-                                @endphp
+        {{-- 4. Tables & Lists --}}
+        <section class="details-section">
+            {{-- Recent Transactions --}}
+            <div class="section-card">
+                <div class="card-title">
+                    <h3>Transaksi Terbaru</h3>
+                    <a href="#"
+                        style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">Lihat
+                        Semua &rarr;</a>
+                </div>
+
+                @if ($recentPayments->isEmpty())
+                    <div class="empty-state">Belum ada transaksi</div>
+                @else
+                    <div class="table-wrapper">
+                        <table class="modern-table">
+                            <thead>
                                 <tr>
-                                    <td style="font-family: monospace;">{{ $payment['invoice'] }}</td>
-                                    <td>
-                                        <div style="font-weight: 600;">{{ $payment['student'] }}</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $payment['paid_at'] }}</div>
-                                    </td>
-                                    <td>{{ $payment['package'] }}</td>
-                                    <td><span class="status-pill {{ $badgeClass }}">{{ $payment['status_label'] }}</span></td>
-                                    <td style="text-align: right; font-weight: 700;">{{ $payment['total'] }}</td>
+                                    <th>Invoice</th>
+                                    <th>Siswa</th>
+                                    <th>Paket</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Total</th>
                                 </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($recentPayments as $payment)
+                                    @php
+                                        $badgeClass = match ($payment['status']) {
+                                            'paid' => 'status-paid',
+                                            'pending' => 'status-pending',
+                                            'failed' => 'status-failed',
+                                            default => 'status-default'
+                                        };
+                                    @endphp
+                                    <tr>
+                                        <td style="font-family: monospace;">{{ $payment['invoice'] }}</td>
+                                        <td>
+                                            <div style="font-weight: 600;">{{ $payment['student'] }}</div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $payment['paid_at'] }}
+                                            </div>
+                                        </td>
+                                        <td>{{ $payment['package'] }}</td>
+                                        <td><span class="status-pill {{ $badgeClass }}">{{ $payment['status_label'] }}</span></td>
+                                        <td style="text-align: right; font-weight: 700;">{{ $payment['total'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Top Packages & Students --}}
+            <div style="display: grid; gap: 24px;">
+                {{-- Top Packages Chart --}}
+                <div class="section-card">
+                    <div class="card-title">
+                        <h3>Penjualan Paket</h3>
+                    </div>
+                    @if ($packageDistribution->isEmpty())
+                        <div class="empty-state">Data belum cukup</div>
+                    @else
+                        <div id="packageChart"></div>
+                    @endif
+                </div>
+
+                {{-- Recent Students --}}
+                <div class="section-card">
+                    <div class="card-title">
+                        <h3>Siswa Baru</h3>
+                        <a href="{{ route('admin.students.index') }}"
+                            style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">Semua
+                            Siswa</a>
+                    </div>
+                    @if ($recentStudents->isEmpty())
+                        <div class="empty-state">Belum ada pendaftaran</div>
+                    @else
+                        <div class="list-group">
+                            @foreach ($recentStudents as $student)
+                                <div class="list-item">
+                                    <div class="item-main">
+                                        <strong>{{ $student['name'] }}</strong>
+                                        <span>{{ $student['email'] }}</span>
+                                    </div>
+                                    <div class="item-side" style="font-weight: 400; font-size: 0.8rem; color: var(--text-muted);">
+                                        {{ $student['joined_at'] }}
+                                    </div>
+                                </div>
                             @endforeach
-                        </tbody>
-                    </table>
+                        </div>
+                    @endif
                 </div>
-            @endif
-        </div>
-
-        {{-- Top Packages & Students --}}
-        <div style="display: grid; gap: 24px;">
-            {{-- Top Packages --}}
-            <div class="section-card">
-                <div class="card-title">
-                    <h3>Paket Terpopuler</h3>
-                </div>
-                @if ($topPackages->isEmpty())
-                    <div class="empty-state">Data belum cukup</div>
-                @else
-                    <div class="list-group">
-                        @foreach ($topPackages as $package)
-                            <div class="list-item">
-                                <div class="item-main">
-                                    <strong>{{ $package['title'] }}</strong>
-                                    <span>{{ number_format($package['orders']) }} Terjual</span>
-                                </div>
-                                <div class="item-side">{{ $package['revenue'] }}</div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
             </div>
+        </section>
 
-            {{-- Recent Students --}}
-            <div class="section-card">
-                <div class="card-title">
-                    <h3>Siswa Baru</h3>
-                    <a href="{{ route('admin.students.index') }}" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">Semua Siswa</a>
-                </div>
-                @if ($recentStudents->isEmpty())
-                    <div class="empty-state">Belum ada pendaftaran</div>
-                @else
-                    <div class="list-group">
-                        @foreach ($recentStudents as $student)
-                            <div class="list-item">
-                                <div class="item-main">
-                                    <strong>{{ $student['name'] }}</strong>
-                                    <span>{{ $student['email'] }}</span>
-                                </div>
-                                <div class="item-side" style="font-weight: 400; font-size: 0.8rem; color: var(--text-muted);">
-                                    {{ $student['joined_at'] }}
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-        </div>
-    </section>
-
-</div>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Revenue Chart (Area) ---
+            const revenueData = @json($monthlyRevenue);
+            const revenueOptions = {
+                series: [{
+                    name: 'Pendapatan',
+                    data: revenueData.map(item => item.value)
+                }],
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: false },
+                    fontFamily: 'Poppins, sans-serif'
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 2 },
+                xaxis: {
+                    categories: revenueData.map(item => item.label),
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (value) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                        }
+                    }
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.3,
+                        stops: [0, 90, 100]
+                    }
+                },
+                colors: ['#0f766e'],
+                tooltip: {
+                    y: {
+                        formatter: function (value) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                        }
+                    }
+                }
+            };
+
+            if (document.querySelector("#revenueChart")) {
+                const revenueChart = new ApexCharts(document.querySelector("#revenueChart"), revenueOptions);
+                revenueChart.render();
+            }
+
+            // --- Package Chart (Donut) ---
+            const packageData = @json($packageDistribution);
+            if (packageData.length > 0) {
+                const packageOptions = {
+                    series: packageData.map(item => item.value),
+                    chart: {
+                        type: 'donut',
+                        height: 320,
+                        fontFamily: 'Poppins, sans-serif'
+                    },
+                    labels: packageData.map(item => item.label),
+                    colors: ['#0f766e', '#2dd4bf', '#f59e0b', '#ef4444', '#3b82f6'],
+                    legend: {
+                        position: 'bottom'
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%'
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    }
+                };
+
+                if (document.querySelector("#packageChart")) {
+                    const packageChart = new ApexCharts(document.querySelector("#packageChart"), packageOptions);
+                    packageChart.render();
+                }
+            }
+        });
+    </script>
+@endpush

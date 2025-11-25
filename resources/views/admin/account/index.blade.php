@@ -4,319 +4,392 @@
 
 @push('styles')
     <style>
-        .account-wrapper {
-            display: grid;
-            gap: 28px;
-        }
+        :root {
+                --primary: #0f766e;
+                --primary-hover: #115e59;
+                --primary-light: rgba(15, 118, 110, 0.08);
+                --surface: #ffffff;
+                --bg-body: #f8fafc;
+                --border: #e2e8f0;
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+                --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                --radius: 16px;
+            }
 
-        .account-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+            .account-layout {
+                display: grid;
+                grid-template-columns: 350px 1fr;
+                gap: 32px;
+                align-items: start;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
 
-        .account-header img {
-            width: 88px;
-            height: 88px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--border);
-        }
-
-        .account-header h1 {
-            margin: 0;
-            font-size: 1.6rem;
-        }
-
-        .account-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
-        }
-
-        .password-card {
-            margin-top: 12px;
-            display: grid;
-            gap: 16px;
-        }
-
-        .password-card h2 {
-            margin: 0;
-            font-size: 1.3rem;
-        }
-
-        .password-card p {
-            margin: 0;
-            color: var(--text-muted);
-        }
-
-        .password-form {
-            display: grid;
-            gap: 20px;
-        }
-
-        .password-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
-        }
-
-        .password-input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            background: var(--surface-muted);
-            font-family: inherit;
-            font-size: 1rem;
-        }
-
-        .password-error {
-            margin-top: 6px;
-            font-size: 0.85rem;
-            color: #dc2626;
-        }
-
-        .password-submit {
-            width: fit-content;
-            border: none;
-            border-radius: 999px;
-            padding: 12px 28px;
-            background: #125e66;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 10px 24px rgba(18, 94, 102, 0.2);
-        }
-
-        .password-alert {
-            padding: 12px 16px;
-            border-radius: 14px;
-            background: rgba(18, 94, 102, 0.08);
-            color: #125e66;
-            font-weight: 500;
-        }
-
-        .avatar-field {
-            display: grid;
-            gap: 12px;
-            justify-items: center;
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px dashed var(--border);
-            background: var(--surface-muted);
-        }
-
-        .avatar-field__preview {
-            width: 108px;
-            height: 108px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: grid;
-            place-items: center;
-            background: #e2e8f0;
-        }
-
-        .avatar-field__preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-field__input {
-            display: none;
-        }
-
-        .avatar-field__button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: #fff;
-            color: var(--text);
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .avatar-field__hint {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        .avatar-field__error {
-            margin: 0;
-            font-size: 0.82rem;
-            color: #dc2626;
-            text-align: center;
-        }
-
-        form {
-            display: grid;
-            gap: 24px;
-        }
-
-        .form-grid {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-
-        label span {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        input[type='text'],
-        input[type='email'] {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            background: var(--surface-muted);
-            font-family: inherit;
-            font-size: 1rem;
-        }
-
-        .error-text {
-            margin-top: 6px;
-            font-size: 0.85rem;
-            color: #dc2626;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .form-actions button {
-            padding: 12px 24px;
-            border-radius: 999px;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
-        }
-
-        @media (max-width: 768px) {
-            .account-header {
-                flex-direction: column;
+            /* --- LEFT COLUMN: PROFILE CARD --- */
+            .profile-card {
+                background: var(--surface);
+                border-radius: var(--radius);
+                border: 1px solid var(--border);
+                box-shadow: var(--shadow-card);
+                padding: 40px 24px 32px;
                 text-align: center;
+                position: sticky;
+                top: 32px;
             }
 
-            .form-actions {
-                justify-content: center;
+            .avatar-wrapper {
+                position: relative;
+                width: 120px;
+                height: 120px;
+                margin: 0 auto 20px;
             }
-        }
-    </style>
+
+            .avatar-img {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+                box-shadow: 0 12px 24px -6px rgba(15, 118, 110, 0.15);
+                background: #fff;
+                border: 4px solid var(--surface);
+            }
+
+            .status-indicator {
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                width: 20px;
+                height: 20px;
+                background: #22c55e;
+                border: 3px solid var(--surface);
+                border-radius: 50%;
+            }
+
+            .admin-name {
+                font-size: 1.35rem;
+                font-weight: 700;
+                color: var(--text-main);
+                margin: 0 0 6px;
+                letter-spacing: -0.01em;
+            }
+
+            .admin-role {
+                font-size: 0.85rem;
+                color: var(--primary);
+                background: var(--primary-light);
+                padding: 6px 14px;
+                border-radius: 99px;
+                display: inline-block;
+                font-weight: 600;
+                margin-bottom: 24px;
+            }
+
+            .info-list {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                text-align: left;
+                padding-top: 24px;
+                border-top: 1px solid var(--border);
+            }
+
+            .info-item {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                font-size: 0.9rem;
+                color: var(--text-main);
+                font-weight: 500;
+            }
+
+            .info-icon {
+                color: #94a3b8;
+                width: 20px;
+                height: 20px;
+                flex-shrink: 0;
+            }
+
+            /* --- RIGHT COLUMN: FORMS --- */
+            .settings-container {
+                display: flex;
+                flex-direction: column;
+                gap: 32px;
+            }
+
+            .form-card {
+                background: var(--surface);
+                border-radius: var(--radius);
+                border: 1px solid var(--border);
+                padding: 32px;
+                box-shadow: var(--shadow-card);
+            }
+
+            .section-header {
+                margin-bottom: 28px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--text-main);
+                margin: 0 0 6px;
+            }
+
+            .section-desc {
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                margin: 0;
+            }
+
+            /* Upload Area */
+            .upload-area {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+                padding: 24px;
+                background: #f8fafc;
+                border: 1px dashed #cbd5e1;
+                border-radius: 12px;
+                margin-bottom: 32px;
+            }
+
+            .upload-preview {
+                width: 72px;
+                height: 72px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #e2e8f0;
+            }
+
+            .upload-btn {
+                background: #fff;
+                border: 1px solid #cbd5e1;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: var(--text-main);
+                cursor: pointer;
+                transition: all 0.2s;
+                display: inline-block;
+            }
+
+            .upload-btn:hover {
+                background: #f1f5f9;
+                border-color: #94a3b8;
+            }
+
+            /* Form Elements */
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 24px;
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-label {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: var(--text-main);
+            }
+
+            .form-input {
+                padding: 12px 16px;
+                border-radius: 10px;
+                border: 1px solid var(--border);
+                font-size: 0.95rem;
+                transition: all 0.2s;
+                color: var(--text-main);
+                width: 100%;
+                background: #fff;
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1);
+            }
+
+            .error-msg {
+                font-size: 0.8rem;
+                color: #ef4444;
+                margin-top: 4px;
+            }
+
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 12px 28px;
+                border-radius: 99px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s, transform 0.1s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .btn-primary:hover {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+            }
+
+            .alert-box {
+                background: #ecfdf5;
+                border: 1px solid #d1fae5;
+                color: #065f46;
+                padding: 14px 18px;
+                border-radius: 10px;
+                margin-bottom: 24px;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            @media (max-width: 1024px) {
+                .account-layout {
+                    grid-template-columns: 1fr;
+                }
+                .profile-card {
+                    position: relative;
+                    top: 0;
+                    margin-bottom: 20px;
+                }
+            }
+        </style>
 @endpush
 
 @section('content')
     @php($currentAdmin = $account ?? $admin)
     @php($avatarPlaceholder = asset('images/avatar-placeholder.svg'))
     @php($avatarSource = $avatarUrl ?? \App\Support\AvatarResolver::resolve([$currentAdmin?->avatar_path]) ?? $avatarPlaceholder)
-    <div class="account-wrapper">
-        <div class="account-header">
-            <img src="{{ $avatarSource }}" alt="Foto Admin" id="admin-account-avatar" />
-            <div>
-                <h1>Pengaturan Akun</h1>
-                <p style="margin: 6px 0 0; color: rgba(17, 37, 54, 0.7);">
-                    Kelola informasi profil admin utama untuk memastikan data terbaru tampil di seluruh panel.
-                </p>
+
+    <div class="account-layout">
+        
+        {{-- SIDEBAR: Profile Summary --}}
+        <aside class="profile-card">
+            <div class="avatar-wrapper">
+                <img src="{{ $avatarSource }}" alt="Avatar" class="avatar-img" id="sidebar-avatar-preview">
+                <div class="status-indicator" title="Online"></div>
             </div>
-        </div>
 
-        <div class="account-card">
-            <form action="{{ route('admin.account.update') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+            <h2 class="admin-name">{{ $currentAdmin?->name ?? 'Administrator' }}</h2>
+            <span class="admin-role">Super Admin</span>
 
-                <div class="avatar-field">
-                    <div class="avatar-field__preview">
-                        <img src="{{ $avatarSource }}" alt="Preview foto admin" id="admin-avatar-preview" />
+            <div class="info-list">
+                <div class="info-item">
+                    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span>{{ $currentAdmin?->email }}</span>
+                </div>
+                <div class="info-item">
+                    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    <span>{{ $currentAdmin?->phone ?? '-' }}</span>
+                </div>
+                <div class="info-item">
+                    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    <span>Akun Terverifikasi</span>
+                </div>
+            </div>
+        </aside>
+
+        {{-- MAIN CONTENT: Forms --}}
+        <div class="settings-container">
+            
+            {{-- Edit Profile Form --}}
+            <div class="form-card">
+                <div class="section-header">
+                    <h3 class="section-title">Edit Profil</h3>
+                    <p class="section-desc">Perbarui informasi pribadi admin utama.</p>
+                </div>
+
+                <form action="{{ route('admin.account.update') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="upload-area">
+                        <img src="{{ $avatarSource }}" class="upload-preview" id="form-avatar-preview">
+                        <div>
+                            <label for="avatar" class="upload-btn">Ubah Foto</label>
+                            <input type="file" id="avatar" name="avatar" accept="image/*" hidden>
+                            <p class="error-msg" style="color: #64748b; margin-top: 6px;">JPG, GIF, atau PNG. Maksimal 5MB.</p>
+                            @error('avatar') <p class="error-msg">{{ $message }}</p> @enderror
+                        </div>
                     </div>
-                    <label class="avatar-field__button" for="avatar">Unggah Foto Baru</label>
-                    <input type="file" class="avatar-field__input" id="avatar" name="avatar" accept="image/*" />
-                    <p class="avatar-field__hint">Format JPG/PNG, maksimum 5 MB</p>
-                    @error('avatar')
-                        <p class="avatar-field__error">{{ $message }}</p>
-                    @enderror
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" name="name" class="form-input" value="{{ old('name', $currentAdmin?->name) }}" required>
+                            @error('name') <p class="error-msg">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-input" value="{{ old('email', $currentAdmin?->email) }}" required>
+                            @error('email') <p class="error-msg">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nomor Telepon</label>
+                            <input type="text" name="phone" class="form-input" value="{{ old('phone', $currentAdmin?->phone) }}">
+                            @error('phone') <p class="error-msg">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 32px; text-align: right;">
+                        <button type="submit" class="btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Change Password Form --}}
+            <div class="form-card">
+                <div class="section-header">
+                    <h3 class="section-title">Keamanan Akun</h3>
+                    <p class="section-desc">Perbarui kata sandi untuk menjaga keamanan akses dashboard.</p>
                 </div>
 
-                <div class="form-grid">
-                    <label>
-                        <span>Nama Lengkap</span>
-                        <input type="text" name="name" value="{{ old('name', $currentAdmin?->name) }}" required />
-                        @error('name')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                    </label>
+                @if (session('password_status'))
+                    <div class="alert-box">{{ session('password_status') }}</div>
+                @endif
 
-                    <label>
-                        <span>Email</span>
-                        <input type="email" name="email" value="{{ old('email', $currentAdmin?->email) }}" required />
-                        @error('email')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                    </label>
+                <form method="post" action="{{ route('admin.account.password') }}">
+                    @csrf
+                    @method('PUT')
 
-                    <label>
-                        <span>No. Telepon</span>
-                        <input type="text" name="phone" value="{{ old('phone', $currentAdmin?->phone) }}" />
-                        @error('phone')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                    </label>
-                </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Password Lama</label>
+                            <input type="password" name="current_password" class="form-input" required>
+                            @error('current_password', 'passwordUpdate') <p class="error-msg">{{ $message }}</p> @enderror
+                        </div>
 
-                <div class="form-actions">
-                    <button type="submit">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-        <div class="account-card password-card">
-            <h2>Keamanan Akun</h2>
-            <p>Ubah password secara berkala untuk menjaga akses dashboard tetap aman.</p>
-            @if (session('password_status'))
-                <div class="password-alert">{{ session('password_status') }}</div>
-            @endif
-            <form class="password-form" method="post" action="{{ route('admin.account.password') }}">
-                @csrf
-                @method('PUT')
-                <div class="password-grid">
-                    <label>
-                        <span>Password Lama</span>
-                        <input class="password-input" type="password" name="current_password" autocomplete="current-password" required />
-                        @error('current_password', 'passwordUpdate')
-                            <div class="password-error">{{ $message }}</div>
-                        @enderror
-                    </label>
-                    <label>
-                        <span>Password Baru</span>
-                        <input class="password-input" type="password" name="password" autocomplete="new-password" required />
-                        @error('password', 'passwordUpdate')
-                            <div class="password-error">{{ $message }}</div>
-                        @enderror
-                    </label>
-                    <label>
-                        <span>Konfirmasi Password Baru</span>
-                        <input class="password-input" type="password" name="password_confirmation" autocomplete="new-password" required />
-                    </label>
-                </div>
-                <button class="password-submit" type="submit">Perbarui Password</button>
-            </form>
+                        <div class="form-group">
+                            <label class="form-label">Password Baru</label>
+                            <input type="password" name="password" class="form-input" required>
+                            @error('password', 'passwordUpdate') <p class="error-msg">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 32px; text-align: right;">
+                        <button type="submit" class="btn-primary" style="background-color: #0f172a;">Perbarui Password</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </div>
 @endsection
@@ -325,32 +398,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const input = document.getElementById('avatar');
-            const preview = document.getElementById('admin-avatar-preview');
+            const formPreview = document.getElementById('form-avatar-preview');
+            const sidebarPreview = document.getElementById('sidebar-avatar-preview');
 
-            if (!input || !preview) {
-                return;
-            }
-
-            input.addEventListener('change', function () {
-                const file = input.files && input.files[0];
-
-                if (!file) {
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.addEventListener('load', function (event) {
-                    const result = event.target?.result;
-                    if (typeof result === 'string') {
-                        preview.src = result;
-                        const headerPreview = document.getElementById('admin-account-avatar');
-                        if (headerPreview) {
-                            headerPreview.src = result;
+            if (input) {
+                input.addEventListener('change', function () {
+                    const file = input.files && input.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            if (formPreview) formPreview.src = e.target.result;
+                            if (sidebarPreview) sidebarPreview.src = e.target.result;
                         }
+                        reader.readAsDataURL(file);
                     }
                 });
-                reader.readAsDataURL(file);
-            });
+            }
         });
     </script>
 @endpush

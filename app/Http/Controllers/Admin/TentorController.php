@@ -20,7 +20,7 @@ class TentorController extends BaseAdminController
 {
     public function index(Request $request): View
     {
-        if (! Schema::hasTable('users')) {
+        if (!Schema::hasTable('users')) {
             return $this->render('admin.tentors.index', [
                 'tentors' => collect(),
                 'stats' => ['total' => 0, 'active' => 0, 'inactive' => 0],
@@ -55,7 +55,7 @@ class TentorController extends BaseAdminController
         $tentors = $query
             ->orderBy('name')
             ->get()
-            ->map(fn (User $tentor) => [
+            ->map(fn(User $tentor) => [
                 'id' => $tentor->id,
                 'name' => $tentor->name,
                 'email' => $tentor->email,
@@ -78,18 +78,11 @@ class TentorController extends BaseAdminController
                 'query' => $queryTerm,
                 'status' => in_array($status, ['all', 'active', 'inactive'], true) ? $status : 'all',
             ],
-        ]);
-    }
-
-    public function create(): View
-    {
-        return $this->render('admin.tentors.create', [
-            'tentor' => null,
-            'tentorProfile' => null,
-            'avatarPreview' => asset('images/avatar-placeholder.svg'),
             'subjectsByLevel' => $this->getSubjectsByLevel(),
         ]);
     }
+
+
 
     public function store(Request $request): RedirectResponse
     {
@@ -162,7 +155,7 @@ class TentorController extends BaseAdminController
             'avatar_path' => $avatarPath,
         ];
 
-        if (! empty($data['password'])) {
+        if (!empty($data['password'])) {
             $updatePayload['password'] = Hash::make($data['password']);
         }
 
@@ -260,7 +253,7 @@ class TentorController extends BaseAdminController
     {
         return TutorProfile::query()
             ->where('slug', $slug)
-            ->when($ignoreProfileId, fn ($query) => $query->where('id', '!=', $ignoreProfileId))
+            ->when($ignoreProfileId, fn($query) => $query->where('id', '!=', $ignoreProfileId))
             ->exists();
     }
 
@@ -282,7 +275,7 @@ class TentorController extends BaseAdminController
 
     private function getSubjectsByLevel(): array
     {
-        if (! Schema::hasTable('subjects')) {
+        if (!Schema::hasTable('subjects')) {
             return [
                 'SD' => collect(),
                 'SMP' => collect(),

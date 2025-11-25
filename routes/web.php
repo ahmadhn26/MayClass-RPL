@@ -42,7 +42,7 @@ Route::get('/', function () {
         $query = Package::query()->withQuotaUsage()->orderBy('level')->orderBy('price');
 
         if (Schema::hasTable('package_features')) {
-            $query->with(['cardFeatures' => fn ($features) => $features->orderBy('position')]);
+            $query->with(['cardFeatures' => fn($features) => $features->orderBy('position')]);
         }
 
         $packages = $query->get();
@@ -51,11 +51,18 @@ Route::get('/', function () {
 
     $user = Auth::user();
 
+    // Fetch Landing Content
+    $landingContents = \App\Models\LandingContent::where('is_active', true)
+        ->orderBy('order')
+        ->get()
+        ->groupBy('section');
+
     return view('welcome', [
         'landingPackages' => $catalog,
         'stageDefinitions' => $stageDefinitions,
         'profileLink' => ProfileLinkResolver::forUser($user),
         'profileAvatar' => ProfileAvatar::forUser($user),
+        'landingContents' => $landingContents,
     ]);
 });
 
@@ -75,7 +82,7 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
-    
+
 });
 
 Route::middleware('auth')->group(function () {
@@ -143,10 +150,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/students/{student}', [AdminStudentController::class, 'show'])->name('students.show');
     Route::post('/students/{student}/reset-password', [AdminStudentController::class, 'resetPassword'])->name('students.reset-password');
 
-    Route::resource('tentors', AdminTentorController::class)->except(['show']);
+    Route::resource('tentors', AdminTentorController::class)->except(['show', 'create']);
 
     Route::get('/packages', [AdminPackageController::class, 'index'])->name('packages.index');
-    Route::get('/packages/create', [AdminPackageController::class, 'create'])->name('packages.create');
     Route::post('/packages', [AdminPackageController::class, 'store'])->name('packages.store');
     Route::get('/packages/{package}/edit', [AdminPackageController::class, 'edit'])->name('packages.edit');
     Route::put('/packages/{package}', [AdminPackageController::class, 'update'])->name('packages.update');
@@ -154,7 +160,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/packages/{package}/subjects', [AdminPackageController::class, 'getSubjects'])->name('packages.subjects');
 
     Route::get('/subjects', [AdminSubjectController::class, 'index'])->name('subjects.index');
-    Route::get('/subjects/create', [AdminSubjectController::class, 'create'])->name('subjects.create');
+    Route::post('/subjects', [AdminSubjectController::class, 'store'])->name('subjects.store');
     Route::post('/subjects', [AdminSubjectController::class, 'store'])->name('subjects.store');
     Route::get('/subjects/{subject}/edit', [AdminSubjectController::class, 'edit'])->name('subjects.edit');
     Route::put('/subjects/{subject}', [AdminSubjectController::class, 'update'])->name('subjects.update');
@@ -172,4 +178,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/schedule/{session}', [AdminScheduleSessionController::class, 'update'])->name('schedule.sessions.update');
     Route::post('/schedule/{session}/cancel', [AdminScheduleSessionController::class, 'cancel'])->name('schedule.sessions.cancel');
     Route::post('/schedule/{session}/restore', [AdminScheduleSessionController::class, 'restore'])->name('schedule.sessions.restore');
+
+    Route::resource('landing-content', \App\Http\Controllers\Admin\LandingContentController::class)->except(['show', 'create', 'edit']);
 });

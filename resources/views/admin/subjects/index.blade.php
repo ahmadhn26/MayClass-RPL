@@ -65,6 +65,8 @@
             text-decoration: none;
             transition: background 0.2s, transform 0.1s;
             box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2);
+            cursor: pointer;
+            border: none;
         }
 
         .btn-add:hover {
@@ -239,9 +241,23 @@
             font-weight: 600;
         }
 
-        .level-sd { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-        .level-smp { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .level-sma { background: #fef3c7; color: #a16207; border: 1px solid #fde68a; }
+        .level-sd {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .level-smp {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .level-sma {
+            background: #fef3c7;
+            color: #a16207;
+            border: 1px solid #fde68a;
+        }
 
         .status-badge {
             display: inline-flex;
@@ -251,8 +267,15 @@
             font-weight: 700;
         }
 
-        .status-active { background: #d1fae5; color: #065f46; }
-        .status-inactive { background: #fee2e2; color: #991b1b; }
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         .action-group {
             display: flex;
@@ -293,19 +316,191 @@
             color: var(--text-muted);
         }
 
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .btn-close:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            width: 100%;
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+            background: #fff;
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .checkbox-label input {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .modal-footer {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            color: var(--text-main);
+            background: #f1f5f9;
+        }
+
+        .btn-submit {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
         @media (max-width: 768px) {
             .page-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .btn-add {
                 width: 100%;
                 justify-content: center;
             }
+
             .filter-row {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .search-box {
                 width: 100%;
             }
@@ -315,17 +510,19 @@
 
 @section('content')
     <div class="page-container">
-        
+
         {{-- Header --}}
         <div class="page-header">
             <div class="header-title">
                 <h2>Manajemen Mata Pelajaran</h2>
                 <p>Kelola daftar mata pelajaran untuk setiap jenjang pendidikan.</p>
             </div>
-            <a href="{{ route('admin.subjects.create') }}" class="btn-add">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <button type="button" class="btn-add" onclick="openModal('addSubjectModal')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
                 Tambah Mata Pelajaran
-            </a>
+            </button>
         </div>
 
         {{-- Stats --}}
@@ -349,28 +546,33 @@
             <form method="GET" action="{{ route('admin.subjects.index') }}">
                 <div class="filter-row">
                     <div class="filter-group">
-                        <a href="{{ route('admin.subjects.index', ['level' => 'all', 'status' => request('status'), 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['level'] === 'all' ? 'active' : '' }}">Semua Jenjang</a>
-                        <a href="{{ route('admin.subjects.index', ['level' => 'SD', 'status' => request('status'), 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['level'] === 'SD' ? 'active' : '' }}">SD</a>
-                        <a href="{{ route('admin.subjects.index', ['level' => 'SMP', 'status' => request('status'), 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['level'] === 'SMP' ? 'active' : '' }}">SMP</a>
-                        <a href="{{ route('admin.subjects.index', ['level' => 'SMA', 'status' => request('status'), 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['level'] === 'SMA' ? 'active' : '' }}">SMA</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => 'all', 'status' => request('status'), 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['level'] === 'all' ? 'active' : '' }}">Semua Jenjang</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => 'SD', 'status' => request('status'), 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['level'] === 'SD' ? 'active' : '' }}">SD</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => 'SMP', 'status' => request('status'), 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['level'] === 'SMP' ? 'active' : '' }}">SMP</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => 'SMA', 'status' => request('status'), 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['level'] === 'SMA' ? 'active' : '' }}">SMA</a>
                     </div>
 
                     <div class="filter-group">
-                        <a href="{{ route('admin.subjects.index', ['level' => request('level'), 'status' => 'all', 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['status'] === 'all' ? 'active' : '' }}">Semua Status</a>
-                        <a href="{{ route('admin.subjects.index', ['level' => request('level'), 'status' => 'active', 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['status'] === 'active' ? 'active' : '' }}">Aktif</a>
-                        <a href="{{ route('admin.subjects.index', ['level' => request('level'), 'status' => 'inactive', 'q' => request('q')]) }}" 
-                           class="filter-btn {{ $filters['status'] === 'inactive' ? 'active' : '' }}">Nonaktif</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => request('level'), 'status' => 'all', 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['status'] === 'all' ? 'active' : '' }}">Semua Status</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => request('level'), 'status' => 'active', 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['status'] === 'active' ? 'active' : '' }}">Aktif</a>
+                        <a href="{{ route('admin.subjects.index', ['level' => request('level'), 'status' => 'inactive', 'q' => request('q')]) }}"
+                            class="filter-btn {{ $filters['status'] === 'inactive' ? 'active' : '' }}">Nonaktif</a>
                     </div>
 
                     <div class="search-box">
-                        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <input type="text" name="q" placeholder="Cari nama mata pelajaran..." value="{{ $filters['query'] }}">
+                        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" name="q" placeholder="Cari nama mata pelajaran..."
+                            value="{{ $filters['query'] }}">
                         <input type="hidden" name="level" value="{{ $filters['level'] }}">
                         <input type="hidden" name="status" value="{{ $filters['status'] }}">
                     </div>
@@ -398,7 +600,8 @@
                                     <div class="subject-name">{{ $subject->name }}</div>
                                 </td>
                                 <td>
-                                    <span class="level-badge level-{{ strtolower($subject->level) }}">{{ $subject->level }}</span>
+                                    <span
+                                        class="level-badge level-{{ strtolower($subject->level) }}">{{ $subject->level }}</span>
                                 </td>
                                 <td>
                                     <div class="subject-desc">{{ $subject->description ?: '—' }}</div>
@@ -410,15 +613,26 @@
                                 </td>
                                 <td>
                                     <div class="action-group">
-                                        <a href="{{ route('admin.subjects.edit', $subject) }}" class="btn-icon" title="Edit Mata Pelajaran">
-                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        <a href="{{ route('admin.subjects.edit', $subject) }}" class="btn-icon"
+                                            title="Edit Mata Pelajaran">
+                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                </path>
+                                            </svg>
                                         </a>
-                                        
-                                        <form action="{{ route('admin.subjects.destroy', $subject) }}" method="POST" onsubmit="return confirm('Yakin ingin menonaktifkan mata pelajaran ini?');">
+
+                                        <form action="{{ route('admin.subjects.destroy', $subject) }}" method="POST"
+                                            onsubmit="return confirm('Yakin ingin menonaktifkan mata pelajaran ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-icon delete" title="Nonaktifkan Mata Pelajaran">
-                                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                <svg width="18" height="18" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                    </path>
+                                                </svg>
                                             </button>
                                         </form>
                                     </div>
@@ -428,7 +642,12 @@
                             <tr>
                                 <td colspan="5">
                                     <div class="empty-state">
-                                        <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                        <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                                            </path>
+                                        </svg>
                                         <p>Belum ada mata pelajaran yang tersedia.</p>
                                     </div>
                                 </td>
@@ -439,4 +658,81 @@
             </div>
         </div>
     </div>
+
+    {{-- ADD SUBJECT MODAL --}}
+    <div id="addSubjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tambah Mata Pelajaran</h2>
+                <button type="button" class="btn-close" onclick="closeModal('addSubjectModal')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <form action="{{ route('admin.subjects.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nama Mata Pelajaran *</label>
+                        <input type="text" name="name" class="form-control" placeholder="Contoh: Matematika, Fisika"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jenjang Pendidikan *</label>
+                        <select name="level" class="form-control" required>
+                            <option value="" disabled selected>Pilih jenjang</option>
+                            @foreach ($levels as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deskripsi (Opsional)</label>
+                        <textarea name="description" class="form-control" rows="3"
+                            placeholder="Deskripsi singkat..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="hidden" name="is_active" value="0">
+                            <input type="checkbox" name="is_active" value="1" checked>
+                            Aktifkan mata pelajaran ini
+                        </label>
+                        <p class="helper-text" style="margin-left: 24px;">Mata pelajaran aktif dapat dipilih saat membuat
+                            paket.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal('addSubjectModal')">Batal</button>
+                    <button type="submit" class="btn-submit">Simpan Mata Pelajaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @push('scripts')
+        <script>
+            function openModal(modalId) {
+                document.getElementById(modalId).classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Close modal on outside click
+            window.onclick = function (event) {
+                if (event.target.classList.contains('modal-overlay')) {
+                    event.target.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        </script>
+    @endpush
 @endsection

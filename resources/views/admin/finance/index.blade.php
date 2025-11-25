@@ -146,6 +146,12 @@
         .bg-failed { background: #f1f5f9; color: #475569; }
 
         /* --- 3. CHART SECTION --- */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
         .chart-card {
             background: var(--bg-surface);
             border-radius: var(--radius);
@@ -163,59 +169,6 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-main);
-        }
-
-        .chart-canvas {
-            height: 300px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 12px;
-            padding-top: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .chart-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            height: 100%;
-            justify-content: flex-end;
-            position: relative;
-        }
-
-        .chart-bar {
-            width: 100%;
-            background: linear-gradient(180deg, #0f766e 0%, #2dd4bf 100%);
-            border-radius: 4px 4px 0 0;
-            opacity: 0.8;
-            transition: all 0.3s;
-        }
-
-        .chart-col:hover .chart-bar {
-            opacity: 1;
-            transform: scaleX(1.1);
-        }
-
-        /* Tooltip on hover */
-        .chart-col:hover::after {
-            content: attr(data-label);
-            position: absolute;
-            top: -30px;
-            background: #1e293b;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 10;
-        }
-
-        .chart-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
         }
 
         /* --- 4. VERIFICATION TABLE --- */
@@ -336,6 +289,7 @@
 
         @media (max-width: 1024px) {
             .status-summary { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -354,7 +308,6 @@
                 <h2>Manajemen Keuangan</h2>
                 <p>Monitor arus kas, verifikasi pembayaran, dan kelola status transaksi siswa.</p>
             </div>
-            {{-- Bisa tambah tombol export report di sini jika perlu --}}
         </div>
 
         {{-- 2. Stats Overview --}}
@@ -410,20 +363,30 @@
             </div>
         </div>
 
-        {{-- 4. Chart --}}
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Grafik Pendapatan Bulanan {{ now()->year }}</h3>
+        {{-- 4. Charts Section --}}
+        <div class="charts-row">
+            {{-- Revenue Chart --}}
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Grafik Pendapatan Bulanan {{ now()->year }}</h3>
+                </div>
+                @if ($monthlyRevenue->sum('value') === 0)
+                    <div class="empty-state">Belum ada data transaksi</div>
+                @else
+                    <div id="revenueChart"></div>
+                @endif
             </div>
-            @php $maxValue = max($monthlyRevenue->pluck('value')->all() ?: [1]); @endphp
-            <div class="chart-canvas">
-                @foreach ($monthlyRevenue as $entry)
-                    @php $height = $maxValue > 0 ? max(($entry['value'] / $maxValue) * 100, 5) : 5; @endphp
-                    <div class="chart-col" data-label="{{ $entry['label'] }}: {{ $entry['formatted_short'] ?? $entry['value'] }}">
-                        <div class="chart-bar" style="height: {{ $height }}%;"></div>
-                        <span class="chart-label">{{ $entry['label'] }}</span>
-                    </div>
-                @endforeach
+
+            {{-- Package Distribution Chart --}}
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Penjualan per Paket</h3>
+                </div>
+                @if ($packageDistribution->isEmpty())
+                    <div class="empty-state">Data belum cukup</div>
+                @else
+                    <div id="packageChart"></div>
+                @endif
             </div>
         </div>
 
@@ -512,3 +475,93 @@
 
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Revenue Chart (Area) ---
+        const revenueData = @json($monthlyRevenue);
+        const revenueOptions = {
+            series: [{
+                name: 'Pendapatan',
+                data: revenueData.map(item => item.value)
+            }],
+            chart: {
+                type: 'area',
+                height: 300,
+                toolbar: { show: false },
+                fontFamily: 'Poppins, sans-serif'
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 2 },
+            xaxis: {
+                categories: revenueData.map(item => item.label),
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                    }
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.3,
+                    stops: [0, 90, 100]
+                }
+            },
+            colors: ['#0f766e'],
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                    }
+                }
+            }
+        };
+
+        if (document.querySelector("#revenueChart")) {
+            const revenueChart = new ApexCharts(document.querySelector("#revenueChart"), revenueOptions);
+            revenueChart.render();
+        }
+
+        // --- Package Chart (Donut) ---
+        const packageData = @json($packageDistribution);
+        if (packageData.length > 0) {
+            const packageOptions = {
+                series: packageData.map(item => item.value),
+                chart: {
+                    type: 'donut',
+                    height: 320,
+                    fontFamily: 'Poppins, sans-serif'
+                },
+                labels: packageData.map(item => item.label),
+                colors: ['#0f766e', '#2dd4bf', '#f59e0b', '#ef4444', '#3b82f6'],
+                legend: {
+                    position: 'bottom'
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%'
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                }
+            };
+
+            if (document.querySelector("#packageChart")) {
+                const packageChart = new ApexCharts(document.querySelector("#packageChart"), packageOptions);
+                packageChart.render();
+            }
+        }
+    });
+</script>
+@endpush
