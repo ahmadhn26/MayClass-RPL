@@ -44,14 +44,14 @@ class GoogleController extends Controller
 
             // Cari user di database berdasarkan google_id atau email
             $user = User::where('google_id', $googleUser->id)
-                        ->orWhere('email', $googleUser->email)
-                        ->first();
+                ->orWhere('email', $googleUser->email)
+                ->first();
 
             // ==========================================================
             // SKENARIO A: USER BELUM ADA DI DATABASE
             // ==========================================================
-            if (! $user) {
-                
+            if (!$user) {
+
                 // Jika mode LOGIN tapi user tidak ada -> TOLAK
                 if ($mode === 'login') {
                     return redirect()
@@ -67,17 +67,17 @@ class GoogleController extends Controller
                     // Buat User Baru
                     // Role diset 'visitor' agar sesuai dengan AuthController manual registration
                     $user = User::create([
-                        'name'      => $googleUser->name,
-                        'username'  => $username,
-                        'email'     => $googleUser->email,
+                        'name' => $googleUser->name,
+                        'username' => $username,
+                        'email' => $googleUser->email,
                         'google_id' => $googleUser->id,
-                        'password'  => Hash::make(Str::random(16)), // Password acak
+                        'password' => Hash::make(Str::random(16)), // Password acak
                         'is_active' => true,
-                        'role'      => 'visitor', // Default role visitor (agar diarahkan ke packages)
-                        'phone'     => null,
-                        'gender'    => 'other',
+                        'role' => 'visitor', // Default role visitor (agar diarahkan ke packages)
+                        'phone' => null,
+                        'gender' => 'other',
                     ]);
-                    
+
                     // Lanjut ke proses login di bawah...
                 }
             }
@@ -85,14 +85,14 @@ class GoogleController extends Controller
             // ==========================================================
             // SKENARIO B: USER SUDAH ADA (LOGIN)
             // ==========================================================
-            
+
             // Sinkronisasi google_id jika user lama belum punya
-            if (! $user->google_id) {
+            if (!$user->google_id) {
                 $user->update(['google_id' => $googleUser->id]);
             }
 
             // Cek apakah akun diblokir/nonaktif (Keamanan Tambahan)
-            if (Schema::hasColumn('users', 'is_active') && ! $user->is_active) {
+            if (Schema::hasColumn('users', 'is_active') && !$user->is_active) {
                 return redirect()
                     ->route('login')
                     ->with('error', 'Akun Anda sedang dinonaktifkan. Hubungi admin.');
@@ -105,11 +105,11 @@ class GoogleController extends Controller
             // LOGIKA REDIRECT (Sesuai route di web.php)
             // ==========================================================
             $targetUrl = match ($user->role) {
-                'tutor'   => route('tutor.dashboard'),   // Sesuai prefix 'tutor' di web.php
+                'tutor' => route('tutor.dashboard'),   // Sesuai prefix 'tutor' di web.php
                 'student' => route('student.dashboard'), // Sesuai prefix 'student' di web.php
-                'admin'   => route('admin.dashboard'),   // Sesuai prefix 'admin' di web.php
+                'admin' => route('admin.dashboard'),   // Sesuai prefix 'admin' di web.php
                 'visitor' => route('packages.index'),    // Sesuai route '/packages'
-                default   => route('packages.index'),
+                default => route('packages.index'),
             };
 
             // Jika tadi dari proses register, kirim pesan sukses
@@ -120,6 +120,9 @@ class GoogleController extends Controller
             return redirect()->intended($targetUrl);
 
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Google Auth Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+
             // Jika error, kembalikan ke halaman asal sesuai mode
             $route = ($mode === 'register') ? 'register' : 'login';
             return redirect()

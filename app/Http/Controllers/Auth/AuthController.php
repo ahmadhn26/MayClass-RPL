@@ -114,7 +114,7 @@ class AuthController extends Controller
 
         $profile = $request->session()->get('register.profile');
 
-        if (! $profile) {
+        if (!$profile) {
             return redirect()->route('register')->with('status', __('Silakan lengkapi data diri terlebih dahulu.'));
         }
 
@@ -129,7 +129,7 @@ class AuthController extends Controller
 
         $profile = $request->session()->get('register.profile');
 
-        if (! $profile) {
+        if (!$profile) {
             return redirect()->route('register')->with('status', __('Silakan lengkapi data diri terlebih dahulu.'));
         }
 
@@ -157,7 +157,7 @@ class AuthController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     $secret = config('services.recaptcha.secret');
 
-                    if (! $secret) {
+                    if (!$secret) {
                         Log::warning('Google reCAPTCHA secret key tidak dikonfigurasi.');
                         $fail(__('Konfigurasi reCAPTCHA belum benar. Hubungi admin.'));
 
@@ -165,7 +165,7 @@ class AuthController extends Controller
                     }
 
                     try {
-                        $response = Http::asForm()->post(
+                        $response = Http::withoutVerifying()->asForm()->post(
                             'https://www.google.com/recaptcha/api/siteverify',
                             [
                                 'secret' => $secret,
@@ -220,7 +220,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            if (!Auth::attempt($credentials, $request->boolean('remember'))) {
                 return back()->withErrors([
                     'username' => __('auth.failed'),
                 ])->onlyInput('username');
@@ -232,7 +232,7 @@ class AuthController extends Controller
                 $user &&
                 $user->role === 'tutor' &&
                 Schema::hasColumn('users', 'is_active') &&
-                ! $user->is_active
+                !$user->is_active
             ) {
                 Auth::logout();
 
@@ -240,7 +240,7 @@ class AuthController extends Controller
                     'username' => __('Akun tentor ini sedang dinonaktifkan oleh admin.'),
                 ])->onlyInput('username');
             }
-        } catch (QueryException|PDOException $exception) {
+        } catch (QueryException | PDOException $exception) {
             if ($this->isDatabaseConnectionIssue($exception)) {
                 return back()->withErrors([
                     'username' => __('Koneksi ke database gagal. Pastikan layanan MySQL/XAMPP sudah berjalan dan pengaturan DB_HOST, DB_PORT, DB_USERNAME di file .env sesuai.'),
@@ -267,7 +267,7 @@ class AuthController extends Controller
 
     private function homeRouteFor(?User $user): string
     {
-        if (! $user) {
+        if (!$user) {
             return route('login');
         }
 
@@ -325,7 +325,7 @@ class AuthController extends Controller
     private function ensureUsernameSupport(): void
     {
         try {
-            if (! Schema::hasTable('users')) {
+            if (!Schema::hasTable('users')) {
                 return;
             }
 
@@ -367,7 +367,7 @@ class AuthController extends Controller
 
         $candidate = $base;
 
-        if (! User::where('username', $candidate)->exists()) {
+        if (!User::where('username', $candidate)->exists()) {
             return $candidate;
         }
 

@@ -65,6 +65,8 @@
             text-decoration: none;
             transition: background 0.2s, transform 0.1s;
             box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2);
+            cursor: pointer;
+            border: none;
         }
 
         .btn-add:hover {
@@ -169,9 +171,19 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        
-        .tag-default { background: #f1f5f9; color: #64748b; }
-        .tag-highlight { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; } /* Orange for active tags */
+
+        .tag-default {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .tag-highlight {
+            background: #fff7ed;
+            color: #ea580c;
+            border: 1px solid #ffedd5;
+        }
+
+        /* Orange for active tags */
 
         /* Actions */
         .action-group {
@@ -246,143 +258,591 @@
             color: var(--text-muted);
         }
 
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .btn-close:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            width: 100%;
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+            background: #fff;
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .subject-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .subject-group h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: var(--text-main);
+        }
+
+        .subject-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-label:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .checkbox-label input {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-remove-feature {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .btn-add-feature {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #f0fdfa;
+            color: #0f766e;
+            border: 1px solid #ccfbf1;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 8px;
+            width: fit-content;
+        }
+
+        .modal-footer {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            color: var(--text-main);
+            background: #f1f5f9;
+        }
+
+        .btn-submit {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
         @media (max-width: 768px) {
             .page-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .btn-add {
                 width: 100%;
                 justify-content: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
             }
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="page-container">
-        
-        {{-- Header --}}
-        <div class="page-header">
-            <div class="header-title">
-                <h2>Manajemen Paket Belajar</h2>
-                <p>Atur penawaran harga, jenjang pendidikan, dan detail paket untuk siswa.</p>
-            </div>
-            <a href="{{ route('admin.packages.create') }}" class="btn-add">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah Paket Baru
-            </a>
-        </div>
+<div class="page-container">
 
-        {{-- Table --}}
-        <div class="table-card">
-            <div class="table-responsive">
-                <table class="package-table">
-                    <thead>
-                        <tr>
-                            <th>Nama Paket</th>
-                            <th>Jenjang & Kelas</th>
-                            <th>Harga</th>
-                            <th>Kuota</th>
-                            <th>Mata Pelajaran</th>
-                            <th>Tutor</th>
-                            <th>Tag / Label</th>
-                            <th style="text-align: right;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($packages as $package)
-                            <tr>
-                                <td>
-                                    <span class="pkg-name">{{ $package->detail_title }}</span>
-                                    <span class="pkg-price-label">{{ $package->detail_price_label }}</span>
-                                </td>
-                                <td>
-                                    <span class="pkg-level">{{ \App\Support\PackagePresenter::stageLabel($package->level) }}</span>
-                                    @if ($package->grade_range)
-                                        <span class="pkg-grades">{{ $package->grade_range }}</span>
+    {{-- Header --}}
+    <div class="page-header">
+        <div class="header-title">
+            <h2>Manajemen Paket Belajar</h2>
+            <p>Atur penawaran harga, jenjang pendidikan, dan detail paket untuk siswa.</p>
+        </div>
+        <button type="button" class="btn-add" onclick="openModal('addPackageModal')">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Tambah Paket Baru
+        </button>
+    </div>
+
+    {{-- Table --}}
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="package-table">
+                <thead>
+                    <tr>
+                        <th>Nama Paket</th>
+                        <th>Jenjang & Kelas</th>
+                        <th>Harga</th>
+                        <th>Kuota</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Tutor</th>
+                        <th>Tag / Label</th>
+                        <th style="text-align: right;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($packages as $package)
+                    <tr>
+                        <td>
+                            <span class="pkg-name">{{ $package->detail_title }}</span>
+                            <span class="pkg-price-label">{{ $package->detail_price_label }}</span>
+                        </td>
+                        <td>
+                            <span
+                                class="pkg-level">{{ \App\Support\PackagePresenter::stageLabel($package->level) }}</span>
+                            @if ($package->grade_range)
+                                <span class="pkg-grades">{{ $package->grade_range }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="pkg-price">Rp {{ number_format($package->price, 0, ',', '.') }}</span>
+                        </td>
+                        <td>
+                            @php($quota = $package->quotaSnapshot())
+                            @if ($quota['limit'] === null)
+                                <span class="tag-pill tag-default">Tak terbatas</span>
+                            @else
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <strong>{{ $quota['remaining'] }} / {{ $quota['limit'] }} kursi tersisa</strong>
+                                    <small style="color: var(--text-muted);">
+                                        Aktif: {{ $quota['active_enrollments'] }}, Checkout terkunci:
+                                        {{ $quota['checkout_holds'] }}
+                                    </small>
+                                </div>
+                            @endif
+                        </td>
+                        <td>
+                            @if($package->subjects->isNotEmpty())
+                                <div class="subject-pills">
+                                    @foreach($package->subjects->take(3) as $subject)
+                                        <span class="subject-pill">{{ $subject->name }}</span>
+                                    @endforeach
+                                    @if($package->subjects->count() > 3)
+                                        <span class="subject-pill-more">+{{ $package->subjects->count() - 3 }} lainnya</span>
                                     @endif
-                                </td>
-                                <td>
-                                    <span class="pkg-price">Rp {{ number_format($package->price, 0, ',', '.') }}</span>
-                                </td>
-                                <td>
-                                    @php($quota = $package->quotaSnapshot())
-                                    @if ($quota['limit'] === null)
-                                        <span class="tag-pill tag-default">Tak terbatas</span>
-                                    @else
-                                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                                            <strong>{{ $quota['remaining'] }} / {{ $quota['limit'] }} kursi tersisa</strong>
-                                            <small style="color: var(--text-muted);">
-                                                Aktif: {{ $quota['active_enrollments'] }}, Checkout terkunci: {{ $quota['checkout_holds'] }}
-                                            </small>
-                                        </div>
+                                </div>
+                            @else
+                                <span class="text-muted">Belum ada</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($package->tutors->isNotEmpty())
+                                <div class="subject-pills">
+                                    @foreach($package->tutors->take(3) as $tutor)
+                                        <span class="subject-pill"
+                                            style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">{{ $tutor->name }}</span>
+                                    @endforeach
+                                    @if($package->tutors->count() > 3)
+                                        <span class="subject-pill-more"
+                                            style="background: #f1f5f9; color: #64748b;">+{{ $package->tutors->count() - 3 }}</span>
                                     @endif
-                                </td>
-                                <td>
-                                    @if($package->subjects->isNotEmpty())
-                                        <div class="subject-pills">
-                                            @foreach($package->subjects->take(3) as $subject)
-                                                <span class="subject-pill">{{ $subject->name }}</span>
-                                            @endforeach
-                                            @if($package->subjects->count() > 3)
-                                                <span class="subject-pill-more">+{{ $package->subjects->count() - 3 }} lainnya</span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="text-muted">Belum ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($package->tutors->isNotEmpty())
-                                        <div class="subject-pills">
-                                            @foreach($package->tutors->take(3) as $tutor)
-                                                <span class="subject-pill" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">{{ $tutor->name }}</span>
-                                            @endforeach
-                                            @if($package->tutors->count() > 3)
-                                                <span class="subject-pill-more" style="background: #f1f5f9; color: #64748b;">+{{ $package->tutors->count() - 3 }}</span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="text-muted">Belum ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($package->tag)
-                                        <span class="tag-pill tag-highlight">{{ $package->tag }}</span>
-                                    @else
-                                        <span class="tag-pill tag-default">—</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="action-group">
-                                        <a href="{{ route('admin.packages.edit', $package) }}" class="btn-icon" title="Edit Paket">
-                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        </a>
-                                        
-                                        <form action="{{ route('admin.packages.destroy', $package) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus paket ini? Data yang dihapus tidak bisa dikembalikan.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-icon delete" title="Hapus Paket">
-                                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6">
-                                    <div class="empty-state">
-                                        <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                                        <p>Belum ada paket belajar yang tersedia.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                            @else
+                                <span class="text-muted">Belum ada</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($package->tag)
+                                <span class="tag-pill tag-highlight">{{ $package->tag }}</span>
+                            @else
+                                <span class="tag-pill tag-default">—</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <a href="{{ route('admin.packages.edit', $package) }}" class="btn-icon"
+                                    title="Edit Paket">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                </a>
+
+                                <form action="{{ route('admin.packages.destroy', $package) }}" method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus paket ini? Data yang dihapus tidak bisa dikembalikan.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-icon delete" title="Hapus Paket">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                <p>Belum ada paket belajar yang tersedia.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+
+{{-- ADD PACKAGE MODAL --}}
+<div id="addPackageModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Tambah Paket Belajar</h2>
+            <button type="button" class="btn-close" onclick="closeModal('addPackageModal')">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <form action="{{ route('admin.packages.store') }}" method="POST">
+            @csrf
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Slug *</label>
+                        <input type="text" name="slug" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenjang Pendidikan *</label>
+                        <select name="level" class="form-control" required>
+                            <option value="" disabled selected>Pilih jenjang</option>
+                            @foreach ($stages as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rentang Kelas *</label>
+                        <input type="text" name="grade_range" class="form-control" placeholder="Contoh: Kelas 10 - 12"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tag (Opsional)</label>
+                        <input type="text" name="tag" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Harga (Numerik) *</label>
+                        <input type="number" name="price" class="form-control" min="0" step="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kuota Maksimum (Opsional)</label>
+                        <input type="number" name="max_students" class="form-control" min="1"
+                            placeholder="Kosongkan jika tak terbatas">
+                    </div>
+                    <div class="form-group">
+                        <label>Label Harga Kartu *</label>
+                        <input type="text" name="card_price_label" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Label Harga Detail *</label>
+                        <input type="text" name="detail_price_label" class="form-control" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Judul Paket *</label>
+                        <input type="text" name="detail_title" class="form-control" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Kunci Gambar (Unsplash) *</label>
+                        <input type="text" name="image_url" class="form-control" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Ringkasan *</label>
+                        <textarea name="summary" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    {{-- Features --}}
+                    <div class="form-group full-width">
+                        <label>Fitur Pricing (Kartu Paket)</label>
+                        <p class="helper-text">Tambahkan fitur yang akan muncul di kartu paket.</p>
+                        <div class="feature-list" id="feature-list">
+                            <div class="feature-item">
+                                <input type="text" name="card_features[]" class="form-control"
+                                    placeholder="Contoh: 6x kelas live per bulan">
+                                <button type="button" class="btn-remove-feature"
+                                    onclick="removeFeature(this)">Hapus</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-feature" onclick="addFeature()">+ Tambah Fitur</button>
+                    </div>
+
+                    {{-- Subjects --}}
+                    <div class="form-group full-width">
+                        <label>Mata Pelajaran yang Termasuk *</label>
+                        <div class="subject-selection">
+                            @foreach(['SD', 'SMP', 'SMA'] as $level)
+                                @if($subjectsByLevel[$level]->isNotEmpty())
+                                    <div class="subject-group">
+                                        <h4>{{ $level }}</h4>
+                                        <div class="subject-checkboxes">
+                                            @foreach($subjectsByLevel[$level] as $subject)
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" name="subjects[]" value="{{ $subject->id }}">
+                                                    {{ $subject->name }}
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Tutors --}}
+                    <div class="form-group full-width">
+                        <label>Tutor Pengampu (Opsional)</label>
+                        <div class="subject-selection">
+                            @if($tutors->isEmpty())
+                                <p class="helper-text">Belum ada tutor aktif.</p>
+                            @else
+                                <div class="subject-checkboxes">
+                                    @foreach($tutors as $tutor)
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}">
+                                            {{ $tutor->name }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('addPackageModal')">Batal</button>
+                <button type="submit" class="btn-submit">Simpan Paket</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function addFeature() {
+            const list = document.getElementById('feature-list');
+            const item = document.createElement('div');
+            item.className = 'feature-item';
+            item.innerHTML = `
+                    <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
+                    <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
+                `;
+            list.appendChild(item);
+        }
+
+        function removeFeature(button) {
+            const list = document.getElementById('feature-list');
+            if (list.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                button.parentElement.querySelector('input').value = '';
+            }
+        }
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+@endpush
 @endsection

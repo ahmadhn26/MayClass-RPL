@@ -21,17 +21,13 @@ class PackageController extends BaseAdminController
 
         return $this->render('admin.packages.index', [
             'packages' => $packages,
-        ]);
-    }
-
-    public function create(): View
-    {
-        return $this->render('admin.packages.create', [
             'stages' => $this->stageOptions(),
             'subjectsByLevel' => $this->getSubjectsByLevel(),
             'tutors' => User::where('role', 'tutor')->where('is_active', true)->orderBy('name')->get(),
         ]);
     }
+
+
 
     public function store(Request $request): RedirectResponse
     {
@@ -150,7 +146,7 @@ class PackageController extends BaseAdminController
     {
         $definitions = config('mayclass.package_stages');
 
-        if (! is_array($definitions) || empty($definitions)) {
+        if (!is_array($definitions) || empty($definitions)) {
             $definitions = [
                 'SD' => ['label' => 'Sekolah Dasar (SD)'],
                 'SMP' => ['label' => 'Sekolah Menengah Pertama (SMP)'],
@@ -173,7 +169,7 @@ class PackageController extends BaseAdminController
 
     private function getSubjectsByLevel(): array
     {
-        if (! Schema::hasTable('subjects')) {
+        if (!Schema::hasTable('subjects')) {
             return [
                 'SD' => collect(),
                 'SMP' => collect(),

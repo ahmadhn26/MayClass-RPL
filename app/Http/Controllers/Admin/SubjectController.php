@@ -13,7 +13,7 @@ class SubjectController extends BaseAdminController
 {
     public function index(Request $request): View
     {
-        if (! Schema::hasTable('subjects')) {
+        if (!Schema::hasTable('subjects')) {
             return $this->render('admin.subjects.index', [
                 'subjects' => collect(),
                 'stats' => ['total' => 0, 'active' => 0, 'inactive' => 0],
@@ -56,16 +56,11 @@ class SubjectController extends BaseAdminController
                 'status' => in_array($status, ['all', 'active', 'inactive'], true) ? $status : 'all',
                 'query' => $queryTerm,
             ],
-        ]);
-    }
-
-    public function create(): View
-    {
-        return $this->render('admin.subjects.create', [
-            'subject' => null,
             'levels' => $this->levelOptions(),
         ]);
     }
+
+
 
     public function store(Request $request): RedirectResponse
     {

@@ -35,7 +35,7 @@ class DashboardController extends BaseAdminController
                 ->take(6)
                 ->get()
                 ->map(function (User $user) {
-                    
+
                     return [
                         'name' => $user->name,
                         'email' => $user->email,
@@ -54,7 +54,23 @@ class DashboardController extends BaseAdminController
             'topPackages' => $this->topPackages(),
             'recentStudents' => $recentStudents,
             'schedule' => $this->scheduleOverview($request->input('tutor_id')),
+            'packageDistribution' => $this->packageSalesDistribution(),
         ]);
+    }
+
+    private function packageSalesDistribution()
+    {
+        if (!Schema::hasTable('orders')) {
+            return collect();
+        }
+
+        return Order::query()
+            ->join('packages', 'orders.package_id', '=', 'packages.id')
+            ->selectRaw('packages.detail_title as label, COUNT(*) as value')
+            ->where('orders.status', 'paid')
+            ->groupBy('packages.id', 'packages.detail_title')
+            ->orderByDesc('value')
+            ->get();
     }
 
     private function scheduleOverview($requestedTutor): array
@@ -73,7 +89,7 @@ class DashboardController extends BaseAdminController
 
         $sessions = $sessionsReady
             ? ScheduleSession::query()
-                ->when($selectedTutorId, fn ($query) => $query->where('user_id', $selectedTutorId))
+                ->when($selectedTutorId, fn($query) => $query->where('user_id', $selectedTutorId))
                 ->orderBy('start_at')
                 ->get()
             : collect();
@@ -120,14 +136,14 @@ class DashboardController extends BaseAdminController
             ];
         });
 
-        $upcomingSessions = $sessionPayload->filter(fn ($session) => $session['status'] !== 'cancelled' && ! $session['is_past']);
+        $upcomingSessions = $sessionPayload->filter(fn($session) => $session['status'] !== 'cancelled' && !$session['is_past']);
         $historySessions = $sessionPayload
-            ->filter(fn ($session) => $session['status'] !== 'cancelled' && $session['is_past'])
+            ->filter(fn($session) => $session['status'] !== 'cancelled' && $session['is_past'])
             ->sortByDesc('start_iso')
             ->take(6)
             ->values();
         $cancelledSessions = $sessionPayload
-            ->filter(fn ($session) => $session['status'] === 'cancelled')
+            ->filter(fn($session) => $session['status'] === 'cancelled')
             ->sortByDesc('start_iso')
             ->take(6)
             ->values();
@@ -234,7 +250,7 @@ class DashboardController extends BaseAdminController
 
     private function parseScheduleDate($value): ?CarbonImmutable
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 
@@ -265,7 +281,7 @@ class DashboardController extends BaseAdminController
 
     private function sumPaidOrders(?int $year = null): float
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return 0.0;
         }
 
@@ -279,7 +295,7 @@ class DashboardController extends BaseAdminController
 
     private function monthlyRevenue(): Collection
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return collect();
         }
 
@@ -307,7 +323,7 @@ class DashboardController extends BaseAdminController
 
     private function averageTicket(): float
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return 0.0;
         }
 
@@ -322,7 +338,7 @@ class DashboardController extends BaseAdminController
 
     private function monthComparison(): array
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return [
                 'formatted' => $this->formatCurrency(0),
                 'delta' => 0.0,
@@ -351,7 +367,7 @@ class DashboardController extends BaseAdminController
 
     private function paymentPipeline(): array
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return [
                 'total' => 0,
                 'rows' => collect([
@@ -388,7 +404,7 @@ class DashboardController extends BaseAdminController
 
     private function recentPayments(): Collection
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return collect();
         }
 
@@ -433,7 +449,7 @@ class DashboardController extends BaseAdminController
 
     private function topPackages(): Collection
     {
-        if (! Schema::hasTable('packages') || ! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('packages') || !Schema::hasTable('orders')) {
             return collect();
         }
 
@@ -458,7 +474,7 @@ class DashboardController extends BaseAdminController
 
     private function sumPaidOrdersForMonth(int $year, int $month): float
     {
-        if (! Schema::hasTable('orders')) {
+        if (!Schema::hasTable('orders')) {
             return 0.0;
         }
 
