@@ -1,0 +1,36 @@
+﻿
+
+   INFO  Seeding database.  
+
+  Database\Seeders\PackageSeeder  RUNNING  
+  Database\Seeders\PackageSeeder  94 ms DONE  
+
+  Database\Seeders\SubjectSeeder  RUNNING  
+  Database\Seeders\SubjectSeeder  50 ms DONE  
+
+  Database\Seeders\MaterialSeeder  RUNNING  
+  Database\Seeders\MaterialSeeder  84 ms DONE  
+
+  Database\Seeders\QuizSeeder  RUNNING  
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'subject' in 'field list' (Connection: mysql, SQL: insert into `quizzes` (`slug`, `package_id`, `subject`, `class_level`, `title`, `summary`, `link_url`, `thumbnail_url`, `duration_label`, `question_count`, `updated_at`, `created_at`) values (kuis-matematika-smp-barisan-dan-deret, 3, Matematika, SMP, Barisan dan Deret, Uji pemahaman konsep barisan aritmetika dan geometri dengan soal bertingkat., https://mayclass.id/kuis/matematika/barisan-deret, quiz_math_sequence, 30 menit, 20, 2025-11-25 13:40:46, 2025-11-25 13:40:46))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:824
+    820Γûò                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    821Γûò                 );
+    822Γûò             }
+    823Γûò 
+  Γ₧£ 824Γûò             throw new QueryException(
+    825Γûò                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    826Γûò             );
+    827Γûò         }
+    828Γûò     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:47
+      PDOException::("SQLSTATE[42S22]: Column not found: 1054 Unknown column 'subject' in 'field list'")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:47
+      PDO::prepare("insert into `quizzes` (`slug`, `package_id`, `subject`, `class_level`, `title`, `summary`, `link_url`, `thumbnail_url`, `duration_label`, `question_count`, `updated_at`, `created_at`) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+

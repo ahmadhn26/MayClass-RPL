@@ -1,0 +1,6 @@
+# Add custom PNG assets for MayClass branding in this directory.
+# Example: logo.png, hero-illustration.png, etc.
+# This placeholder ensures the folder exists without bundling binary assets.
+*
+!.gitignore
+!avatar-placeholder.svg
