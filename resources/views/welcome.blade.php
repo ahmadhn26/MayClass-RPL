@@ -313,11 +313,9 @@
             min-height: calc(100vh + 120px);
             padding-top: calc(var(--nav-height) + 60px);
             padding-bottom: 100px;
-            background:
-                linear-gradient(to bottom,
-                    rgba(0, 0, 0, 0.35),
-                    rgba(0, 0, 0, 0.65)),
-                url('/images/stis_contoh.jpeg') center/cover no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .hero-content {
@@ -1137,10 +1135,12 @@
                 </div>
             </div>
         </nav>
-        <div class="hero" id="beranda">
-            @php
-                $heroContent = $landingContents->get('hero')?->first();
-            @endphp
+        @php
+            $heroContent = $landingContents->get('hero')?->first();
+            $heroBg = $heroContent && $heroContent->image ? asset($heroContent->image) : '/images/stis_contoh.jpeg';
+        @endphp
+        <div class="hero" id="beranda"
+            style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65)), url('{{ $heroBg }}');">
             <div class="hero-content" data-reveal data-reveal-delay="40">
                 <span class="badge">{{ $heroContent->content['title'] ?? 'Bimbel MayClass' }}</span>
                 <h1>{{ $heroContent->content['subtitle'] ?? 'Langkah Pasti Menuju Prestasi' }}</h1>
@@ -1163,7 +1163,7 @@
             <div class="articles-grid">
                 @forelse($landingContents['article'] ?? [] as $article)
                     <article class="article-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
-                        <img src="{{ asset($article->image ?? 'images/placeholder-article.jpg') }}"
+                        <img src="{{ Str::startsWith($article->image ?? '', 'http') ? $article->image : asset($article->image ?? 'images/placeholder-article.jpg') }}"
                             alt="{{ $article->content['title'] }}"
                             onerror="this.src='https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80'" />
                         <div class="article-content">
@@ -1348,11 +1348,18 @@
                         </div>
                         <p class="mentor-saying">“{{ $mentor->content['quote'] }}”</p>
                         <div class="mentor-meta">
-                            @if(!empty($mentor->content['meta_1']))
-                                <span>{{ $mentor->content['meta_1'] }}</span>
-                            @endif
-                            @if(!empty($mentor->content['meta_2']))
-                                <span>{{ $mentor->content['meta_2'] }}</span>
+                            @if(isset($mentor->content['meta']) && is_array($mentor->content['meta']))
+                                @foreach($mentor->content['meta'] as $meta)
+                                    <span>{{ $meta }}</span>
+                                @endforeach
+                            @else
+                                {{-- Legacy Fallback --}}
+                                @if(!empty($mentor->content['meta_1']))
+                                    <span>{{ $mentor->content['meta_1'] }}</span>
+                                @endif
+                                @if(!empty($mentor->content['meta_2']))
+                                    <span>{{ $mentor->content['meta_2'] }}</span>
+                                @endif
                             @endif
                         </div>
                     </article>
