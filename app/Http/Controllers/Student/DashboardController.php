@@ -89,6 +89,7 @@ class DashboardController extends Controller
         $recentMaterials = $materialsAvailable
             ? Material::query()
                 ->where('package_id', $packageId)
+                ->with('subject')
                 ->when($materialChaptersReady, fn ($query) => $query->withCount('chapters'))
                 ->when($materialObjectivesReady, fn ($query) => $query->withCount('objectives'))
                 ->orderByDesc('created_at')
@@ -97,14 +98,14 @@ class DashboardController extends Controller
                 ->map(function (Material $material) use ($materialsLink, $materialChaptersReady, $materialObjectivesReady) {
                     return [
                         'slug' => $material->slug,
-                        'subject' => $material->subject,
+                        'subject' => optional($material->subject)->name ?? 'Umum',
                         'title' => $material->title,
                         'summary' => $material->summary,
                         'level' => $material->level,
                         'chapter_count' => $materialChaptersReady ? (int) $material->chapters_count : 0,
                         'objective_count' => $materialObjectivesReady ? (int) $material->objectives_count : 0,
                         'resource' => $material->resource_url ?? $materialsLink,
-                        'accent' => SubjectPalette::accent($material->subject),
+                        'accent' => SubjectPalette::accent(optional($material->subject)->name ?? 'Umum'),
                     ];
                 })
             : collect();
@@ -112,6 +113,7 @@ class DashboardController extends Controller
         $recentQuizzes = $quizzesAvailable
             ? Quiz::query()
                 ->where('package_id', $packageId)
+                ->with('subject')
                 ->when($quizLevelsReady, fn ($query) => $query->with(['levels' => fn ($levels) => $levels->orderBy('position')]))
                 ->orderByDesc('created_at')
                 ->take(4)
@@ -125,7 +127,7 @@ class DashboardController extends Controller
                         'questions' => $quiz->question_count,
                         'levels' => $quizLevelsReady ? $quiz->levels->pluck('label')->all() : [],
                         'link' => $quiz->link ?? $quizLink,
-                        'accent' => SubjectPalette::accent($quiz->subject),
+                        'accent' => SubjectPalette::accent(optional($quiz->subject)->name ?? 'Umum'),
                     ];
                 })
             : collect();
@@ -139,7 +141,7 @@ class DashboardController extends Controller
                 ->count()
             : 0;
         $subjectsTotal = $materialsAvailable
-            ? Material::where('package_id', $packageId)->distinct('subject')->count('subject')
+            ? Material::where('package_id', $packageId)->distinct('subject_id')->count('subject_id')
             : 0;
         $materialLevels = $materialsAvailable
             ? Material::where('package_id', $packageId)->select('level')->distinct()->pluck('level')->filter()->values()->all()
