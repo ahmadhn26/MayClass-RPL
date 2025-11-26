@@ -290,9 +290,9 @@
             display: grid;
             gap: 1px;
             background: var(--border); /* Creates grid lines */
-            border: 1px solid var(--border);
+            border: 1px solid var(--border);\
             border-radius: var(--radius-md);
-            overflow: hidden;
+            overflow: visible; /* Changed from hidden to allow mobile scroll */
         }
 
         .calendar-cell {
@@ -406,12 +406,223 @@
         }
         .btn-primary:hover { background: var(--primary-hover); }
 
+        /* --- Responsive Mobile Styles --- */
         @media (max-width: 768px) {
-            .schedule-container { padding: 0 20px; }
-            .calendar-controls { flex-direction: column; align-items: stretch; }
-            .nav-group { justify-content: space-between; }
-            .calendar-cell { min-height: auto; }
+            .schedule-container { 
+                padding: 0 16px;
+                gap: 32px;
+            }
+            
+            /* Hero adjustments */
+            .hero-banner {
+                padding: 24px;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-desc {
+                font-size: 0.95rem;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+            }
+            
+            .btn-hero,
+            .btn-hero-outline {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            /* Highlight card */
+            .highlight-card {
+                padding: 20px;
+            }
+            
+            .highlight-title {
+                font-size: 1.3rem;
+            }
+            
+            /* Calendar controls - stack vertically */
+            .calendar-controls { 
+                flex-direction: column; 
+                align-items: stretch;
+                gap: 12px;
+                padding: 12px;
+            }
+            
+            /* Tabs - full width on mobile */
+            .tabs-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .tab-link {
+                flex: 1;
+                text-align: center;
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            /* Navigation group */
+            .nav-group { 
+                justify-content: space-between;
+                width: 100%;
+            }
+            
+            .nav-btn {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+            
+            .current-date {
+                font-size: 0.9rem;
+            }
+            
+            /* Calendar wrapper - contains the scroll */
+            .calendar-wrapper {
+                width: 100%;
+                overflow-x: auto;
+                overflow-y: visible;
+                -webkit-overflow-scrolling: touch;
+                margin-bottom: 16px;
+            }
+            
+            /* Custom scrollbar for wrapper */
+            .calendar-wrapper::-webkit-scrollbar {
+                height: 10px;
+            }
+            
+            .calendar-wrapper::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 4px;
+            }
+            
+            .calendar-wrapper::-webkit-scrollbar-thumb {
+                background: var(--primary);
+                border-radius: 4px;
+            }
+            
+            .calendar-wrapper::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-hover);
+            }
+            
+            /* Calendar grid - no overflow, let wrapper handle it */
+            .calendar-grid {
+                overflow: visible !important;
+                display: grid !important;
+            }
+            
+            /* For month/week view (7 columns), set minimum width */
+            .calendar-grid[style*="repeat(7"] {
+                min-width: 700px;
+            }
+            
+            /* Ensure cells maintain size */
+            .calendar-grid[style*="repeat(7"] .calendar-cell {
+                min-width: 100px;
+                min-height: 100px;
+                padding: 12px;
+            }
+            
+            /* For day view (1 column), full width */
+            .calendar-grid[style*="repeat(1"] {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .calendar-cell { 
+                min-height: 80px;
+                padding: 12px;
+            }
+            
+            .day-number {
+                font-size: 1rem;
+            }
+            
+            .day-name {
+                font-size: 0.7rem;
+            }
+            
+            .calendar-event {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+            
+            .event-time {
+                font-size: 0.7rem;
+            }
+            
+            /* Upcoming grid - single column on mobile */
+            .upcoming-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Range list adjustments */
+            .range-session {
+                padding: 12px 16px;
+            }
+            
+            .rs-title {
+                font-size: 0.95rem;
+            }
+            
+            .rs-meta {
+                font-size: 0.8rem;
+            }
         }
+        
+        /* Extra small devices */
+        @media (max-width: 480px) {
+            .schedule-container {
+                padding: 0 12px;
+            }
+            
+            .hero-banner {
+                padding: 20px;
+            }
+            
+            .hero-title {
+                font-size: 1.3rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .highlight-card {
+                padding: 16px;
+            }
+            
+            .highlight-title {
+                font-size: 1.1rem;
+            }
+            
+            .highlight-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .tab-link {
+                padding: 8px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .calendar-cell {
+                min-height: 70px;
+                padding: 8px;
+            }
+            
+            .day-number {
+                font-size: 0.9rem;
+            }
+        }
+    
     </style>
 @endpush
 
@@ -531,29 +742,31 @@
                 </div>
             </div>
 
-            {{-- Calendar Grid --}}
-            <div class="calendar-grid" style="grid-template-columns: repeat({{ $calendar['columns'] }}, minmax(0, 1fr));">
-                @foreach ($calendar['weeks'] as $week)
-                    @foreach ($week as $day)
-                        <div class="calendar-cell {{ $day['isActive'] ? 'is-active' : '' }}">
-                            <div class="cell-header">
-                                <span class="day-number">{{ $day['display'] }}</span>
-                                <span class="day-name">
-                                    {{ $viewMode === 'day' ? $day['fullLabel'] : $day['weekday'] }}
-                                </span>
-                            </div>
+            {{-- Calendar Grid Wrapper for Mobile Scroll --}}
+            <div class="calendar-wrapper">
+                <div class="calendar-grid" style="grid-template-columns: repeat({{ $calendar['columns'] }}, minmax(0, 1fr));">
+                    @foreach ($calendar['weeks'] as $week)
+                        @foreach ($week as $day)
+                            <div class="calendar-cell {{ $day['isActive'] ? 'is-active' : '' }}">
+                                <div class="cell-header">
+                                    <span class="day-number">{{ $day['display'] }}</span>
+                                    <span class="day-name">
+                                        {{ $viewMode === 'day' ? $day['fullLabel'] : $day['weekday'] }}
+                                    </span>
+                                </div>
 
-                            @if (! empty($day['sessions']))
-                                @foreach ($day['sessions'] as $event)
-                                    <div class="calendar-event">
-                                        <span class="event-time">{{ $event['start_time'] ?? '-' }} WIB</span>
-                                        <span>{{ $event['title'] }}</span>
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
+                                @if (! empty($day['sessions']))
+                                    @foreach ($day['sessions'] as $event)
+                                        <div class="calendar-event">
+                                            <span class="event-time">{{ $event['start_time'] ?? '-' }} WIB</span>
+                                            <span>{{ $event['title'] }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        @endforeach
                     @endforeach
-                @endforeach
+                </div>
             </div>
         </section>
 
