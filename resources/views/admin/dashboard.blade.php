@@ -570,18 +570,6 @@
 
             {{-- Top Packages & Students --}}
             <div style="display: grid; gap: 24px;">
-                {{-- Top Packages Chart --}}
-                <div class="section-card">
-                    <div class="card-title">
-                        <h3>Penjualan Paket</h3>
-                    </div>
-                    @if ($packageDistribution->isEmpty())
-                        <div class="empty-state">Data belum cukup</div>
-                    @else
-                        <div id="packageChart"></div>
-                    @endif
-                </div>
-
                 {{-- Recent Students --}}
                 <div class="section-card">
                     <div class="card-title">

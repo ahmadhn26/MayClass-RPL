@@ -37,7 +37,7 @@ class PackagePresenter
     public static function groupByStage(Collection $packages): Collection
     {
         $sorted = $packages
-            ->sortBy(fn (Package $package) => self::stagePriority($package->level))
+            ->sortBy(fn(Package $package) => self::stagePriority($package->level))
             ->values();
 
         return $sorted->groupBy('level')->map(function (Collection $group, string $stage) {
@@ -45,7 +45,7 @@ class PackagePresenter
                 'stage' => $stage,
                 'stage_label' => self::stageLabel($stage),
                 'stage_description' => self::stageDescription($stage),
-                'packages' => $group->map(fn (Package $package) => self::card($package))->values()->all(),
+                'packages' => $group->map(fn(Package $package) => self::card($package))->values()->all(),
             ];
         })->values();
     }
@@ -103,6 +103,8 @@ class PackagePresenter
             'quota_active_enrollments' => $quota['active_enrollments'],
             'quota_checkout_holds' => $quota['checkout_holds'],
             'is_full' => $quota['is_full'],
+            'max_students' => $package->max_students,
+            'price' => $package->price,
         ];
     }
 
@@ -113,7 +115,7 @@ class PackagePresenter
             ->values()
             ->all();
 
-        $order = ! empty($order) ? $order : self::DEFAULT_STAGE_ORDER;
+        $order = !empty($order) ? $order : self::DEFAULT_STAGE_ORDER;
         $priorityMap = array_flip($order);
 
         return $priorityMap[$stage] ?? (count($priorityMap) + 1);
@@ -127,7 +129,7 @@ class PackagePresenter
 
         $stages = config('mayclass.package_stages');
 
-        if (! is_array($stages)) {
+        if (!is_array($stages)) {
             return null;
         }
 
