@@ -458,6 +458,32 @@
             align-items: flex-start;
         }
 
+        .terms-consent input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 3px;
+            accent-color: var(--primary-600);
+        }
+
+        .terms-consent label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.95rem;
+            color: var(--neutral-900);
+        }
+
+        .terms-consent label small {
+            font-size: 0.85rem;
+            color: var(--neutral-500);
+            font-weight: 400;
+        }
+
+        .terms-consent.is-approved {
+            background: #dcfce7;
+            border-color: #16a34a;
+        }
+
         @media (max-width: 600px) { 
             .auth-container { 
                 padding: 24px 20px; 
@@ -482,6 +508,15 @@
             
             .terms-dialog {
                 max-height: 90vh;
+            }
+        }
+        @media (max-width: 600px) {
+            .auth-container {
+                padding: 32px 24px;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>

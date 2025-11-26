@@ -310,9 +310,61 @@
                 border-top: 1px solid var(--border);
             }
 
-            @media (max-width: 640px) {
-                .page-hero h1 { font-size: 2rem; }
-                .grid { grid-template-columns: 1fr; }
+            @media (max-width: 768px) {
+                .container {
+                    padding: 0 16px;
+                }
+                
+                .brand img {
+                    height: 80px;
+                }
+                
+                .page-hero {
+                    padding: 40px 0 24px;
+                }
+                
+                .page-hero h1 {
+                    font-size: 1.75rem;
+                }
+                
+                .page-hero p {
+                    font-size: 1rem;
+                }
+                
+                .alert-box {
+                    padding: 12px;
+                    margin-bottom: 24px;
+                }
+                
+                .stage-section {
+                    margin-bottom: 40px;
+                }
+                
+                .stage-title {
+                    font-size: 1.25rem;
+                }
+                
+                .grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+                
+                .card {
+                    padding: 24px 20px;
+                }
+                
+                .pkg-title {
+                    font-size: 1.15rem;
+                }
+                
+                .pkg-price {
+                    font-size: 1.75rem;
+                }
+                
+                .btn {
+                    padding: 10px 14px;
+                    font-size: 0.85rem;
+                }
             }
         </style>
     </head>
