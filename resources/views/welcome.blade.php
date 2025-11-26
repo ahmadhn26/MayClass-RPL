@@ -187,6 +187,7 @@
         }
 
         @media (max-width: 768px) {
+
             /* Hide desktop nav-actions on mobile */
             .nav-actions-desktop {
                 display: none !important;
@@ -215,19 +216,22 @@
 
             .nav-inner {
                 /* UBAH BAGIAN INI */
-                display: flex;      /* Gunakan Flexbox agar lebih mudah diatur */
-                justify-content: space-between; /* Logo mentok kiri, Burger mentok kanan */
+                display: flex;
+                /* Gunakan Flexbox agar lebih mudah diatur */
+                justify-content: space-between;
+                /* Logo mentok kiri, Burger mentok kanan */
                 align-items: center;
                 width: 100%;
 
-                padding: 0;         
+                padding: 0;
                 gap: 0;
             }
 
             .hamburger {
                 display: flex;
                 /* Hapus justify-self: end; karena sudah diatur oleh flex parent */
-                margin-right: 0; /* Pastikan tidak ada margin kanan yang menghalangi */
+                margin-right: 0;
+                /* Pastikan tidak ada margin kanan yang menghalangi */
             }
 
             .nav-links {
@@ -336,6 +340,34 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .nav-icon-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-strong);
+            border-radius: 50%;
+            transition: background 0.2s;
+            margin-right: 4px;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid #fff;
         }
 
         .sr-only {
@@ -1300,6 +1332,16 @@
         $joinLink = route('join');
         $profileLink = $profileLink ?? null;
         $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
+
+        // Check for pending order
+        $pendingOrder = null;
+        if (Auth::check()) {
+            $pendingOrder = Auth::user()->orders()
+                ->where('status', 'pending')
+                ->with('package')
+                ->latest()
+                ->first();
+        }
     @endphp
 
     <header>
@@ -1322,6 +1364,19 @@
                     <a href="#faq">FAQ</a>
                     <div class="nav-actions">
                         @auth
+                            @if($pendingOrder && $pendingOrder->package)
+                                <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                    class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                    </svg>
+                                    <span class="notification-dot"></span>
+                                </a>
+                            @endif
+
                             <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
                                 aria-label="Buka profil">
                                 <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
@@ -1342,6 +1397,18 @@
                 {{-- Desktop nav-actions (visible on ≥769px) --}}
                 <div class="nav-actions nav-actions-desktop">
                     @auth
+                        @if($pendingOrder && $pendingOrder->package)
+                            <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                </svg>
+                                <span class="notification-dot"></span>
+                            </a>
+                        @endif
+
                         <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
                             aria-label="Buka profil">
                             <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
@@ -1733,13 +1800,13 @@
             // Hamburger menu functionality
             const hamburger = document.querySelector('.hamburger');
             const navLinks = document.querySelector('.nav-links');
-            
+
             if (hamburger && navLinks) {
                 const toggleMenu = () => {
                     const isActive = hamburger.classList.toggle('active');
                     navLinks.classList.toggle('active');
                     hamburger.setAttribute('aria-expanded', isActive);
-                    
+
                     // Prevent body scroll when menu is open
                     if (isActive) {
                         document.body.style.overflow = 'hidden';
@@ -1761,8 +1828,8 @@
 
                 // Close menu when clicking outside
                 document.addEventListener('click', (e) => {
-                    if (navLinks.classList.contains('active') && 
-                        !navLinks.contains(e.target) && 
+                    if (navLinks.classList.contains('active') &&
+                        !navLinks.contains(e.target) &&
                         !hamburger.contains(e.target)) {
                         toggleMenu();
                     }
