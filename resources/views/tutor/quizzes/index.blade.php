@@ -285,7 +285,6 @@
     <div class="page-header">
         <div class="header-title">
             <h1>Manajemen Quiz</h1> 
-            <p style="margin-bottom: 12px;">Siapkan evaluasi pembelajaran yang terstruktur untuk siswa.</p> 
             <div class="stats-badge"> 
                 {{ $tableReady ? $quizzes->count() : 0 }} Quiz Aktif
             </div>

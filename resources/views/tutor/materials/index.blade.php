@@ -147,7 +147,7 @@
         }
 
         /* CSS Thumbnail dihapus karena elemennya sudah tidak dipakai, 
-               tapi layout card-content akan otomatis menyesuaikan */
+                               tapi layout card-content akan otomatis menyesuaikan */
 
         .card-content {
             flex: 1;
@@ -495,6 +495,190 @@
             transform: translateY(0);
         }
 
+        /* --- MODERN FILE UPLOAD --- */
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary-color);
+            background: #ecfdf5;
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--primary-color);
+            background: #d1fae5;
+            transform: scale(1.02);
+        }
+
+        .upload-placeholder {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .upload-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .file-preview {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+            border-radius: 10px;
+            margin: 8px;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .file-remove {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            background: #fee2e2;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-remove:hover {
+            background: #fecaca;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        /* --- DIVIDER --- */
+        .divider-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .divider-text {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 4px;
+        }
+
+        /* --- GOOGLE DRIVE INPUT --- */
+        .gdrive-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .gdrive-icon {
+            position: absolute;
+            left: 14px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .gdrive-input {
+            padding-left: 46px !important;
+            padding-right: 42px !important;
+            border-color: #cbd5e1;
+        }
+
+        .gdrive-input:focus {
+            border-color: #4285f4 !important;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1) !important;
+        }
+
+        .gdrive-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .clear-gdrive-btn {
+            position: absolute;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 1;
+        }
+
+        .clear-gdrive-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: rotate(90deg);
+        }
+
+        .gdrive-hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
         /* Responsive */
         @media (max-width: 640px) {
             .page-header {
@@ -543,7 +727,8 @@
         </div>
     </div>
     <button type="button" onclick="openModal()" class="btn-add">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
         Tambah Materi
@@ -633,7 +818,8 @@
                         onchange="fetchSubjects(this.value)">
                         <option value="">-- Pilih Paket --</option>
                         @foreach($packages as $package)
-                            <option value="{{ $package->id }}">{{ $package->name }} ({{ $package->level }})</option>
+                            <option value="{{ $package->id }}" data-level="{{ $package->level }}">{{ $package->name }}
+                                ({{ $package->level }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -651,21 +837,89 @@
                 <input type="text" name="title" class="form-control" placeholder="Contoh: Aljabar Dasar" required>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Tingkat Kelas</label>
-                    <select name="level" class="form-control" required>
-                        <option value="">-- Pilih Kelas --</option>
-                        <option value="SD">SD / Sederajat</option>
-                        <option value="SMP">SMP / Sederajat</option>
-                        <option value="SMA">SMA / Sederajat</option>
-                        <option value="Umum">Umum</option>
-                    </select>
+            {{-- Hidden Level (Auto-filled from package) --}}
+            <input type="hidden" name="level" id="hiddenLevel" required>
+
+            {{-- Modern File Upload --}}
+            <div class="form-group">
+                <label class="form-label">Upload File Materi <small style="color: #64748b;">(PDF, PPT, DOC - Max
+                        10MB)</small></label>
+                <div class="file-upload-area" id="fileUploadArea">
+                    <input type="file" name="attachment" id="fileInput" accept=".pdf,.ppt,.pptx,.doc,.docx"
+                        style="display: none;">
+                    <div class="upload-placeholder" id="uploadPlaceholder">
+                        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            style="color: #94a3b8; margin-bottom: 12px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <div class="upload-text">
+                            <strong style="color: #334155;">Klik untuk upload</strong>
+                            <span style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">atau
+                                drag & drop file disini</span>
+                        </div>
+                    </div>
+                    <div class="file-preview" id="filePreview" style="display: none;">
+                        <div class="file-icon">
+                            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                        <button type="button" class="file-remove" id="fileRemove">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Upload File (PDF/PPT/DOC)</label>
-                    <input type="file" name="attachment" class="form-control">
+            </div>
+
+            {{-- Divider with "OR" --}}
+            <div class="divider-container">
+                <div class="divider-line"></div>
+                <span class="divider-text">atau</span>
+                <div class="divider-line"></div>
+            </div>
+
+            {{-- Google Drive Link Input --}}
+            <div class="form-group">
+                <label class="form-label">
+                    Link Google Drive
+                    <small style="color: #64748b; font-weight: 500;">(Opsional - jika tidak upload file)</small>
+                </label>
+                <div class="gdrive-input-wrapper">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" class="gdrive-icon">
+                        <path
+                            d="M12.01 2.011c1.74 0 3.28.67 4.44 1.77l-1.79 1.79c-.71-.71-1.69-1.14-2.65-1.14-2.06 0-3.73 1.67-3.73 3.73 0 .96.43 1.94 1.14 2.65l-1.79 1.79C6.68 10.62 6 9.08 6 7.34c0-3.31 2.69-6 6.01-6zm0 20c-3.32 0-6.01-2.69-6.01-6 0-1.74.68-3.28 1.83-4.43l1.79 1.79c-.71.71-1.14 1.69-1.14 2.65 0 2.06 1.67 3.73 3.73 3.73.96 0 1.94-.43 2.65-1.14l1.79 1.79c-1.15 1.15-2.69 1.83-4.43 1.83z"
+                            fill="#4285f4" />
+                        <path d="M21.99 13H14.4l3.8-6.6h7.59c.33 0 .6.27.6.6v5.4c0 .33-.27.6-.6.6z" fill="#ea4335" />
+                        <path d="M14.4 13l-7.6 13.18c-.16.28-.52.37-.79.21-.28-.16-.37-.52-.21-.79L13.4 12h1z"
+                            fill="#34a853" />
+                    </svg>
+                    <input type="url" name="gdrive_link" id="gdriveInput" class="form-control gdrive-input"
+                        placeholder="https://drive.google.com/file/d/...">
+                    <button type="button" id="clearGdriveBtn" class="clear-gdrive-btn" style="display: none;"
+                        title="Hapus link">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
+                <small class="gdrive-hint">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        style="display: inline-block; vertical-align: middle; color: #64748b;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Pastikan file dapat diakses oleh siapa saja dengan link
+                </small>
             </div>
 
             <div class="form-group">
@@ -728,33 +982,147 @@
         openModal();
     @endif
 
-        // AJAX Fetch Subjects
-        function fetchSubjects(packageId) {
-            const subjectSelect = document.getElementById('subjectSelect');
+    // ========== AUTO-FILL LEVEL FROM PACKAGE ==========
+    const packageSelect = document.getElementById('packageSelect');
+    const hiddenLevel = document.getElementById('hiddenLevel');
 
-            if (!packageId) {
-                subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
-                subjectSelect.disabled = true;
-                return;
-            }
+    packageSelect.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const level = selectedOption.getAttribute('data-level') || '';
+        hiddenLevel.value = level;
+    });
 
-            subjectSelect.innerHTML = '<option>Loading...</option>';
-            subjectSelect.disabled = true;
+    // ========== MODERN FILE UPLOAD HANDLER ==========
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileRemove = document.getElementById('fileRemove');
 
-            fetch(`/tutor/packages/${packageId}/subjects`)
-                .then(response => response.json())
-                .then(data => {
-                    subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
-                    data.forEach(subject => {
-                        subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
-                    });
-                    subjectSelect.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
-                });
+    // Click to upload
+    fileUploadArea.addEventListener('click', (e) => {
+        if (e.target.closest('.file-remove')) return; // Don't trigger if clicking remove button
+        fileInput.click();
+    });
+
+    // Handle file selection
+    fileInput.addEventListener('change', (e) => {
+        handleFile(e.target.files[0]);
+    });
+
+    // Drag and drop handlers
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('dragover');
+    });
+
+    fileUploadArea.addEventListener('dragleave', () => {
+        fileUploadArea.classList.remove('dragover');
+    });
+
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+        const droppedFile = e.dataTransfer.files[0];
+        if (droppedFile) {
+            fileInput.files = e.dataTransfer.files; // Assign to input
+            handleFile(droppedFile);
         }
+    });
+
+    // Handle file display
+    function handleFile(file) {
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ['.pdf', '.ppt', '.pptx', '.doc', '.docx'];
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+        if (!allowedTypes.includes(fileExt)) {
+            alert('Format file tidak didukung. Hanya PDF, PPT, dan DOC yang diperbolehkan.');
+            fileInput.value = '';
+            return;
+        }
+
+        // Validate file size (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('Ukuran file terlalu besar. Maksimal 10MB.');
+            fileInput.value = '';
+            return;
+        }
+
+        // Show preview
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        uploadPlaceholder.style.display = 'none';
+        filePreview.style.display = 'flex';
+    }
+
+    // Remove file
+    fileRemove.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering file upload
+        fileInput.value = '';
+        uploadPlaceholder.style.display = 'flex';
+        filePreview.style.display = 'none';
+    });
+
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // ========== GOOGLE DRIVE LINK HANDLER ==========
+    const gdriveInput = document.getElementById('gdriveInput');
+    const clearGdriveBtn = document.getElementById('clearGdriveBtn');
+
+    // Show/hide clear button based on input
+    gdriveInput.addEventListener('input', function () {
+        if (this.value.trim()) {
+            clearGdriveBtn.style.display = 'flex';
+        } else {
+            clearGdriveBtn.style.display = 'none';
+        }
+    });
+
+    // Clear button click
+    clearGdriveBtn.addEventListener('click', function () {
+        gdriveInput.value = '';
+        clearGdriveBtn.style.display = 'none';
+        gdriveInput.focus();
+    });
+
+    // AJAX Fetch Subjects
+    function fetchSubjects(packageId) {
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        if (!packageId) {
+            subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+            subjectSelect.disabled = true;
+            return;
+        }
+
+        subjectSelect.innerHTML = '<option>Loading...</option>';
+        subjectSelect.disabled = true;
+
+        fetch(`/tutor/packages/${packageId}/subjects`)
+            .then(response => response.json())
+            .then(data => {
+                subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+                data.forEach(subject => {
+                    subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
+                });
+                subjectSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
+            });
+    }
 
     // Dynamic Objectives
     function addObjective() {
