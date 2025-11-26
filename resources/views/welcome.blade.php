@@ -82,6 +82,17 @@
             width: 100%;
         }
 
+        /* Mobile optimizations for container and sections */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .section {
+                padding: 48px 0;
+            }
+        }
+
         [data-reveal] {
             opacity: 0;
             transform: translateY(48px);
@@ -132,9 +143,64 @@
             gap: 20px;
         }
 
+        /* Hamburger menu button */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 8px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #000;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Desktop nav-actions - visible on desktop, hidden on mobile */
+        .nav-actions-desktop {
+            display: flex;
+        }
+
+        /* Mobile nav-actions (inside menu) - hidden on desktop */
+        .nav-links .nav-actions {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Hide desktop nav-actions on mobile */
+            .nav-actions-desktop {
+                display: none !important;
+            }
+
+            /* Show mobile nav-actions (inside menu) */
+            .nav-links .nav-actions {
+                display: flex;
+            }
+        }
+
         @media (max-width: 1024px) {
             nav {
-                padding: 16px clamp(8px, 4vw, 20px);
+                padding: 12px clamp(8px, 4vw, 20px);
             }
 
             .nav-inner {
@@ -144,19 +210,68 @@
 
         @media (max-width: 768px) {
             nav {
-                padding: 16px clamp(8px, 6vw, 16px);
-                margin-bottom: 24px;
+                padding: 12px 20px;
             }
 
             .nav-inner {
-                grid-template-columns: 1fr;
-                justify-items: center;
-                gap: 18px;
+                /* UBAH BAGIAN INI */
+                display: flex;      /* Gunakan Flexbox agar lebih mudah diatur */
+                justify-content: space-between; /* Logo mentok kiri, Burger mentok kanan */
+                align-items: center;
+                width: 100%;
+
+                padding: 0;         
+                gap: 0;
             }
 
-            .nav-inner>* {
+            .hamburger {
+                display: flex;
+                /* Hapus justify-self: end; karena sudah diatur oleh flex parent */
+                margin-right: 0; /* Pastikan tidak ada margin kanan yang menghalangi */
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 80px 24px 24px;
+                gap: 24px;
+                margin-left: 0;
+                box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-links a {
+                font-size: 1.1rem;
+                padding: 8px 0;
                 width: 100%;
-                justify-self: center;
+            }
+
+            .nav-actions {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+                margin-top: 8px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -237,20 +352,7 @@
 
         @media (max-width: 768px) {
             .brand img {
-                height: 42px;
-                /* Ukuran mobile sedikit lebih kecil agar tidak overflow */
-            }
-
-            .nav-actions {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 16px;
-                margin-left: 0;
+                height: 36px;
             }
         }
 
@@ -318,6 +420,17 @@
             background-repeat: no-repeat;
         }
 
+        @media (max-width: 768px) {
+            .hero {
+                height: auto;
+                min-height: 100vh;
+                padding-top: calc(var(--nav-height) + 40px);
+                padding-bottom: 60px;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
@@ -343,6 +456,18 @@
             font-size: 1.1rem;
         }
 
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: clamp(2rem, 6vw, 2.7rem);
+                margin: 12px 0;
+            }
+
+            .hero p {
+                font-size: 1rem;
+                margin: 0 0 24px;
+            }
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -366,6 +491,14 @@
             flex-wrap: wrap;
             gap: 16px;
             margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero-actions {
+                margin-bottom: 24px;
+                gap: 12px;
+            }
         }
 
         .section-header {
@@ -395,6 +528,12 @@
             width: 100%;
         }
 
+        @media (max-width: 768px) {
+            .articles-grid {
+                gap: 16px;
+            }
+        }
+
         .article-card {
             background: var(--surface);
             border-radius: var(--radius-xl);
@@ -402,6 +541,12 @@
             overflow: hidden;
             display: grid;
             grid-template-rows: 220px 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .article-card {
+                grid-template-rows: 180px 1fr;
+            }
         }
 
         .article-card img {
@@ -414,6 +559,12 @@
             padding: 24px 26px 32px;
             display: grid;
             gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .article-content {
+                padding: 20px;
+            }
         }
 
         .article-content h3 {
@@ -483,6 +634,12 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid {
+                gap: 16px;
+            }
         }
 
         .pricing-card {
@@ -606,6 +763,12 @@
             width: 100%;
         }
 
+        @media (max-width: 768px) {
+            .highlight-grid {
+                gap: 16px;
+            }
+        }
+
         .highlight-card {
             background: rgba(255, 255, 255, 0.12);
             border-radius: var(--radius-lg);
@@ -614,6 +777,12 @@
             display: grid;
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        @media (max-width: 768px) {
+            .highlight-card {
+                padding: 20px;
+            }
         }
 
         .highlight-card strong {
@@ -650,6 +819,12 @@
             margin-top: 32px;
         }
 
+        @media (max-width: 768px) {
+            .testimonials-grid {
+                gap: 16px;
+            }
+        }
+
         .testimonial-card {
             background: #ffffff;
             border-radius: 28px;
@@ -660,6 +835,13 @@
             box-shadow: 0 25px 70px rgba(31, 107, 79, 0.12);
             border: 1px solid rgba(20, 59, 46, 0.08);
             min-height: 320px;
+        }
+
+        @media (max-width: 768px) {
+            .testimonial-card {
+                padding: 24px;
+                min-height: auto;
+            }
         }
 
         .testimonial-rating {
@@ -741,6 +923,12 @@
             margin-top: 40px;
         }
 
+        @media (max-width: 768px) {
+            .mentor-grid {
+                gap: 16px;
+            }
+        }
+
         .mentor-profile {
             background: #ffffff;
             border-radius: 24px;
@@ -752,6 +940,12 @@
             box-shadow: 0 16px 48px rgba(15, 52, 38, 0.12);
             position: relative;
             overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .mentor-profile {
+                padding: 20px;
+            }
         }
 
         .mentor-profile::after {
@@ -939,6 +1133,13 @@
             opacity: 0.9;
         }
 
+        @media (max-width: 768px) {
+            .footer-logo {
+                width: 120px;
+                height: 80px;
+            }
+        }
+
         .footer-desc {
             font-size: 0.95rem;
             line-height: 1.7;
@@ -1107,6 +1308,11 @@
                 <a class="brand" href="/">
                     <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" width="200" height="auto" />
                 </a>
+                <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <div class="nav-links">
                     <a href="#beranda">Beranda</a>
                     <a href="#artikel">Artikel</a>
@@ -1114,8 +1320,27 @@
                     <a href="#keunggulan">Keunggulan</a>
                     <a href="#testimoni">Testimoni</a>
                     <a href="#faq">FAQ</a>
+                    <div class="nav-actions">
+                        @auth
+                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                aria-label="Buka profil">
+                                <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
+                                <span class="sr-only">Menuju profil</span>
+                            </a>
+                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline"
+                                    style="color: #000; border-color: #ccc;">Keluar</button>
+                            </form>
+                        @else
+                            <a class="btn btn-primary" href="{{ $joinLink }}">
+                                Gabung Sekarang
+                            </a>
+                        @endauth
+                    </div>
                 </div>
-                <div class="nav-actions">
+                {{-- Desktop nav-actions (visible on ≥769px) --}}
+                <div class="nav-actions nav-actions-desktop">
                     @auth
                         <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
                             aria-label="Buka profil">
@@ -1504,6 +1729,53 @@
             if (!root || root.dataset.page !== 'landing') {
                 return;
             }
+
+            // Hamburger menu functionality
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (hamburger && navLinks) {
+                const toggleMenu = () => {
+                    const isActive = hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                    hamburger.setAttribute('aria-expanded', isActive);
+                    
+                    // Prevent body scroll when menu is open
+                    if (isActive) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                };
+
+                hamburger.addEventListener('click', toggleMenu);
+
+                // Close menu when clicking on a link
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (navLinks.classList.contains('active')) {
+                            toggleMenu();
+                        }
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (navLinks.classList.contains('active') && 
+                        !navLinks.contains(e.target) && 
+                        !hamburger.contains(e.target)) {
+                        toggleMenu();
+                    }
+                });
+
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                        toggleMenu();
+                    }
+                });
+            }
+
 
             const revealElements = Array.from(document.querySelectorAll('[data-reveal]'));
             const motionQuery = window.matchMedia

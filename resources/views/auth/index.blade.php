@@ -203,7 +203,32 @@
         .terms-consent label small { font-size: 0.85rem; color: var(--neutral-500); font-weight: 400; }
         .terms-consent.is-approved { background: #dcfce7; border-color: #16a34a; }
 
-        @media (max-width: 600px) { .auth-container { padding: 32px 24px; } .input-row { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { 
+            .auth-container { 
+                padding: 24px 20px; 
+            } 
+            
+            .input-row { 
+                grid-template-columns: 1fr; 
+                gap: 12px;
+            }
+            
+            .header-text {
+                margin-bottom: 24px;
+            }
+            
+            .header-text h2 {
+                font-size: 1.5rem;
+            }
+            
+            .btn-primary {
+                padding: 12px;
+            }
+            
+            .terms-dialog {
+                max-height: 90vh;
+            }
+        }
     </style>
 </head>
 <body>
