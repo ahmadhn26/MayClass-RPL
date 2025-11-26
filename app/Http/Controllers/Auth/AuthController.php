@@ -220,10 +220,23 @@ class AuthController extends Controller
         ]);
 
         try {
+            // 1. Cek apakah user ada di database
+            $userExists = User::where('username', $credentials['username'])->exists();
+
+            if (!$userExists) {
+                // Notifikasi: Pengguna belum memiliki akun, arahkan ke registrasi
+                return redirect()
+                    ->route('register')
+                    ->withInput($request->only('username'))
+                    ->with('error', __('Anda belum memiliki akun MayClass. Silakan daftar terlebih dahulu.'));
+            }
+
+            // 2. Coba otentikasi
             if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+                // Notifikasi: Username atau Password salah (jika user ada, tapi password salah)
                 return back()
                     ->withInput($request->only('username'))
-                    ->with('error', __('Peringatan: Username atau Password salah.'));
+                    ->with('error', __('Username atau Password salah.'));
             }
 
             $user = Auth::user();

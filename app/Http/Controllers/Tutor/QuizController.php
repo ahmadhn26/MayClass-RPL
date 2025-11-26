@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Tutor;
 
 use App\Models\Package;
 use App\Models\Quiz;
+use App\Models\Subject;
+use App\Models\QuizLevel;
+use App\Models\QuizTakeaway;
 use App\Support\UnsplashPlaceholder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class QuizController extends BaseTutorController
 {
@@ -67,10 +71,14 @@ class QuizController extends BaseTutorController
                 ->with('alert', __('Tabel paket belum siap. Pastikan migrasi paket sudah dijalankan.'));
         }
 
+        // DEBUG: Log data yang masuk
+        Log::info('=== QUIZ STORE ATTEMPT ===');
+        Log::info('Request Data:', $request->all());
+
         $data = $request->validate([
             'package_id' => ['required', 'exists:packages,id'],
+            'subject_id' => ['required', 'exists:subjects,id'],
             'title' => ['required', 'string', 'max:255'],
-            'subject' => ['required', 'string', 'max:120'],
             'class_level' => ['required', 'string', 'max:120'],
             'summary' => ['required', 'string'],
             'link_url' => ['required', 'url', 'max:255'],
@@ -82,34 +90,59 @@ class QuizController extends BaseTutorController
             'takeaways.*' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $slug = Str::slug($data['title']) ?: 'quiz-' . Str::random(6);
-        $uniqueSlug = $slug;
-        $counter = 1;
-        while (Quiz::where('slug', $uniqueSlug)->exists()) {
-            $uniqueSlug = $slug . '-' . $counter++;
+        try {
+            // Validasi sederhana: pastikan subject exists
+            $subject = Subject::find($data['subject_id']);
+
+            if (!$subject) {
+                Log::warning('Subject tidak ditemukan', [
+                    'subject_id' => $data['subject_id']
+                ]);
+                
+                return back()
+                    ->withErrors(['subject_id' => 'Mata pelajaran tidak ditemukan.'])
+                    ->withInput();
+            }
+
+            $slug = Str::slug($data['title']) ?: 'quiz-' . Str::random(6);
+            $uniqueSlug = $slug;
+            $counter = 1;
+            while (Quiz::where('slug', $uniqueSlug)->exists()) {
+                $uniqueSlug = $slug . '-' . $counter++;
+            }
+
+            DB::transaction(function () use ($data, $request, $uniqueSlug, $subject) {
+                $quiz = Quiz::create([
+                    'slug' => $uniqueSlug,
+                    'package_id' => $data['package_id'],
+                    'subject_id' => $data['subject_id'],
+                    'class_level' => $data['class_level'],
+                    'title' => $data['title'],
+                    'summary' => $data['summary'],
+                    'link_url' => $data['link_url'],
+                    'thumbnail_url' => UnsplashPlaceholder::quiz($subject->name ?? 'Quiz'),
+                    'duration_label' => $data['duration_label'],
+                    'question_count' => $data['question_count'],
+                ]);
+
+                Log::info('Quiz created successfully:', ['quiz_id' => $quiz->id]);
+
+                $this->syncLevels($quiz, $request->input('levels', []));
+                $this->syncTakeaways($quiz, $request->input('takeaways', []));
+            });
+
+            return redirect()
+                ->route('tutor.quizzes.index')
+                ->with('status', __('Quiz baru berhasil dibuat.'));
+
+        } catch (\Exception $e) {
+            Log::error('Quiz Store Error: ' . $e->getMessage());
+            Log::error('Stack Trace: ' . $e->getTraceAsString());
+
+            return back()
+                ->withErrors(['error' => 'Gagal menyimpan quiz: ' . $e->getMessage()])
+                ->withInput();
         }
-
-        DB::transaction(function () use ($data, $request, $uniqueSlug) {
-            $quiz = Quiz::create([
-                'slug' => $uniqueSlug,
-                'package_id' => $data['package_id'],
-                'subject_id' => $data['subject_id'],
-                'class_level' => $data['class_level'],
-                'title' => $data['title'],
-                'summary' => $data['summary'],
-                'link_url' => $data['link_url'],
-                'thumbnail_url' => UnsplashPlaceholder::quiz(\App\Models\Subject::find($data['subject_id'])->name ?? 'Quiz'),
-                'duration_label' => $data['duration_label'],
-                'question_count' => $data['question_count'],
-            ]);
-
-            $this->syncLevels($quiz, $request->input('levels', []));
-            $this->syncTakeaways($quiz, $request->input('takeaways', []));
-        });
-
-        return redirect()
-            ->route('tutor.quizzes.index')
-            ->with('status', __('Quiz baru berhasil dibuat.'));
     }
 
     public function edit(Quiz $quiz)
@@ -142,8 +175,8 @@ class QuizController extends BaseTutorController
 
         $data = $request->validate([
             'package_id' => ['required', 'exists:packages,id'],
-            'title' => ['required', 'string', 'max:255'],
             'subject_id' => ['required', 'exists:subjects,id'],
+            'title' => ['required', 'string', 'max:255'],
             'class_level' => ['required', 'string', 'max:120'],
             'summary' => ['required', 'string'],
             'link_url' => ['required', 'url', 'max:255'],
@@ -155,39 +188,70 @@ class QuizController extends BaseTutorController
             'takeaways.*' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $payload = [
-            'package_id' => $data['package_id'],
-            'subject_id' => $data['subject_id'],
-            'class_level' => $data['class_level'],
-            'title' => $data['title'],
-            'summary' => $data['summary'],
-            'link_url' => $data['link_url'],
-            'duration_label' => $data['duration_label'],
-            'question_count' => $data['question_count'],
-        ];
+        try {
+            // Validasi subject
+            $subject = Subject::find($data['subject_id']);
 
-        if ($quiz->subject_id !== $data['subject_id']) {
-            $subjectName = \App\Models\Subject::find($data['subject_id'])?->name ?? 'Quiz';
-            $payload['thumbnail_url'] = UnsplashPlaceholder::quiz($subjectName);
+            if (!$subject) {
+                return back()
+                    ->withErrors(['subject_id' => 'Mata pelajaran tidak ditemukan.'])
+                    ->withInput();
+            }
+
+            $payload = [
+                'package_id' => $data['package_id'],
+                'subject_id' => $data['subject_id'],
+                'class_level' => $data['class_level'],
+                'title' => $data['title'],
+                'summary' => $data['summary'],
+                'link_url' => $data['link_url'],
+                'duration_label' => $data['duration_label'],
+                'question_count' => $data['question_count'],
+            ];
+
+            if ($quiz->subject_id !== $data['subject_id']) {
+                $subjectName = Subject::find($data['subject_id'])?->name ?? 'Quiz';
+                $payload['thumbnail_url'] = UnsplashPlaceholder::quiz($subjectName);
+            }
+
+            DB::transaction(function () use ($quiz, $payload, $request) {
+                $quiz->update($payload);
+
+                $this->syncLevels($quiz, $request->input('levels', []));
+                $this->syncTakeaways($quiz, $request->input('takeaways', []));
+            });
+
+            return redirect()
+                ->route('tutor.quizzes.index')
+                ->with('status', __('Quiz berhasil diperbarui.'));
+
+        } catch (\Exception $e) {
+            Log::error('Quiz Update Error: ' . $e->getMessage());
+
+            return back()
+                ->withErrors(['error' => 'Gagal memperbarui quiz: ' . $e->getMessage()])
+                ->withInput();
         }
+    }
 
-        DB::transaction(function () use ($quiz, $payload, $request) {
-            $quiz->update($payload);
-
-            $quiz->levels()->delete();
-            $quiz->takeaways()->delete();
-
-            $this->syncLevels($quiz, $request->input('levels', []));
-            $this->syncTakeaways($quiz, $request->input('takeaways', []));
-        });
-
-        return redirect()
-            ->route('tutor.quizzes.index')
-            ->with('status', __('Quiz berhasil diperbarui.'));
+    // Method untuk AJAX - mengambil subjects berdasarkan package
+    public function getPackageSubjects(Package $package)
+    {
+        try {
+            // Asumsi: Package memiliki relasi subjects() yang mengembalikan subjects terkait
+            $subjects = $package->subjects()->get(['id', 'name', 'level']);
+            return response()->json($subjects);
+        } catch (\Exception $e) {
+            Log::error('Error getting package subjects: ' . $e->getMessage());
+            return response()->json([], 500);
+        }
     }
 
     private function syncLevels(Quiz $quiz, array $levels): void
     {
+        // Hapus levels lama
+        $quiz->levels()->delete();
+
         $payloads = collect($levels)
             ->map(fn ($value) => trim((string) $value))
             ->filter()
@@ -206,6 +270,9 @@ class QuizController extends BaseTutorController
 
     private function syncTakeaways(Quiz $quiz, array $takeaways): void
     {
+        // Hapus takeaways lama
+        $quiz->takeaways()->delete();
+
         $payloads = collect($takeaways)
             ->map(fn ($value) => trim((string) $value))
             ->filter()

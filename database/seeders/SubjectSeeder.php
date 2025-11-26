@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Subject;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class SubjectSeeder extends Seeder
 {
@@ -16,33 +17,41 @@ class SubjectSeeder extends Seeder
         $subjects = [
             // SD Level
             ['name' => 'Matematika', 'level' => 'SD', 'description' => 'Pelajaran matematika dasar untuk SD'],
-            ['name' => 'Bahasa Indonesia', 'level' => 'SD', 'description' => 'Pelajaran bahasa Indonesia untuk SD'],
-            ['name' => 'IPA', 'level' => 'SD', 'description' => 'Ilmu Pengetahuan Alam untuk SD'],
-            ['name' => 'IPS', 'level' => 'SD', 'description' => 'Ilmu Pengetahuan Sosial untuk SD'],
-
+            ['name' => 'Bahasa Inggris', 'level' => 'SD', 'description' => 'Pelajaran bahasa Inggris untuk SD'],
+            
             // SMP Level
             ['name' => 'Matematika', 'level' => 'SMP', 'description' => 'Pelajaran matematika untuk SMP'],
-            ['name' => 'Bahasa Indonesia', 'level' => 'SMP', 'description' => 'Pelajaran bahasa Indonesia untuk SMP'],
             ['name' => 'Bahasa Inggris', 'level' => 'SMP', 'description' => 'Pelajaran bahasa Inggris untuk SMP'],
             ['name' => 'IPA', 'level' => 'SMP', 'description' => 'Ilmu Pengetahuan Alam untuk SMP'],
-            ['name' => 'IPS', 'level' => 'SMP', 'description' => 'Ilmu Pengetahuan Sosial untuk SMP'],
 
             // SMA Level
             ['name' => 'Matematika', 'level' => 'SMA', 'description' => 'Pelajaran matematika untuk SMA'],
-            ['name' => 'Bahasa Indonesia', 'level' => 'SMA', 'description' => 'Pelajaran bahasa Indonesia untuk SMA'],
             ['name' => 'Bahasa Inggris', 'level' => 'SMA', 'description' => 'Pelajaran bahasa Inggris untuk SMA'],
             ['name' => 'Fisika', 'level' => 'SMA', 'description' => 'Pelajaran fisika untuk SMA'],
             ['name' => 'Kimia', 'level' => 'SMA', 'description' => 'Pelajaran kimia untuk SMA'],
-            ['name' => 'Biologi', 'level' => 'SMA', 'description' => 'Pelajaran biologi untuk SMA'],
-            ['name' => 'Sejarah', 'level' => 'SMA', 'description' => 'Pelajaran sejarah untuk SMA'],
-            ['name' => 'Geografi', 'level' => 'SMA', 'description' => 'Pelajaran geografi untuk SMA'],
-            ['name' => 'Ekonomi', 'level' => 'SMA', 'description' => 'Pelajaran ekonomi untuk SMA'],
-            ['name' => 'Sosiologi', 'level' => 'SMA', 'description' => 'Pelajaran sosiologi untuk SMA'],
-            ['name' => 'UTBK', 'level' => 'SMA', 'description' => 'Persiapan Ujian Tulis Berbasis Komputer'],
         ];
 
+        // Hapus record di DB yang tidak ada di $subjects
+        $existing = Subject::all();
+        foreach ($existing as $ex) {
+            $found = collect($subjects)->contains(function ($s) use ($ex) {
+                return $s['name'] === $ex->name && $s['level'] === $ex->level;
+            });
+
+            if (! $found) {
+                // kalau ada file path di model, hapus file di storage juga (sesuaikan nama kolom)
+                if (isset($ex->file_path) && $ex->file_path) {
+                    Storage::delete($ex->file_path);
+                }
+                $ex->delete();
+            }
+        }
+
         foreach ($subjects as $subject) {
-            Subject::create($subject);
+            Subject::updateOrCreate(
+                ['name' => $subject['name'], 'level' => $subject['level']],
+                ['description' => $subject['description']]
+            );
         }
     }
 }
