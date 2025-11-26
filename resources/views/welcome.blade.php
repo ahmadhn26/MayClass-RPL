@@ -26,7 +26,6 @@
             --ink-soft: rgba(20, 59, 46, 0.62);
             --nav-surface: linear-gradient(135deg, rgba(80, 190, 150, 0.98), rgba(63, 166, 126, 0.98));
             --footer-bg: #0d261f;
-            /* Warna background footer baru (Deep Teal) */
             --footer-text: #a3b3ad;
             --footer-heading: #ffffff;
             --shadow-lg: 0 24px 60px rgba(31, 107, 79, 0.2);
@@ -72,7 +71,6 @@
             padding: 0 32px;
         }
 
-        /* Ensure all sections have consistent full-width layout */
         .section {
             width: 100%;
             padding: 96px 0;
@@ -80,6 +78,16 @@
 
         .section .container {
             width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .section {
+                padding: 48px 0;
+            }
         }
 
         [data-reveal] {
@@ -109,32 +117,77 @@
             right: 0;
             z-index: 1000;
             width: 100%;
-            /* Padding diperkecil sedikit agar navbar tidak terlalu tinggi saat logo membesar */
             padding: 8px clamp(12px, 3vw, 24px);
-
-            /* Glassmorphism putih */
             background: rgba(255, 254, 254, 0.52);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
         .nav-inner {
             display: grid;
             grid-template-columns: auto 1fr auto;
-            /* kiri - tengah - kanan */
             align-items: center;
             width: 100%;
             padding: 0 32px;
             gap: 20px;
         }
 
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 8px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #000;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .nav-actions-desktop {
+            display: flex;
+        }
+
+        .nav-links .nav-actions {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-actions-desktop {
+                display: none !important;
+            }
+
+            .nav-links .nav-actions {
+                display: flex;
+            }
+        }
+
         @media (max-width: 1024px) {
             nav {
-                padding: 16px clamp(8px, 4vw, 20px);
+                padding: 12px clamp(8px, 4vw, 20px);
             }
 
             .nav-inner {
@@ -144,19 +197,65 @@
 
         @media (max-width: 768px) {
             nav {
-                padding: 16px clamp(8px, 6vw, 16px);
-                margin-bottom: 24px;
+                padding: 12px 20px;
             }
 
             .nav-inner {
-                grid-template-columns: 1fr;
-                justify-items: center;
-                gap: 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding: 0;
+                gap: 0;
             }
 
-            .nav-inner>* {
+            .hamburger {
+                display: flex;
+                margin-right: 0;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 80px 24px 24px;
+                gap: 24px;
+                margin-left: 0;
+                box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-links a {
+                font-size: 1.1rem;
+                padding: 8px 0;
                 width: 100%;
-                justify-self: center;
+            }
+
+            .nav-actions {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+                margin-top: 8px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -170,7 +269,6 @@
             justify-self: start;
         }
 
-        /* REVISI LOGO: Diperbesar heightnya, width auto */
         .brand img {
             height: 90px;
             width: auto;
@@ -223,6 +321,34 @@
             object-fit: cover;
         }
 
+        .nav-icon-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-strong);
+            border-radius: 50%;
+            transition: background 0.2s;
+            margin-right: 4px;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
         .sr-only {
             position: absolute;
             width: 1px;
@@ -237,20 +363,7 @@
 
         @media (max-width: 768px) {
             .brand img {
-                height: 42px;
-                /* Ukuran mobile sedikit lebih kecil agar tidak overflow */
-            }
-
-            .nav-actions {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 16px;
-                margin-left: 0;
+                height: 36px;
             }
         }
 
@@ -318,6 +431,17 @@
             background-repeat: no-repeat;
         }
 
+        @media (max-width: 768px) {
+            .hero {
+                height: auto;
+                min-height: 100vh;
+                padding-top: calc(var(--nav-height) + 40px);
+                padding-bottom: 60px;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
@@ -343,6 +467,18 @@
             font-size: 1.1rem;
         }
 
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: clamp(2rem, 6vw, 2.7rem);
+                margin: 12px 0;
+            }
+
+            .hero p {
+                font-size: 1rem;
+                margin: 0 0 24px;
+            }
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -366,6 +502,14 @@
             flex-wrap: wrap;
             gap: 16px;
             margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero-actions {
+                margin-bottom: 24px;
+                gap: 12px;
+            }
         }
 
         .section-header {
@@ -395,6 +539,12 @@
             width: 100%;
         }
 
+        @media (max-width: 768px) {
+            .articles-grid {
+                gap: 16px;
+            }
+        }
+
         .article-card {
             background: var(--surface);
             border-radius: var(--radius-xl);
@@ -402,6 +552,12 @@
             overflow: hidden;
             display: grid;
             grid-template-rows: 220px 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .article-card {
+                grid-template-rows: 180px 1fr;
+            }
         }
 
         .article-card img {
@@ -414,6 +570,12 @@
             padding: 24px 26px 32px;
             display: grid;
             gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .article-content {
+                padding: 20px;
+            }
         }
 
         .article-content h3 {
@@ -456,115 +618,157 @@
             font-size: 0.98rem;
         }
 
+        /* UPDATED PRICING LAYOUT */
         .pricing-group {
-            margin-top: 32px;
-            display: grid;
-            gap: 18px;
-        }
-
-        .pricing-group>div:first-child {
+            margin-bottom: 60px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 4px;
         }
 
-        .pricing-group>div:first-child h3 {
+        .pricing-group:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Header Jenjang (SD/SMP/SMA) */
+        .pricing-group-header {
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .pricing-group-header h3 {
+            display: inline-block;
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            background: rgba(63, 166, 126, 0.1);
+            padding: 8px 32px;
+            border-radius: 12px;
+            font-weight: 700;
         }
 
-        .pricing-group>div:first-child p {
-            margin: 0;
-            color: var(--ink-soft);
-            font-size: 0.92rem;
+        .pricing-group-header p {
+            margin: 12px 0 0;
+            color: var(--ink-muted);
+            font-size: 1rem;
         }
 
+        /* Pricing Grid - Modified with auto-fill to prevent stretching */
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            /* Menggunakan auto-fill agar jika hanya ada 1 item, dia tidak akan melar memenuhi layar */
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                /* Di mobile tetap 1 kolom */
+                gap: 16px;
+            }
         }
 
         .pricing-card {
             position: relative;
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 14px;
-            padding: 20px 18px 18px;
-            border-radius: 18px;
+            padding: 24px;
+            border-radius: 20px;
             background: var(--surface);
-            border: 1px solid var(--neutral-100);
-            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.04);
             transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            height: 100%;
+            /* Pastikan tinggi kartu sama rata */
         }
 
         .pricing-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 38px rgba(15, 23, 42, 0.08);
-            border-color: rgba(63, 166, 126, 0.28);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+            border-color: rgba(63, 166, 126, 0.4);
         }
 
         .pricing-card .badge {
+            align-self: flex-start;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            background: rgba(63, 166, 126, 0.12);
+            letter-spacing: 0.05em;
+            background: rgba(63, 166, 126, 0.1);
             color: var(--primary-main);
         }
 
         .pricing-card strong {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
+            line-height: 1.4;
+            color: var(--ink-strong);
         }
 
         .pricing-price {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-dark);
+            margin: 4px 0;
         }
 
         .pricing-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            font-size: 0.9rem;
+            display: inline-block;
+            font-size: 0.85rem;
             color: var(--ink-soft);
+            padding: 4px 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            align-self: flex-start;
         }
 
         .pricing-features {
             list-style: none;
             padding: 0;
-            margin: 6px 0 0;
+            margin: 8px 0 0;
             display: grid;
-            gap: 6px;
-            font-size: 0.9rem;
+            gap: 10px;
+            font-size: 0.92rem;
             color: var(--ink-soft);
+            flex-grow: 1;
+            /* Dorong tombol ke bawah */
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .pricing-features li::before {
-            content: '•';
-            margin-right: 6px;
+            content: '✔';
             color: var(--primary-main);
-            font-weight: 700;
+            font-weight: 800;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
 
         .pricing-actions {
-            margin-top: 6px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: flex-start;
+            margin-top: 20px;
+            width: 100%;
         }
 
         .pricing-actions .btn {
-            font-size: 0.92rem;
-            border-radius: 999px;
-            padding: 10px 18px;
+            width: 100%;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            padding: 12px;
             text-decoration: none;
+            justify-content: center;
         }
 
         .pricing-actions .btn-primary {
@@ -606,6 +810,12 @@
             width: 100%;
         }
 
+        @media (max-width: 768px) {
+            .highlight-grid {
+                gap: 16px;
+            }
+        }
+
         .highlight-card {
             background: rgba(255, 255, 255, 0.12);
             border-radius: var(--radius-lg);
@@ -614,6 +824,12 @@
             display: grid;
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        @media (max-width: 768px) {
+            .highlight-card {
+                padding: 20px;
+            }
         }
 
         .highlight-card strong {
@@ -650,6 +866,12 @@
             margin-top: 32px;
         }
 
+        @media (max-width: 768px) {
+            .testimonials-grid {
+                gap: 16px;
+            }
+        }
+
         .testimonial-card {
             background: #ffffff;
             border-radius: 28px;
@@ -660,6 +882,13 @@
             box-shadow: 0 25px 70px rgba(31, 107, 79, 0.12);
             border: 1px solid rgba(20, 59, 46, 0.08);
             min-height: 320px;
+        }
+
+        @media (max-width: 768px) {
+            .testimonial-card {
+                padding: 24px;
+                min-height: auto;
+            }
         }
 
         .testimonial-rating {
@@ -741,6 +970,12 @@
             margin-top: 40px;
         }
 
+        @media (max-width: 768px) {
+            .mentor-grid {
+                gap: 16px;
+            }
+        }
+
         .mentor-profile {
             background: #ffffff;
             border-radius: 24px;
@@ -752,6 +987,12 @@
             box-shadow: 0 16px 48px rgba(15, 52, 38, 0.12);
             position: relative;
             overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .mentor-profile {
+                padding: 20px;
+            }
         }
 
         .mentor-profile::after {
@@ -939,6 +1180,13 @@
             opacity: 0.9;
         }
 
+        @media (max-width: 768px) {
+            .footer-logo {
+                width: 120px;
+                height: 80px;
+            }
+        }
+
         .footer-desc {
             font-size: 0.95rem;
             line-height: 1.7;
@@ -992,6 +1240,19 @@
             color: var(--primary-main);
         }
 
+        .contact-link {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .contact-link:hover {
+            opacity: 0.9;
+            color: #ffffff;
+        }
+
         .social-icons {
             display: flex;
             gap: 12px;
@@ -1018,12 +1279,14 @@
         .footer-bottom {
             padding-top: 32px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
             gap: 16px;
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            width: 100%;
         }
 
         .footer-legal {
@@ -1064,7 +1327,6 @@
         @media (max-width: 1080px) {
 
             .articles-grid,
-            .pricing-grid,
             .highlight-grid,
             .faq-grid,
             .testimonials-grid,
@@ -1083,7 +1345,6 @@
             }
 
             .articles-grid,
-            .pricing-grid,
             .highlight-grid,
             .faq-grid,
             .testimonials-grid,
@@ -1099,6 +1360,16 @@
         $joinLink = route('join');
         $profileLink = $profileLink ?? null;
         $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
+
+        // Check for pending order
+        $pendingOrder = null;
+        if (Auth::check()) {
+            $pendingOrder = Auth::user()->orders()
+                ->where('status', 'pending')
+                ->with('package')
+                ->latest()
+                ->first();
+        }
     @endphp
 
     <header>
@@ -1107,6 +1378,11 @@
                 <a class="brand" href="/">
                     <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" width="200" height="auto" />
                 </a>
+                <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <div class="nav-links">
                     <a href="#beranda">Beranda</a>
                     <a href="#artikel">Artikel</a>
@@ -1114,9 +1390,53 @@
                     <a href="#keunggulan">Keunggulan</a>
                     <a href="#testimoni">Testimoni</a>
                     <a href="#faq">FAQ</a>
+                    <div class="nav-actions">
+                        @auth
+                            @if($pendingOrder && $pendingOrder->package)
+                                <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                    class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                    </svg>
+                                    <span class="notification-dot"></span>
+                                </a>
+                            @endif
+
+                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                aria-label="Buka profil">
+                                <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
+                                <span class="sr-only">Menuju profil</span>
+                            </a>
+                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline"
+                                    style="color: #000; border-color: #ccc;">Keluar</button>
+                            </form>
+                        @else
+                            <a class="btn btn-primary" href="{{ $joinLink }}">
+                                Gabung Sekarang
+                            </a>
+                        @endauth
+                    </div>
                 </div>
-                <div class="nav-actions">
+                {{-- Desktop nav-actions (visible on ≥769px) --}}
+                <div class="nav-actions nav-actions-desktop">
                     @auth
+                        @if($pendingOrder && $pendingOrder->package)
+                            <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                </svg>
+                                <span class="notification-dot"></span>
+                            </a>
+                        @endif
+
                         <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
                             aria-label="Buka profil">
                             <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
@@ -1188,41 +1508,92 @@
     <section class="pricing-section" id="paket">
         <div class="container">
             <div class="section-header" data-reveal>
-                <h2 class="section-title">Pilih Paket Favoritmu &amp; Belajar Bareng Mentor Andal</h2>
+                <h2 class="section-title">Pilih Paket Favoritmu</h2>
                 <p class="section-subtitle">
-                    Mulai dari kelas reguler, persiapan UTBK, hingga bimbingan CPNS—MayClass siap menemanimu dengan sesi
+                    Mulai dari SD, SMP, hingga SMA—MayClass siap menemanimu dengan sesi
                     interaktif dan laporan perkembangan rutin.
                 </p>
             </div>
-            @php($packageCatalog = collect($landingPackages ?? []))
+            
+            @php
+            // REGROUPING LOGIC (Menggabungkan kelas-kelas ke dalam Jenjang Besar)
+            $rawCatalog = collect($landingPackages ?? []);
+            
+            // Inisialisasi wadah untuk jenjang besar
+            $groupedLevels = [
+                'SD' => [
+                    'label' => 'Jenjang Sekolah Dasar (SD)',
+                    'desc' => 'Membangun pondasi akademik yang kuat dan menyenangkan.',
+                    'items' => collect()
+                ],
+                'SMP' => [
+                    'label' => 'Jenjang SMP',
+                    'desc' => 'Persiapan matang untuk ujian sekolah dan penguatan materi.',
+                    'items' => collect()
+                ],
+                'SMA' => [
+                    'label' => 'Jenjang SMA & Alumni',
+                    'desc' => 'Fokus intensif menembus PTN Impian dan Sekolah Kedinasan.',
+                    'items' => collect()
+                ],
+                'Lainnya' => [
+                    'label' => 'Program Lainnya',
+                    'desc' => 'Program pengembangan skill dan persiapan khusus.',
+                    'items' => collect()
+                ]
+            ];
 
-            @if ($packageCatalog->isNotEmpty())
-            @foreach ($packageCatalog as $group)
-            <div class="pricing-group">
-                <div>
-                    <h3>{{ $group['stage_label'] ?? $group['stage'] }}</h3>
-                    @php($stageDescription = $group['stage_description'] ?? '')
-                    @if (!empty($stageDescription))
-                        <p>{{ $stageDescription }}</p>
-                    @endif
-                </div>
-                <div class="pricing-grid">
-                    @foreach ($group['packages'] as $package)
-                    @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
-                                <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 120 }}">
-                                    <span class="badge" style="background: rgba(63, 166, 126, 0.12); color: var(--primary-main);">
-                                        {{ $package['tag'] ?? ($group['stage_label'] ?? $group['stage']) }}
+            // Loop data mentah dan masukkan ke wadah yang sesuai
+            foreach($rawCatalog as $group) {
+                $label = strtoupper($group['stage_label'] ?? $group['stage'] ?? '');
+                $packages = collect($group['packages'] ?? []);
+
+                if (str_contains($label, 'SD') || str_contains($label, 'SEKOLAH DASAR')) {
+                    $groupedLevels['SD']['items'] = $groupedLevels['SD']['items']->merge($packages);
+                } elseif (str_contains($label, 'SMP')) {
+                    $groupedLevels['SMP']['items'] = $groupedLevels['SMP']['items']->merge($packages);
+                } elseif (str_contains($label, 'SMA') || str_contains($label, 'SMK') || str_contains($label, 'ALUMNI')) {
+                    $groupedLevels['SMA']['items'] = $groupedLevels['SMA']['items']->merge($packages);
+                } else {
+                    $groupedLevels['Lainnya']['items'] = $groupedLevels['Lainnya']['items']->merge($packages);
+                }
+            }
+            @endphp
+
+            @php($hasAnyPackage = false)
+
+            @foreach ($groupedLevels as $key => $levelGroup)
+                @if ($levelGroup['items']->isNotEmpty())
+                    @php($hasAnyPackage = true)
+                    <div class="pricing-group">
+                        <div class="pricing-group-header" data-reveal>
+                            <h3>{{ $levelGroup['label'] }}</h3>
+                            <p>{{ $levelGroup['desc'] }}</p>
+                        </div>
+
+                        <div class="pricing-grid">
+                            @foreach ($levelGroup['items'] as $package)
+                                @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
+                                <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
+                                    <span class="badge">
+                                        {{ $package['tag'] ?? $key }}
                                     </span>
                                     <strong>{{ $package['detail_title'] }}</strong>
                                     <div class="pricing-price">{{ $package['card_price'] }}</div>
-                                    <div class="pricing-meta">
-                                        <span>{{ $group['stage_label'] ?? $group['stage'] }}</span>
-                                        @if (!empty($package['grade_range']))
-                                            <span>• {{ $package['grade_range'] }}</span>
-                                        @endif
-                                    </div>
+                                    
+                                    @if (!empty($package['grade_range']))
+                                        <div class="pricing-meta">
+                                            {{-- Jika isinya angka saja (misal "8"), tambahkan kata "Kelas" --}}
+                                            @if(is_numeric($package['grade_range']))
+                                                Kelas {{ $package['grade_range'] }}
+                                            @else
+                                                {{ $package['grade_range'] }}
+                                            @endif
+                                        </div>
+                                    @endif
+                                    
                                     @if ($package['summary'] ?? false)
-                                        <p style="margin: 0; color: var(--ink-soft); font-size: 0.95rem;">
+                                        <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
                                             {{ $package['summary'] }}
                                         </p>
                                     @endif
@@ -1238,14 +1609,16 @@
                                             Paket</a>
                                     </div>
                                 </article>
-                                @endforeach
-                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
-                    @else
-            <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 16px; width: 100%;">
-                <p style="color: var(--ink-muted); margin: 0;">Belum ada paket belajar yang tersedia.</p>
-            </div>
+                    </div>
+                @endif
+            @endforeach
+
+            @if (!$hasAnyPackage)
+                <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 16px; width: 100%;">
+                    <p style="color: var(--ink-muted); margin: 0;">Belum ada paket belajar yang tersedia.</p>
+                </div>
             @endif
         </div>
     </section>
@@ -1457,41 +1830,43 @@
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
                         <div class="contact-row">
-                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            <span>Jl. Pendidikan No. 123, Jakarta Selatan, DKI Jakarta 12430</span>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630" target="_blank" rel="noopener noreferrer" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
+                            </a>
                         </div>
                         <div class="contact-row">
-                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path
-                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.12 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                </path>
-                            </svg>
-                            <span>+62 812-3456-7890</span>
+                            <a href="https://wa.me/6283194085776" target="_blank" rel="noopener noreferrer" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.12 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                    </path>
+                                </svg>
+                                <span>+62 831-9408-5776</span>
+                            </a>
                         </div>
                         <div class="contact-row">
-                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                </path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                            <span>hello@mayclass.id</span>
+                            <a href="mailto:hello@mayclass.id" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>hello@mayclass.id</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; {{ date('Y') }} MayClass Education. All rights reserved.</p>
-                <div class="footer-legal">
-                    <a href="#">Kebijakan Privasi</a>
-                    <a href="#">Syarat & Ketentuan</a>
-                </div>
+                <p>&copy; 2025 MayClass Education. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -1504,6 +1879,53 @@
             if (!root || root.dataset.page !== 'landing') {
                 return;
             }
+
+            // Hamburger menu functionality
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (hamburger && navLinks) {
+                const toggleMenu = () => {
+                    const isActive = hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                    hamburger.setAttribute('aria-expanded', isActive);
+
+                    // Prevent body scroll when menu is open
+                    if (isActive) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                };
+
+                hamburger.addEventListener('click', toggleMenu);
+
+                // Close menu when clicking on a link
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (navLinks.classList.contains('active')) {
+                            toggleMenu();
+                        }
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (navLinks.classList.contains('active') &&
+                        !navLinks.contains(e.target) &&
+                        !hamburger.contains(e.target)) {
+                        toggleMenu();
+                    }
+                });
+
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                        toggleMenu();
+                    }
+                });
+            }
+
 
             const revealElements = Array.from(document.querySelectorAll('[data-reveal]'));
             const motionQuery = window.matchMedia

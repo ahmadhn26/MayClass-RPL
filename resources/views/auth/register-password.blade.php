@@ -282,7 +282,19 @@
 
         @media (max-width: 600px) {
             .auth-container {
-                padding: 30px 24px;
+                padding: 24px 20px;
+            }
+            
+            .header-text {
+                margin-bottom: 20px;
+            }
+            
+            .header-text h2 {
+                font-size: 1.5rem;
+            }
+            
+            .btn-primary {
+                padding: 12px;
             }
         }
     </style>

@@ -50,7 +50,7 @@ class CheckoutController extends Controller
                 ->with('package_full', $exception->getMessage());
         }
 
-        if (! $order->expires_at) {
+        if (!$order->expires_at) {
             $order->forceFill(['expires_at' => now()->addMinutes(30)])->save();
             $order->refresh();
         }
@@ -81,7 +81,7 @@ class CheckoutController extends Controller
             'cardholder_name' => ['required', 'string', 'max:255'],
             'card_number' => ['required', 'string', 'max:25'],
             'payment_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'order_id' => ['required', Rule::exists('orders', 'id')->where(fn ($query) => $query->where('user_id', $request->user()->id)->where('status', 'initiated'))],
+            'order_id' => ['required', Rule::exists('orders', 'id')->where(fn($query) => $query->where('user_id', $request->user()->id)->where('status', 'initiated'))],
         ]);
 
         $user = Auth::user();
@@ -145,7 +145,7 @@ class CheckoutController extends Controller
                 ->first();
         }
 
-        if (! $order) {
+        if (!$order) {
             return redirect()->route('checkout.show', $slug);
         }
 
@@ -153,11 +153,11 @@ class CheckoutController extends Controller
 
         $this->syncSessionForOrder($order, $package);
 
-        if ($order->status === 'paid' && ! $activationRequest) {
+        if ($order->status === 'paid' && !$activationRequest) {
             return $this->redirectToStudentDashboard($packageDetail);
         }
 
-        if ($order->status !== 'pending' && ! ($order->status === 'paid' && $activationRequest)) {
+        if ($order->status !== 'pending' && !($order->status === 'paid' && $activationRequest)) {
             return redirect()->route('checkout.show', $slug);
         }
 
@@ -257,7 +257,7 @@ class CheckoutController extends Controller
             if ($activeSession) {
                 $order = $this->resolveDraftOrder($userId, $lockedPackage, lock: true);
 
-                if (! $activeSession->order_id) {
+                if (!$activeSession->order_id) {
                     $activeSession->forceFill(['order_id' => $order->id])->save();
                 }
 
@@ -287,7 +287,7 @@ class CheckoutController extends Controller
     {
         $session = CheckoutSession::firstOrNew(['order_id' => $order->id]);
 
-        if (! $session->exists) {
+        if (!$session->exists) {
             $session->forceFill([
                 'user_id' => $order->user_id,
                 'package_id' => $order->package_id,
@@ -304,7 +304,7 @@ class CheckoutController extends Controller
             $session->status = $targetStatus;
         }
 
-        if (! $session->order_id) {
+        if (!$session->order_id) {
             $session->order_id = $order->id;
         }
 
@@ -319,7 +319,7 @@ class CheckoutController extends Controller
             ->latest('id')
             ->first();
 
-        if (! $session) {
+        if (!$session) {
             $session = CheckoutSession::create([
                 'user_id' => $order->user_id,
                 'package_id' => $package->id,
@@ -334,7 +334,7 @@ class CheckoutController extends Controller
             return;
         }
 
-        if (! $session->order_id) {
+        if (!$session->order_id) {
             $session->order_id = $order->id;
         }
 
@@ -373,7 +373,6 @@ class CheckoutController extends Controller
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total' => $total,
-                'expires_at' => $expiresAt,
             ])->save();
 
             return $draft->fresh();
@@ -393,7 +392,7 @@ class CheckoutController extends Controller
 
     private function assertPackageSlot(Package $package): void
     {
-        if (! $package->hasQuota()) {
+        if (!$package->hasQuota()) {
             return;
         }
 
@@ -416,18 +415,18 @@ class CheckoutController extends Controller
 
     private function redirectIfPurchaseLocked($user): ?RedirectResponse
     {
-        if (! $user || $user->role !== 'student') {
+        if (!$user || $user->role !== 'student') {
             return null;
         }
 
-        if (! StudentAccess::hasActivePackage($user)) {
+        if (!StudentAccess::hasActivePackage($user)) {
             return null;
         }
 
         $enrollment = StudentAccess::activeEnrollment($user);
         $package = optional($enrollment)->package;
 
-        if (! $package) {
+        if (!$package) {
             return null;
         }
 
