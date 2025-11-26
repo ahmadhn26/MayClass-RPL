@@ -92,7 +92,7 @@ class PackageSeeder extends Seeder
         ];
 
         foreach ($packages as $package) {
-            DB::table('packages')->insert([
+            DB::table('packages')->insertOrIgnore([
                 'slug' => $package['slug'],
                 'level' => $package['level'],
                 'grade_range' => $package['grade_range'],
