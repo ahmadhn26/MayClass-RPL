@@ -1,13 +1,14 @@
-<?php
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ $package->detail_title }} - MayClass</title>
+    <title>{{ $package['detail_title'] }} - MayClass</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <style>
         :root {
             --primary: #0f766e;
@@ -22,7 +23,9 @@
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -33,8 +36,16 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; padding: 0; margin: 0; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
         .container {
             width: 100%;
@@ -67,9 +78,16 @@
             color: var(--primary);
         }
 
-        .brand img { height: 40px; width: auto; }
+        .brand img {
+            height: 110px; /* diperbesar dari 40px */
+            width: auto;
+        }
 
-        .nav-actions { display: flex; gap: 12px; align-items: center; }
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
 
         .btn {
             display: inline-flex;
@@ -89,16 +107,20 @@
             border-color: var(--border);
             color: var(--text-main);
         }
-        .btn-outline:hover { background: var(--bg-body); }
+
+        .btn-outline:hover {
+            background: var(--bg-body);
+        }
 
         .btn-primary {
             background: var(--primary);
             color: white;
         }
-        .btn-primary:hover { 
-            background: var(--primary-hover); 
-            transform: translateY(-1px); 
-            box-shadow: var(--shadow-md); 
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-disabled {
@@ -125,7 +147,10 @@
             width: fit-content;
             transition: color 0.2s;
         }
-        .back-link:hover { color: var(--primary); }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
 
         .feature-card {
             background: var(--surface);
@@ -342,21 +367,24 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <nav class="container">
             <a href="/" class="brand">
                 <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" />
-                MayClass
             </a>
             <div class="nav-actions">
                 @auth
-                    <a href="{{ route('student.profile') }}" style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border);">
-                        <img src="{{ auth()->user()->profile_picture ?? asset('images/avatar-placeholder.svg') }}" alt="Profil" style="width: 100%; height: 100%; object-fit: cover;">
+                    <a href="{{ route('student.profile') }}"
+                        style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border);">
+                        <img src="{{ auth()->user()->profile_picture ?? asset('images/avatar-placeholder.svg') }}"
+                            alt="Profil" style="width: 100%; height: 100%; object-fit: cover;">
                     </a>
                     <form method="post" action="{{ route('logout') }}" style="margin:0">
                         @csrf
-                        <button type="submit" class="btn btn-outline" style="border: none; color: #ef4444; font-weight: 600;">Keluar</button>
+                        <button type="submit" class="btn btn-outline"
+                            style="border: none; color: #ef4444; font-weight: 600;">Keluar</button>
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="btn btn-outline">Masuk</a>
@@ -374,27 +402,29 @@
         @endif
 
         <a href="{{ route('packages.index') }}" class="back-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
             Kembali ke Katalog
         </a>
 
         <div class="feature-card">
             <div class="card-left">
-                <span class="package-tag">{{ $package->tag ?? 'Program' }}</span>
-                <h1 class="card-title">{{ $package->detail_title }}</h1>
-                <p class="card-subtitle">{{ $package->summary }}</p>
+                <span class="package-tag">{{ $package['tag'] ?? 'Program' }}</span>
+                <h1 class="card-title">{{ $package['detail_title'] }}</h1>
+                <p class="card-subtitle">{{ $package['summary'] }}</p>
                 <div class="meta-row">
                     <div class="meta-item">
                         <div class="meta-icon">📚</div>
-                        <span>{{ $package->level }}</span>
+                        <span>{{ $package['level'] }}</span>
                     </div>
                     <div class="meta-item">
                         <div class="meta-icon">📖</div>
-                        <span>Kelas {{ $package->grade_range }}</span>
+                        <span>Kelas {{ $package['grade_range'] }}</span>
                     </div>
                     <div class="meta-item">
                         <div class="meta-icon">👥</div>
-                        <span>Kuota {{ $package->max_students }} siswa</span>
+                        <span>Kuota {{ $package['max_students'] }} siswa</span>
                     </div>
                 </div>
             </div>
@@ -402,16 +432,13 @@
             <div class="card-right">
                 <div class="price-box">
                     <div class="price-label">Harga</div>
-                    <div class="price-value">Rp{{ number_format($package->price, 0, ',', '.') }}/bln</div>
+                    <div class="price-value">Rp{{ number_format($package['price'], 0, ',', '.') }}/bln</div>
                 </div>
 
                 @php
-                    $enrolledCount = $package->active_enrollment_count ?? 0;
-                    $pendingCount = $package->pending_checkout_count ?? 0;
-                    $totalReserved = $enrolledCount + $pendingCount;
-                    $quotaRemaining = $package->max_students - $totalReserved;
-                    $isFull = $quotaRemaining <= 0;
-                    $isLimited = $quotaRemaining > 0 && $quotaRemaining <= 3;
+                    $quotaRemaining = $package['quota_remaining'] ?? 0;
+                    $isFull = $package['is_full'] ?? false;
+                    $isLimited = !$isFull && $quotaRemaining > 0 && $quotaRemaining <= 3;
                 @endphp
 
                 <div class="quota-badge {{ $isFull ? 'full' : ($isLimited ? 'limited' : '') }}">
@@ -420,14 +447,14 @@
                     @elseif ($isLimited)
                         ⚠ Sisa {{ $quotaRemaining }} kursi
                     @else
-                        ✓ Slot Tersedia ({{ $quotaRemaining }}/{{ $package->max_students }})
+                        ✓ Slot Tersedia ({{ $quotaRemaining }}/{{ $package['max_students'] }})
                     @endif
                 </div>
 
                 @auth
                     @php
                         $isStudent = auth()->user()->role === 'student';
-                        $hasActivePackage = $isStudent && auth()->user()->enrollments()->where('package_id', $package->id)->where('is_active', true)->exists();
+                        $hasActivePackage = $isStudent && auth()->user()->enrollments()->where('package_id', $package['id'])->where('is_active', true)->exists();
                     @endphp
 
                     @if ($isFull)
@@ -436,7 +463,9 @@
                         <button class="btn btn-disabled" disabled>Paket Aktif</button>
                         <div class="alert-box alert-info">Kamu sedang mengikuti paket ini</div>
                     @else
-                        <a href="{{ route('checkout.show', $package->slug) }}" class="btn btn-primary btn-checkout">Checkout Sekarang</a>
+                        <a href="{{ route('checkout.show', $package['slug']) }}"
+                            class="btn btn-primary btn-checkout">Checkout
+                            Sekarang</a>
                     @endif
                 @else
                     @if ($isFull)
@@ -448,33 +477,34 @@
             </div>
         </div>
 
-        @if($features->isNotEmpty())
-        <div class="features-wrapper">
-            <div class="features-title">Program & Fasilitas</div>
-            <div class="features-grid">
-                @foreach ($features as $feature)
-                    <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span class="feature-text">{{ $feature->description }}</span>
-                    </div>
-                @endforeach
+        @if (!empty($package['included']))
+            <div class="features-wrapper">
+                <div class="features-title">Program & Fasilitas</div>
+                <div class="features-grid">
+                    @foreach ($package['included'] as $feature)
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span class="feature-text">{{ $feature }}</span>
+                        </div>
+                    @endforeach
+                </div>
             </div>
-        </div>
         @endif
 
-        @if($subjects->isNotEmpty())
-        <div class="features-wrapper">
-            <div class="features-title">Mata Pelajaran</div>
-            <div class="features-grid">
-                @foreach ($subjects as $subject)
-                    <div class="feature-item">
-                        <span class="feature-icon">📝</span>
-                        <span class="feature-text">{{ $subject->name }}</span>
-                    </div>
-                @endforeach
+        @if ($subjects->isNotEmpty())
+            <div class="features-wrapper">
+                <div class="features-title">Mata Pelajaran</div>
+                <div class="features-grid">
+                    @foreach ($subjects as $subject)
+                        <div class="feature-item">
+                            <span class="feature-icon">📝</span>
+                            <span class="feature-text">{{ $subject->name }}</span>
+                        </div>
+                    @endforeach
+                </div>
             </div>
-        </div>
         @endif
     </div>
 </body>
+
 </html>

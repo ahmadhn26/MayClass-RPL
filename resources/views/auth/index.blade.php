@@ -646,11 +646,13 @@
             <div class="input-group">
                 <label class="label">Username</label>
                 <input class="input-field" type="text" name="username" value="{{ old('username') }}" required>
+                @error('username') <span class="error-msg">{{ $message }}</span> @enderror
             </div>
 
             <div class="input-group">
                 <label class="label">Password</label>
                 <input class="input-field" type="password" name="password" required>
+                @error('password') <span class="error-msg">{{ $message }}</span> @enderror
             </div>
 
             <div class="forgot-pass-wrapper">
