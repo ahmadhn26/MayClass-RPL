@@ -11,9 +11,9 @@
             --bg-surface: #ffffff;
             --bg-muted: #f8fafc;
             --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --radius-lg: 16px;
             --radius-md: 12px;
         }
@@ -134,7 +134,8 @@
             background: var(--bg-surface);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 24px; /* Padding disesuaikan karena tidak ada gambar */
+            padding: 24px;
+            /* Padding disesuaikan karena tidak ada gambar */
             display: flex;
             gap: 20px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -185,14 +186,22 @@
         }
 
         /* Purple Theme for Quiz Tags */
-        .tag-subject { background: #f5f3ff; color: #7c3aed; }
-        .tag-level { background: #eff6ff; color: #2563eb; }
+        .tag-subject {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+
+        .tag-level {
+            background: #eff6ff;
+            color: #2563eb;
+        }
 
         .card-summary {
             font-size: 0.9rem;
             color: #64748b;
             line-height: 1.5;
-            margin: 0 0 20px 0; /* Margin bawah ditambah */
+            margin: 0 0 20px 0;
+            /* Margin bawah ditambah */
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -223,15 +232,21 @@
             background: #f1f5f9;
             color: #475569;
         }
-        .btn-secondary:hover { background: #e2e8f0; color: #1e293b; }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
 
         .btn-outline {
             border: 1px solid var(--border-color);
             color: #475569;
             background: white;
         }
+
         .btn-outline:hover {
-            border-color: var(--primary-dark); /* Ubah warna hover jadi hijau juga agar konsisten */
+            border-color: var(--primary-dark);
+            /* Ubah warna hover jadi hijau juga agar konsisten */
             color: var(--primary-dark);
             background: #ecfdf5;
         }
@@ -256,21 +271,186 @@
             color: #64748b;
         }
 
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .btn-close {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .btn-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            width: 100%;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .btn-submit {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
         /* Responsive */
         @media (max-width: 640px) {
             .quiz-card {
                 flex-direction: column;
             }
+
             .page-header {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .btn-add {
                 justify-content: center;
             }
+
             .card-actions {
                 flex-direction: row;
             }
+
             .action-btn {
                 flex: 1;
             }
@@ -279,91 +459,209 @@
 @endpush
 
 @section('content')
-    @php($tableReady = $tableReady ?? true)
+@php($tableReady = $tableReady ?? true)
 
-    {{-- Header Section --}}
-    <div class="page-header">
-        <div class="header-title">
-            <h1>Manajemen Quiz</h1> 
-            <div class="stats-badge"> 
-                {{ $tableReady ? $quizzes->count() : 0 }} Quiz Aktif
-            </div>
+{{-- Header Section --}}
+<div class="page-header">
+    <div class="header-title">
+        <h1>Manajemen Quiz</h1>
+        <div class="stats-badge">
+            {{ $tableReady ? $quizzes->count() : 0 }} Quiz Aktif
         </div>
-        <a href="{{ route('tutor.quizzes.create') }}" class="btn-add">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Quiz
-        </a>
     </div>
+    <a href="{{ route('tutor.quizzes.create') }}" class="btn-add">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Tambah Quiz
+    </a>
+</div>
 
-    {{-- Search Toolbar --}}
-    <div class="content-toolbar">
-        <form method="GET" class="search-wrapper">
-            <input 
-                type="search" 
-                name="q" 
-                class="search-input" 
-                value="{{ $search }}" 
-                placeholder="Cari judul, mata pelajaran, atau jenjang..." 
-            />
-            <button type="submit" class="search-btn" title="Cari">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+{{-- Search Toolbar --}}
+<div class="content-toolbar">
+    <form method="GET" class="search-wrapper">
+        <input type="search" name="q" class="search-input" value="{{ $search }}"
+            placeholder="Cari judul, mata pelajaran, atau jenjang..." />
+        <button type="submit" class="search-btn" title="Cari">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </button>
+    </form>
+</div>
+
+{{-- Content Area --}}
+@if (!$tableReady)
+    <div class="system-alert">
+        <strong>⚠ Database kuis belum siap</strong>
+        <p style="margin: 8px 0;">Jalankan migrasi agar tutor dapat membuat kuis.</p>
+        <code style="background: rgba(255,255,255,0.6); padding: 2px 6px; border-radius: 4px;">php artisan migrate</code>
+    </div>
+@elseif ($quizzes->isEmpty())
+    <div class="empty-state">
+        <div style="font-size: 3rem; margin-bottom: 16px;">📝</div>
+        <strong style="display: block; font-size: 1.25rem; color: #1e293b; margin-bottom: 8px;">Belum ada quiz
+            terdaftar</strong>
+        <p>Buat quiz pertama Anda dan bagikan tautan evaluasi kepada siswa.</p>
+    </div>
+@else
+    <div class="quiz-grid">
+        @foreach ($quizzes as $quiz)
+            <article class="quiz-card">
+                {{-- BAGIAN GAMBAR SUDAH DIHAPUS DI SINI --}}
+
+                <div class="card-content">
+                    <h3 class="card-title" title="{{ $quiz->title }}">{{ $quiz->title }}</h3>
+
+                    <div class="tags-row">
+                        <span class="tag tag-subject">{{ $quiz->subject->name ?? 'Tanpa Mapel' }}</span>
+                        <span class="tag tag-level">{{ $quiz->class_level ?? 'Semua Kelas' }}</span>
+                    </div>
+
+                    <p class="card-summary">{{ Str::limit($quiz->summary, 100) }}</p>
+
+                    <div class="card-actions">
+                        <a href="{{ route('tutor.quizzes.edit', $quiz) }}" class="action-btn btn-secondary">
+                            Edit
+                        </a>
+                        @if ($quiz->link)
+                            <a href="{{ $quiz->link }}" class="action-btn btn-outline" target="_blank" rel="noopener"
+                                title="Buka link quiz">
+                                Buka Quiz
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </article>
+        @endforeach
+    </div>
+@endif
+
+{{-- Modal: Tambah Quiz Baru --}}
+<div id="createModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Tambah Quiz Baru</h2>
+            <button type="button" onclick="closeModal()" class="btn-close">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
+        </div>
+
+        <form action="{{ route('tutor.quizzes.store') }}" method="POST">
+            @csrf
+
+            <div class="modal-body">
+                {{-- Hidden Fields --}}
+                <input type="hidden" name="class_level" value="-">
+                <input type="hidden" name="duration_label" value="-">
+                <input type="hidden" name="question_count" value="1">
+
+                {{-- Paket & Judul --}}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Pilih Paket Belajar</label>
+                        <select name="package_id" id="packageSelect" class="form-control" required
+                            onchange="fetchSubjects(this.value)">
+                            <option value="">Pilih paket yang tersedia</option>
+                            @foreach($packages ?? [] as $package)
+                                <option value="{{ $package->id }}">{{ $package->name }} ({{ $package->level }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Judul Quiz</label>
+                        <input type="text" name="title" class="form-control" placeholder="Contoh: Quiz Persamaan Linear"
+                            required>
+                    </div>
+                </div>
+
+                {{-- Mata Pelajaran --}}
+                <div class="form-group">
+                    <label class="form-label">Mata Pelajaran</label>
+                    <select name="subject_id" id="subjectSelect" class="form-control" required disabled>
+                        <option value="">Pilih paket terlebih dahulu</option>
+                    </select>
+                </div>
+
+                {{-- Deskripsi --}}
+                <div class="form-group">
+                    <label class="form-label">Deskripsi Quiz</label>
+                    <textarea name="summary" rows="3" class="form-control"
+                        placeholder="Tuliskan deskripsi singkat quiz..." required></textarea>
+                </div>
+
+                {{-- Link Quiz --}}
+                <div class="form-group">
+                    <label class="form-label">Link Quiz (Google Form / Platform Lainnya)</label>
+                    <input type="url" name="link_url" class="form-control" placeholder="https://" required>
+                </div>
+
+                <button type="submit" class="btn-submit">✓ Simpan Quiz</button>
+            </div>
         </form>
     </div>
+</div>
 
-    {{-- Content Area --}}
-    @if (! $tableReady)
-        <div class="system-alert">
-            <strong>⚠ Database kuis belum siap</strong>
-            <p style="margin: 8px 0;">Jalankan migrasi agar tutor dapat membuat kuis.</p>
-            <code style="background: rgba(255,255,255,0.6); padding: 2px 6px; border-radius: 4px;">php artisan migrate</code>
-        </div>
-    @elseif ($quizzes->isEmpty())
-        <div class="empty-state">
-            <div style="font-size: 3rem; margin-bottom: 16px;">📝</div>
-            <strong style="display: block; font-size: 1.25rem; color: #1e293b; margin-bottom: 8px;">Belum ada quiz terdaftar</strong>
-            <p>Buat quiz pertama Anda dan bagikan tautan evaluasi kepada siswa.</p>
-        </div>
-    @else
-        <div class="quiz-grid">
-            @foreach ($quizzes as $quiz)
-                <article class="quiz-card">
-                    {{-- BAGIAN GAMBAR SUDAH DIHAPUS DI SINI --}}
-                    
-                    <div class="card-content">
-                        <h3 class="card-title" title="{{ $quiz->title }}">{{ $quiz->title }}</h3>
-                        
-                        <div class="tags-row">
-                            <span class="tag tag-subject">{{ $quiz->subject->name ?? 'Tanpa Mapel' }}</span>
-                            <span class="tag tag-level">{{ $quiz->class_level ?? 'Semua Kelas' }}</span>
-                        </div>
+@push('scripts')
+    <script>
+        // Modal Logic
+        const modal = document.getElementById('createModal');
 
-                        <p class="card-summary">{{ Str::limit($quiz->summary, 100) }}</p>
+        function openModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-                        <div class="card-actions">
-                            <a href="{{ route('tutor.quizzes.edit', $quiz) }}" class="action-btn btn-secondary">
-                                Edit
-                            </a>
-                            @if ($quiz->link)
-                                <a href="{{ $quiz->link }}" 
-                                   class="action-btn btn-outline" 
-                                   target="_blank" 
-                                   rel="noopener"
-                                   title="Buka link quiz">
-                                   Buka Quiz
-                                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                   </svg>
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-    @endif
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal if clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Auto open modal if validation error exists
+        @if($errors->any())
+            openModal();
+        @endif
+
+        // AJAX Fetch Subjects
+        function fetchSubjects(packageId) {
+            const subjectSelect = document.getElementById('subjectSelect');
+
+            if (!packageId) {
+                subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+                subjectSelect.disabled = true;
+                return;
+            }
+
+            subjectSelect.innerHTML = '<option>Loading...</option>';
+            subjectSelect.disabled = true;
+
+            fetch(`/tutor/packages/${packageId}/subjects`)
+                .then(response => response.json())
+                .then(data => {
+                    subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+                    data.forEach(subject => {
+                        subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
+                    });
+                    subjectSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
+                });
+        }
+    </script>
+@endpush
 @endsection

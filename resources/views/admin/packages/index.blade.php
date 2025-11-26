@@ -266,18 +266,39 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
         }
 
         .modal-overlay.active {
             display: flex;
-            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal-content {
@@ -288,14 +309,9 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
         }
 
         .modal-header {
@@ -318,18 +334,23 @@
         }
 
         .btn-close {
-            background: transparent;
+            background: #f1f5f9;
             border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 8px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
         }
 
         .btn-close:hover {
-            background: #f1f5f9;
-            color: var(--text-main);
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: rotate(90deg);
         }
 
         .modal-body {
@@ -359,13 +380,14 @@
         }
 
         .form-control {
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 12px 14px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
             font-size: 0.95rem;
             transition: all 0.2s;
             width: 100%;
-            background: #f8fafc;
+            background: white;
+            font-family: inherit;
         }
 
         .form-control:focus {
@@ -373,6 +395,10 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
             background: #fff;
+        }
+
+        textarea.form-control {
+            resize: vertical;
         }
 
         .helper-text {
@@ -487,18 +513,26 @@
         }
 
         .btn-submit {
-            padding: 10px 24px;
-            border-radius: 8px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
             color: white;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
             border: none;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+            margin-top: 8px;
         }
 
         .btn-submit:hover {
-            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
         }
 
         @media (max-width: 768px) {
@@ -726,10 +760,7 @@
                         <label>Judul Paket *</label>
                         <input type="text" name="detail_title" class="form-control" required>
                     </div>
-                    <div class="form-group full-width">
-                        <label>Kunci Gambar (Unsplash) *</label>
-                        <input type="text" name="image_url" class="form-control" required>
-                    </div>
+
                     <div class="form-group full-width">
                         <label>Ringkasan *</label>
                         <textarea name="summary" class="form-control" rows="3" required></textarea>
@@ -794,7 +825,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('addPackageModal')">Batal</button>
-                <button type="submit" class="btn-submit">Simpan Paket</button>
+                <button type="submit" class="btn-submit">✓ Simpan Paket</button>
             </div>
         </form>
     </div>
@@ -817,9 +848,9 @@
             const item = document.createElement('div');
             item.className = 'feature-item';
             item.innerHTML = `
-                        <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
-                        <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
-                    `;
+                            <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
+                            <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
+                        `;
             list.appendChild(item);
         }
 
@@ -839,6 +870,11 @@
                 document.body.style.overflow = 'auto';
             }
         }
+
+        // Auto open modal if validation errors exist
+        @if($errors->any())
+            openModal('addPackageModal');
+        @endif
     </script>
 @endpush
 @endsection
