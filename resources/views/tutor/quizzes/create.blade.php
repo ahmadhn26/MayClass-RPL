@@ -4,26 +4,97 @@
 
 @push('styles')
     <style>
+        /* --- OVERLAY & MODAL STYLE --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
         .form-card {
             background: #fff;
-            border-radius: 24px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .form-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            flex-shrink: 0;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: #ef4444; }
+
+        .form-body {
             padding: 32px;
-            box-shadow: 0 22px 55px rgba(15, 23, 42, 0.08);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
+        
+        .form-body::-webkit-scrollbar { width: 6px; }
+        .form-body::-webkit-scrollbar-track { background: transparent; }
+        .form-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
 
-        .form-card h1 {
-            margin-top: 0;
-        }
-
+        /* --- GRID SYSTEM --- */
         .form-grid {
             display: grid;
-            gap: 18px;
-            margin-top: 24px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
         }
 
+        .span-full { grid-column: 1 / -1; }
+
+        /* --- INPUTS --- */
         label span {
             display: block;
             font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
             margin-bottom: 8px;
         }
 
@@ -32,11 +103,19 @@
         textarea,
         select {
             width: 100%;
-            padding: 14px 18px;
-            border: 1px solid #d9e0ea;
-            border-radius: 16px;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3fa67e;
+            box-shadow: 0 0 0 3px rgba(63, 166, 126, 0.1);
         }
 
         textarea {
@@ -44,369 +123,205 @@
             resize: vertical;
         }
 
-        .dynamic-group {
-            border: 1px solid #e5e7eb;
-            border-radius: 18px;
-            padding: 18px;
-            background: rgba(249, 250, 251, 0.8);
+        .error-text {
+            color: #dc2626;
+            font-size: 0.85rem;
+            margin-top: 4px;
         }
 
-        .dynamic-group__header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .dynamic-group__header span {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .dynamic-group__items {
-            display: grid;
-            gap: 12px;
-        }
-
-        .dynamic-item {
-            display: grid;
-            gap: 12px;
-            padding: 14px;
-            border-radius: 14px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-        }
-
-        .dynamic-item__actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .dynamic-item__remove {
-            appearance: none;
-            border: none;
-            background: transparent;
-            color: #ef4444;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .dynamic-add {
-            appearance: none;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 18px;
-            background: rgba(95, 106, 248, 0.12);
-            color: var(--primary-dark);
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        /* --- ACTIONS --- */
         .form-actions {
-            display: flex;
-            gap: 16px;
             margin-top: 32px;
-            align-items: center;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
             justify-content: flex-end;
+            gap: 16px;
         }
 
         .btn-cancel {
             padding: 12px 24px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 600;
             text-decoration: none;
             color: #64748b;
-            background: #f1f5f9;
-            border: 1px solid transparent;
+            background: white;
+            border: 1px solid #e2e8f0;
             transition: all 0.2s;
-            font-size: 1rem;
-            display: inline-block;
         }
-
-        .btn-cancel:hover {
-            background: #e2e8f0;
-            color: #0f172a;
-        }
+        .btn-cancel:hover { background: #f1f5f9; color: #0f172a; }
 
         .btn-save {
             background: #3fa67e;
             color: white;
             border: none;
             padding: 12px 32px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 1rem;
             transition: all 0.2s;
             box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
         }
-
-        .btn-save:hover {
-            background: #2f8a67;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px -1px rgba(63, 166, 126, 0.4);
-        }
-
-        .error-text {
-            color: #dc2626;
-            font-size: 0.9rem;
-            margin-top: 6px;
+        .btn-save:hover { background: #2f8a67; transform: translateY(-1px); }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-card { height: 100vh; max-height: 100vh; border-radius: 0; }
+            .form-header { border-radius: 0; }
         }
     </style>
 @endpush
 
 @section('content')
-    @php
-        $levelValues = collect(old('levels', ['']))->map(fn($value) => is_string($value) ? $value : '');
-        if ($levelValues->isEmpty()) {
-            $levelValues = collect(['']);
-        }
+    {{-- WRAPPER OVERLAY --}}
+    <div class="modal-overlay">
+        <div class="form-card">
+            
+            {{-- HEADER FORM --}}
+            <div class="form-header">
+                <h1>Tambah Quiz Baru</h1>
+                <a href="{{ route('tutor.quizzes.index') }}" class="close-btn">&times;</a>
+            </div>
 
-        $takeawayValues = collect(old('takeaways', ['']))->map(fn($value) => is_string($value) ? $value : '');
-        if ($takeawayValues->isEmpty()) {
-            $takeawayValues = collect(['']);
-        }
-    @endphp
-    <div class="form-card">
-        <h1>Tambah Quiz Baru</h1>
-        <p>Buat quiz untuk siswa MayClass lengkap dengan tautan pelaksanaan.</p>
-
-        <form method="POST" action="{{ route('tutor.quizzes.store') }}" class="form-grid">
-            @csrf
-            <label>
-                <span>Paket Belajar</span>
-                <select name="package_id" required style="width: 100%; padding: 14px 18px; border: 1px solid #d9e0ea; border-radius: 16px; font-family: inherit; font-size: 1rem;">
-                    <option value="">Pilih paket yang tersedia</option>
-                    @forelse ($packages as $package)
-                        <option value="{{ $package->id }}" @selected(old('package_id') == $package->id)>
-                            {{ $package->detail_title ?? $package->title }}
-                        </option>
-                    @empty
-                        <option value="" disabled>Belum ada paket yang tersedia</option>
-                    @endforelse
-                </select>
-                @error('package_id')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <label>
-                <span>Judul Quiz</span>
-                <input type="text" name="title" value="{{ old('title') }}" placeholder="Contoh: Quiz Persamaan Linear" required />
-                @error('title')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <label>
-                <span>Mata Pelajaran</span>
-                <select name="subject_id" id="subject-select" required style="width: 100%; padding: 14px 18px; border: 1px solid #d9e0ea; border-radius: 16px; font-family: inherit; font-size: 1rem;">
-                    <option value="">Memuat...</option>
-                </select>
-                @error('subject_id')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <label>
-                <span>Kelas</span>
-                <input type="text" name="class_level" value="{{ old('class_level') }}" placeholder="Contoh: Kelas 10A" required />
-                @error('class_level')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <label>
-                <span>Durasi Pengerjaan</span>
-                <input type="text" name="duration_label" value="{{ old('duration_label', '45 Menit') }}" placeholder="Contoh: 45 Menit" required />
-                @error('duration_label')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <label>
-                <span>Jumlah Soal</span>
-                <input type="number" min="1" max="200" name="question_count" value="{{ old('question_count', 20) }}" placeholder="Contoh: 20" required />
-                @error('question_count')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <label>
-                <span>Deskripsi</span>
-                <textarea name="summary" placeholder="Tuliskan deskripsi singkat quiz..." required>{{ old('summary') }}</textarea>
-                @error('summary')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
-
-            <div class="dynamic-group">
-                <div class="dynamic-group__header">
-                    <span>Level atau Kompetensi</span>
-                    <button class="dynamic-add" data-add-level type="button">Tambah level</button>
-                </div>
-                <div class="dynamic-group__items" data-levels>
-                    @foreach ($levelValues as $value)
-                        <div class="dynamic-item" data-level-row>
-                            <input type="text" name="levels[]" value="{{ $value }}" placeholder="Contoh: Level Dasar" />
-                            <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                @php
-                    $levelError = $errors->first('levels') ?: $errors->first('levels.*');
-                @endphp
-                @if ($levelError)
-                    <div class="error-text" style="margin-top: 10px;">{{ $levelError }}</div>
+            {{-- BODY FORM --}}
+            <div class="form-body">
+                @if ($errors->any())
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                        <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                            @foreach ($errors->all() as $error)
+                                <li style="color: #dc2626;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
-            </div>
 
-            <div class="dynamic-group">
-                <div class="dynamic-group__header">
-                    <span>Highlight Pembelajaran</span>
-                    <button class="dynamic-add" data-add-takeaway type="button">Tambah highlight</button>
-                </div>
-                <div class="dynamic-group__items" data-takeaways>
-                    @foreach ($takeawayValues as $value)
-                        <div class="dynamic-item" data-takeaway-row>
-                            <input type="text" name="takeaways[]" value="{{ $value }}" placeholder="Contoh: Evaluasi persamaan linear" />
-                            <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                @php
-                    $takeawayError = $errors->first('takeaways') ?: $errors->first('takeaways.*');
-                @endphp
-                @if ($takeawayError)
-                    <div class="error-text" style="margin-top: 10px;">{{ $takeawayError }}</div>
-                @endif
-            </div>
+                <form method="POST" action="{{ route('tutor.quizzes.store') }}" id="quiz-form">
+                    @csrf
+                    
+                    {{-- 
+                        INPUT HIDDEN (DATA BOHONGAN)
+                        Agar Controller tidak error, kita kirim data default
+                    --}}
+                    <input type="hidden" name="class_level" value="-">
+                    <input type="hidden" name="duration_label" value="-">
+                    <input type="hidden" name="question_count" value="1">
 
-            <label>
-                <span>Link Quiz</span>
-                <input type="url" name="link_url" value="{{ old('link_url') }}" placeholder="https://" required />
-                @error('link_url')
-                    <div class="error-text">{{ $message }}</div>
-                @enderror
-            </label>
+                    <div class="form-grid">
+                        <label>
+                            <span>Paket Belajar</span>
+                            <select name="package_id" id="package-select" required>
+                                <option value="">Pilih paket yang tersedia</option>
+                                @forelse ($packages as $package)
+                                    <option value="{{ $package->id }}" @selected(old('package_id') == $package->id)>
+                                        {{ $package->detail_title ?? $package->title }}
+                                    </option>
+                                @empty
+                                    <option value="" disabled>Belum ada paket yang tersedia</option>
+                                @endforelse
+                            </select>
+                            @error('package_id') <div class="error-text">{{ $message }}</div> @enderror
+                        </label>
 
-            <div class="form-actions">
-                <a href="{{ route('tutor.quizzes.index') }}" class="btn-cancel">
-                    Batal
-                </a>
-                <button type="submit" class="btn-save">
-                    Simpan Quiz
-                </button>
+                        <label>
+                            <span>Judul Quiz</span>
+                            <input type="text" name="title" value="{{ old('title') }}" placeholder="Contoh: Quiz Persamaan Linear" required />
+                            @error('title') <div class="error-text">{{ $message }}</div> @enderror
+                        </label>
+
+                        <label class="span-full">
+                            <span>Mata Pelajaran</span>
+                            {{-- data-old digunakan untuk recovery saat validation error --}}
+                            <select name="subject_id" id="subject-select" data-old="{{ old('subject_id') }}" required>
+                                <option value="">Pilih paket terlebih dahulu</option>
+                            </select>
+                            @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
+                        </label>
+
+                        <label class="span-full">
+                            <span>Deskripsi</span>
+                            <textarea name="summary" placeholder="Tuliskan deskripsi singkat quiz..." required>{{ old('summary') }}</textarea>
+                            @error('summary') <div class="error-text">{{ $message }}</div> @enderror
+                        </label>
+
+                        <label class="span-full">
+                            <span>Link Quiz</span>
+                            <input type="url" name="link_url" value="{{ old('link_url') }}" placeholder="https://" required />
+                            @error('link_url') <div class="error-text">{{ $message }}</div> @enderror
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ route('tutor.quizzes.index') }}" class="btn-cancel">
+                            Batal
+                        </a>
+                        <button type="submit" class="btn-save" id="submit-btn">
+                            Simpan Quiz
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const levelContainer = document.querySelector('[data-levels]');
-            const takeawayContainer = document.querySelector('[data-takeaways]');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const packageSelect = document.getElementById('package-select');
+    const subjectSelect = document.getElementById('subject-select');
+    const form = document.getElementById('quiz-form');
+    const submitBtn = document.getElementById('submit-btn');
 
-            const templateRow = (name, placeholder) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'dynamic-item';
-                wrapper.innerHTML = `
-                    <input type="text" name="${name}" placeholder="${placeholder}" />
-                    <div class="dynamic-item__actions">
-                        <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                    </div>
-                `;
-                return wrapper;
-            };
+    // AJAX Subject Dropdown
+    if (packageSelect && subjectSelect) {
+        const loadSubjects = (packageId, selectedId = null) => {
+            subjectSelect.innerHTML = '<option value="">Memuat...</option>';
+            subjectSelect.disabled = true;
 
-            document.querySelectorAll('[data-remove-row]').forEach((button) => {
-                button.addEventListener('click', () => {
-                    const row = button.closest('.dynamic-item');
-                    if (row && row.parentElement.children.length > 1) {
-                        row.remove();
-                    }
-                });
-            });
-
-            const bindRemoval = (row) => {
-                row.querySelector('[data-remove-row]')?.addEventListener('click', () => {
-                    if (row.parentElement.children.length > 1) {
-                        row.remove();
-                    }
-                });
-            };
-
-            const addLevelBtn = document.querySelector('[data-add-level]');
-            addLevelBtn?.addEventListener('click', (event) => {
-                event.preventDefault();
-                if (!levelContainer) return;
-
-                const row = templateRow('levels[]', 'Contoh: Level Lanjutan');
-                levelContainer.appendChild(row);
-                bindRemoval(row);
-            });
-
-            const addTakeawayBtn = document.querySelector('[data-add-takeaway]');
-            addTakeawayBtn?.addEventListener('click', (event) => {
-                event.preventDefault();
-                if (!takeawayContainer) return;
-
-                const row = templateRow('takeaways[]', 'Contoh: Evaluasi persamaan linear');
-                takeawayContainer.appendChild(row);
-                bindRemoval(row);
-            });
-
-            // AJAX Subject Dropdown - SAMA PERSIS DENGAN EDIT
-            const packageSelect = document.querySelector('select[name="package_id"]');
-            const subjectSelect = document.getElementById('subject-select');
-            const currentSubjectId = "{{ old('subject_id') }}";
-
-            if (packageSelect && subjectSelect) {
-                const loadSubjects = (packageId, selectedId = null) => {
-                    subjectSelect.innerHTML = '<option value="">Memuat...</option>';
-                    subjectSelect.disabled = true;
-
-                    if (packageId) {
-                        fetch(`/tutor/packages/${packageId}/subjects`)
-                            .then(response => response.json())
-                            .then(data => {
-                                subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
-                                data.forEach(subject => {
-                                    const option = document.createElement('option');
-                                    option.value = subject.id;
-                                    option.textContent = subject.name + ' (' + subject.level + ')';
-                                    if (selectedId && String(subject.id) === String(selectedId)) {
-                                        option.selected = true;
-                                    }
-                                    subjectSelect.appendChild(option);
-                                });
-                                subjectSelect.disabled = false;
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
-                            });
-                    } else {
-                        subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
-                        subjectSelect.disabled = true;
-                    }
-                };
-
-                packageSelect.addEventListener('change', function() {
-                    loadSubjects(this.value);
-                });
-
-                // Jika package sudah dipilih (setelah validation error), load subjects
-                if (packageSelect.value) {
-                    loadSubjects(packageSelect.value, currentSubjectId);
-                }
+            if (packageId) {
+                fetch(/tutor/packages/${packageId}/subjects)
+                    .then(response => response.json())
+                    .then(data => {
+                        subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+                        data.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.id;
+                            option.textContent = subject.name + ' (' + subject.level + ')';
+                            if (selectedId && String(subject.id) === String(selectedId)) {
+                                option.selected = true;
+                            }
+                            subjectSelect.appendChild(option);
+                        });
+                        subjectSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
+                    });
+            } else {
+                subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
+                subjectSelect.disabled = true;
             }
+        };
+
+        packageSelect.addEventListener('change', function() {
+            loadSubjects(this.value);
         });
-    </script>
+
+        // Jika package sudah dipilih (setelah validation error), load subjects
+        if (packageSelect.value) {
+            const oldSubjectId = subjectSelect.getAttribute('data-old');
+            loadSubjects(packageSelect.value, oldSubjectId);
+        }
+    }
+
+    // Disable button saat submit
+    form?.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Menyimpan...';
+    });
+});
+</script>
 @endpush
