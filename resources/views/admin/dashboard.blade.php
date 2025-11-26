@@ -484,6 +484,8 @@
                     <span>Distribusi Order</span>
                 </div>
 
+                <div id="salesStatusChart" style="margin-bottom: 24px;"></div>
+
                 @if ($paymentPipeline['total'] === 0)
                     <div class="empty-state">Data tidak tersedia</div>
                 @else
@@ -696,6 +698,74 @@
                 if (document.querySelector("#packageChart")) {
                     const packageChart = new ApexCharts(document.querySelector("#packageChart"), packageOptions);
                     packageChart.render();
+                }
+            }
+
+            // --- Sales Status Chart (Donut) ---
+            const pipelineData = @json($paymentPipeline['rows']);
+            // Filter for Paid, Rejected, Pending
+            const targetStatuses = ['paid', 'rejected', 'pending'];
+            const statusColors = {
+                'paid': '#22c55e',    // Green
+                'rejected': '#ef4444', // Red
+                'pending': '#eab308'   // Yellow
+            };
+
+            const salesChartData = pipelineData.filter(item => targetStatuses.includes(item.status));
+
+            // Sort to ensure consistent order (Paid, Pending, Rejected)
+            salesChartData.sort((a, b) => targetStatuses.indexOf(a.status) - targetStatuses.indexOf(b.status));
+
+            if (salesChartData.length > 0 && salesChartData.some(item => item.count > 0)) {
+                const salesOptions = {
+                    series: salesChartData.map(item => item.count),
+                    chart: {
+                        type: 'donut',
+                        height: 280,
+                        fontFamily: 'Poppins, sans-serif'
+                    },
+                    labels: salesChartData.map(item => item.label),
+                    colors: salesChartData.map(item => statusColors[item.status]),
+                    legend: {
+                        position: 'bottom',
+                        horizontalAlign: 'center'
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '70%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        label: 'Total',
+                                        formatter: function (w) {
+                                            return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val + " Transaksi"
+                            }
+                        }
+                    }
+                };
+
+                if (document.querySelector("#salesStatusChart")) {
+                    const salesChart = new ApexCharts(document.querySelector("#salesStatusChart"), salesOptions);
+                    salesChart.render();
+                }
+            } else {
+                if (document.querySelector("#salesStatusChart")) {
+                    document.querySelector("#salesStatusChart").style.display = 'none';
                 }
             }
         });
