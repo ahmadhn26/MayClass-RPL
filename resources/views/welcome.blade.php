@@ -757,9 +757,11 @@
             margin-top: 1px;
         }
 
+        /* --- CSS TOMBOL SEJAJAR --- */
         .pricing-actions {
-            margin-top: 20px;
+            margin-top: auto; /* Memaksa tombol turun ke bawah */
             width: 100%;
+            padding-top: 20px; /* Memberi jarak aman */
         }
 
         .pricing-actions .btn {
@@ -1375,7 +1377,7 @@
     <header>
         <nav>
             <div class="nav-inner">
-                <a class="brand" href="/">
+                <a class="brand" href="#beranda">
                     <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" width="200" height="auto" />
                 </a>
                 <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
@@ -1384,7 +1386,6 @@
                     <span></span>
                 </button>
                 <div class="nav-links">
-                    <a href="#beranda">Beranda</a>
                     <a href="#artikel">Artikel</a>
                     <a href="#paket">Paket Belajar</a>
                     <a href="#keunggulan">Keunggulan</a>
@@ -1776,34 +1777,6 @@
                         MayClass adalah platform bimbingan belajar premium yang menggabungkan materi berkualitas, mentor
                         berpengalaman, dan teknologi terkini untuk mengantarkan siswa menuju prestasi akademik terbaik.
                     </p>
-                    <div class="social-icons">
-                        <a href="#" class="social-btn" aria-label="Instagram">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                viewBox="0 0 24 24">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-btn" aria-label="TikTok">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                viewBox="0 0 448 512">
-                                <path
-                                    d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0l88 0a121.18 121.18 0 0 0 1.86 22.17h0A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14z" />
-                            </svg>
-                        </a>
-                        <a href="#" class="social-btn" aria-label="YouTube">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                viewBox="0 0 24 24">
-                                <path
-                                    d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.25z">
-                                </path>
-                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
-                            </svg>
-                        </a>
-                    </div>
                 </div>
 
                 <div>
@@ -1829,44 +1802,60 @@
                 <div>
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
-                        <div class="contact-row">
-                            <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630" target="_blank" rel="noopener noreferrer" class="contact-link">
-                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
-                                </svg>
-                                <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
-                            </a>
-                        </div>
-                        <div class="contact-row">
-                            <a href="https://wa.me/6283194085776" target="_blank" rel="noopener noreferrer" class="contact-link">
-                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path
-                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.12 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                    </path>
-                                </svg>
-                                <span>+62 831-9408-5776</span>
-                            </a>
-                        </div>
-                        <div class="contact-row">
-                            <a href="mailto:hello@mayclass.id" class="contact-link">
-                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                    </path>
-                                    <polyline points="22,6 12,13 2,6"></polyline>
-                                </svg>
-                                <span>hello@mayclass.id</span>
-                            </a>
-                        </div>
+                            <div class="contact-row">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630"
+                                target="_blank" rel="noopener noreferrer" class="contact-link">
+                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
+                                </a>
+                            </div>
+
+                            <div class="contact-row">
+                                <a href="https://wa.me/6283194085776"
+                                target="_blank" rel="noopener noreferrer" class="contact-link">
+                                    <!-- “Logo” WhatsApp sederhana (lingkaran hijau + ikon telp) -->
+                                    <svg class="contact-icon" width="20" height="20" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="11" fill="#22c55e"></circle>
+                                        <path d="M16.5 14.5c-.2.5-1 1-1.5 1.1-.4.1-.9.1-1.5 0-1.3-.3-2.7-1.1-3.7-2.1s-1.8-2.4-2.1-3.7c-.1-.6-.1-1.1 0-1.5.1-.5.6-1.3 1.1-1.5.3-.1.7 0 .9.3l.9 1.4c.2.3.2.7 0 1-.1.1-.2.3-.3.4-.1.2-.2.3-.1.5.2.5.7 1.1 1.2 1.6.5.5 1.1 1 1.6 1.2.2.1.4 0 .5-.1.1-.1.3-.2.4-.3.3-.2.7-.2 1 0l1.4.9c.3.2.4.6.3.9z"
+                                            fill="white"/>
+                                    </svg>
+                                    <span>0831-9408-5776 (WhatsApp)</span>
+                                </a>
+                            </div>
+
+                            <div class="contact-row">
+                                <a href="mailto:hello@mayclass.id" class="contact-link">
+                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <span>hello@mayclass.id</span>
+                                </a>
+                            </div>
+
+                            <div class="contact-row">
+                                <div class="contact-link">
+                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <span>Jam respon: 09.00–21.00 WIB (Setiap hari)</span>
+                                </div>
+                            </div>
+
                     </div>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2025 MayClass Education. All rights reserved.</p>
+                <p>© 2025 MayClass Education. All rights reserved.</p>
             </div>
         </div>
     </footer>
