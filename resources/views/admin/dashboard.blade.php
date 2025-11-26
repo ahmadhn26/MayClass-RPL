@@ -188,9 +188,18 @@
         }
 
         /* --- 3. CHARTS & PIPELINE --- */
-        .insights-section {
+        /* --- 3. DASHBOARD GRID --- */
+        .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .main-column,
+        .side-column {
+            display: flex;
+            flex-direction: column;
             gap: 24px;
         }
 
@@ -199,16 +208,17 @@
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-subtle);
             box-shadow: var(--shadow-card);
-            padding: 28px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
+            height: fit-content;
         }
 
         .card-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .card-title h3 {
@@ -257,11 +267,7 @@
         }
 
         /* --- 4. TABLE & LISTS --- */
-        .details-section {
-            display: grid;
-            grid-template-columns: 1.8fr 1.2fr;
-            gap: 24px;
-        }
+
 
         .table-wrapper {
             overflow-x: auto;
@@ -369,10 +375,8 @@
         }
 
         @media (max-width: 1024px) {
-
             .hero-panel,
-            .insights-section,
-            .details-section {
+            .dashboard-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -462,114 +466,119 @@
         </section>
 
         {{-- 3. Charts & Pipeline --}}
-        <section class="insights-section">
-            {{-- Chart --}}
-            <div class="section-card">
-                <div class="card-title">
-                    <h3>Grafik Pendapatan</h3>
-                    <span>{{ now()->year }}</span>
-                </div>
-
-                @if ($monthlyRevenue->sum('value') === 0)
-                    <div class="empty-state">Belum ada data transaksi untuk ditampilkan</div>
-                @else
-                    <div id="revenueChart"></div>
-                @endif
-            </div>
-
-            {{-- Pipeline --}}
-            <div class="section-card">
-                <div class="card-title">
-                    <h3>Status Pembayaran</h3>
-                    <span>Distribusi Order</span>
-                </div>
-
-                <div id="salesStatusChart" style="margin-bottom: 24px;"></div>
-
-                @if ($paymentPipeline['total'] === 0)
-                    <div class="empty-state">Data tidak tersedia</div>
-                @else
-                    <div class="pipeline-list">
-                        @foreach ($paymentPipeline['rows'] as $row)
-                            @php
-                                $color = match ($row['status']) {
-                                    'paid' => '#22c55e',
-                                    'pending' => '#eab308',
-                                    'failed' => '#ef4444',
-                                    default => '#3b82f6'
-                                };
-                            @endphp
-                            <div class="pipeline-item">
-                                <div class="pipeline-info">
-                                    <span>{{ $row['label'] }}</span>
-                                    <span>{{ number_format($row['count']) }} ({{ $row['percentage'] }}%)</span>
-                                </div>
-                                <div class="pipeline-bar-bg">
-                                    <div class="pipeline-bar-fill"
-                                        style="width: {{ $row['percentage'] }}%; background: {{ $color }};"></div>
-                                </div>
-                            </div>
-                        @endforeach
+        {{-- 3. Main Dashboard Grid --}}
+        <div class="dashboard-grid">
+            
+            {{-- LEFT COLUMN --}}
+            <div class="main-column">
+                
+                {{-- Chart --}}
+                <div class="section-card">
+                    <div class="card-title">
+                        <h3>Grafik Pendapatan</h3>
+                        <span>{{ now()->year }}</span>
                     </div>
-                @endif
-            </div>
-        </section>
 
-        {{-- 4. Tables & Lists --}}
-        <section class="details-section">
-            {{-- Recent Transactions --}}
-            <div class="section-card">
-                <div class="card-title">
-                    <h3>Transaksi Terbaru</h3>
-                    <a href="#"
-                        style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">Lihat
-                        Semua &rarr;</a>
+                    @if ($monthlyRevenue->sum('value') === 0)
+                        <div class="empty-state">Belum ada data transaksi untuk ditampilkan</div>
+                    @else
+                        <div id="revenueChart"></div>
+                    @endif
                 </div>
 
-                @if ($recentPayments->isEmpty())
-                    <div class="empty-state">Belum ada transaksi</div>
-                @else
-                    <div class="table-wrapper">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th>Invoice</th>
-                                    <th>Siswa</th>
-                                    <th>Paket</th>
-                                    <th>Status</th>
-                                    <th style="text-align: right;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($recentPayments as $payment)
-                                    @php
-                                        $badgeClass = match ($payment['status']) {
-                                            'paid' => 'status-paid',
-                                            'pending' => 'status-pending',
-                                            'failed' => 'status-failed',
-                                            default => 'status-default'
-                                        };
-                                    @endphp
+                {{-- Recent Transactions --}}
+                <div class="section-card">
+                    <div class="card-title">
+                        <h3>Transaksi Terbaru</h3>
+                        <a href="#"
+                            style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">Lihat
+                            Semua &rarr;</a>
+                    </div>
+
+                    @if ($recentPayments->isEmpty())
+                        <div class="empty-state">Belum ada transaksi</div>
+                    @else
+                        <div class="table-wrapper">
+                            <table class="modern-table">
+                                <thead>
                                     <tr>
-                                        <td style="font-family: monospace;">{{ $payment['invoice'] }}</td>
-                                        <td>
-                                            <div style="font-weight: 600;">{{ $payment['student'] }}</div>
-                                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $payment['paid_at'] }}
-                                            </div>
-                                        </td>
-                                        <td>{{ $payment['package'] }}</td>
-                                        <td><span class="status-pill {{ $badgeClass }}">{{ $payment['status_label'] }}</span></td>
-                                        <td style="text-align: right; font-weight: 700;">{{ $payment['total'] }}</td>
+                                        <th>Invoice</th>
+                                        <th>Siswa</th>
+                                        <th>Paket</th>
+                                        <th>Status</th>
+                                        <th style="text-align: right;">Total</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
+                                </thead>
+                                <tbody>
+                                    @foreach ($recentPayments as $payment)
+                                        @php
+                                            $badgeClass = match ($payment['status']) {
+                                                'paid' => 'status-paid',
+                                                'pending' => 'status-pending',
+                                                'failed' => 'status-failed',
+                                                default => 'status-default'
+                                            };
+                                        @endphp
+                                        <tr>
+                                            <td style="font-family: monospace;">{{ $payment['invoice'] }}</td>
+                                            <td>
+                                                <div style="font-weight: 600;">{{ $payment['student'] }}</div>
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $payment['paid_at'] }}
+                                                </div>
+                                            </td>
+                                            <td>{{ $payment['package'] }}</td>
+                                            <td><span class="status-pill {{ $badgeClass }}">{{ $payment['status_label'] }}</span></td>
+                                            <td style="text-align: right; font-weight: 700;">{{ $payment['total'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+
             </div>
 
-            {{-- Top Packages & Students --}}
-            <div style="display: grid; gap: 24px;">
+            {{-- RIGHT COLUMN --}}
+            <div class="side-column">
+
+                {{-- Pipeline --}}
+                <div class="section-card">
+                    <div class="card-title">
+                        <h3>Status Pembayaran</h3>
+                        <span>Distribusi Order</span>
+                    </div>
+
+                    <div id="salesStatusChart" style="margin-bottom: 24px;"></div>
+
+                    @if ($paymentPipeline['total'] === 0)
+                        <div class="empty-state">Data tidak tersedia</div>
+                    @else
+                        <div class="pipeline-list">
+                            @foreach ($paymentPipeline['rows'] as $row)
+                                @php
+                                    $color = match ($row['status']) {
+                                        'paid' => '#22c55e',
+                                        'pending' => '#eab308',
+                                        'failed' => '#ef4444',
+                                        default => '#3b82f6'
+                                    };
+                                @endphp
+                                <div class="pipeline-item">
+                                    <div class="pipeline-info">
+                                        <span>{{ $row['label'] }}</span>
+                                        <span>{{ number_format($row['count']) }} ({{ $row['percentage'] }}%)</span>
+                                    </div>
+                                    <div class="pipeline-bar-bg">
+                                        <div class="pipeline-bar-fill"
+                                            style="width: {{ $row['percentage'] }}%; background: {{ $color }};"></div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
                 {{-- Recent Students --}}
                 <div class="section-card">
                     <div class="card-title">
@@ -596,8 +605,9 @@
                         </div>
                     @endif
                 </div>
+
             </div>
-        </section>
+        </div>
 
     </div>
 @endsection
@@ -614,7 +624,7 @@
                 }],
                 chart: {
                     type: 'area',
-                    height: 300,
+                    height: 240,
                     toolbar: { show: false },
                     fontFamily: 'Poppins, sans-serif'
                 },
@@ -625,7 +635,16 @@
                     axisBorder: { show: false },
                     axisTicks: { show: false }
                 },
+                grid: {
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 10
+                    }
+                },
                 yaxis: {
+                    min: 300000,
                     labels: {
                         formatter: function (value) {
                             return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);

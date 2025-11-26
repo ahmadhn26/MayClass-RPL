@@ -363,33 +363,6 @@
             </div>
         </div>
 
-        {{-- 4. Charts Section --}}
-        <div class="charts-row">
-            {{-- Revenue Chart --}}
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>Grafik Pendapatan Bulanan {{ now()->year }}</h3>
-                </div>
-                @if ($monthlyRevenue->sum('value') === 0)
-                    <div class="empty-state">Belum ada data transaksi</div>
-                @else
-                    <div id="revenueChart"></div>
-                @endif
-            </div>
-
-            {{-- Package Distribution Chart --}}
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>Penjualan per Paket</h3>
-                </div>
-                @if ($packageDistribution->isEmpty())
-                    <div class="empty-state">Data belum cukup</div>
-                @else
-                    <div id="packageChart"></div>
-                @endif
-            </div>
-        </div>
-
         {{-- 5. Verification Table --}}
         <div class="table-card">
             <div class="table-header">

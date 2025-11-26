@@ -26,7 +26,6 @@
             --ink-soft: rgba(20, 59, 46, 0.62);
             --nav-surface: linear-gradient(135deg, rgba(80, 190, 150, 0.98), rgba(63, 166, 126, 0.98));
             --footer-bg: #0d261f;
-            /* Warna background footer baru (Deep Teal) */
             --footer-text: #a3b3ad;
             --footer-heading: #ffffff;
             --shadow-lg: 0 24px 60px rgba(31, 107, 79, 0.2);
@@ -72,7 +71,6 @@
             padding: 0 32px;
         }
 
-        /* Ensure all sections have consistent full-width layout */
         .section {
             width: 100%;
             padding: 96px 0;
@@ -82,7 +80,6 @@
             width: 100%;
         }
 
-        /* Mobile optimizations for container and sections */
         @media (max-width: 768px) {
             .container {
                 padding: 0 16px;
@@ -120,30 +117,24 @@
             right: 0;
             z-index: 1000;
             width: 100%;
-            /* Padding diperkecil sedikit agar navbar tidak terlalu tinggi saat logo membesar */
             padding: 8px clamp(12px, 3vw, 24px);
-
-            /* Glassmorphism putih */
             background: rgba(255, 254, 254, 0.52);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
         .nav-inner {
             display: grid;
             grid-template-columns: auto 1fr auto;
-            /* kiri - tengah - kanan */
             align-items: center;
             width: 100%;
             padding: 0 32px;
             gap: 20px;
         }
 
-        /* Hamburger menu button */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -176,23 +167,19 @@
             transform: rotate(-45deg) translate(7px, -7px);
         }
 
-        /* Desktop nav-actions - visible on desktop, hidden on mobile */
         .nav-actions-desktop {
             display: flex;
         }
 
-        /* Mobile nav-actions (inside menu) - hidden on desktop */
         .nav-links .nav-actions {
             display: none;
         }
 
         @media (max-width: 768px) {
-            /* Hide desktop nav-actions on mobile */
             .nav-actions-desktop {
                 display: none !important;
             }
 
-            /* Show mobile nav-actions (inside menu) */
             .nav-links .nav-actions {
                 display: flex;
             }
@@ -214,20 +201,17 @@
             }
 
             .nav-inner {
-                /* UBAH BAGIAN INI */
-                display: flex;      /* Gunakan Flexbox agar lebih mudah diatur */
-                justify-content: space-between; /* Logo mentok kiri, Burger mentok kanan */
+                display: flex;
+                justify-content: space-between;
                 align-items: center;
                 width: 100%;
-
-                padding: 0;         
+                padding: 0;
                 gap: 0;
             }
 
             .hamburger {
                 display: flex;
-                /* Hapus justify-self: end; karena sudah diatur oleh flex parent */
-                margin-right: 0; /* Pastikan tidak ada margin kanan yang menghalangi */
+                margin-right: 0;
             }
 
             .nav-links {
@@ -285,7 +269,6 @@
             justify-self: start;
         }
 
-        /* REVISI LOGO: Diperbesar heightnya, width auto */
         .brand img {
             height: 90px;
             width: auto;
@@ -336,6 +319,34 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .nav-icon-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-strong);
+            border-radius: 50%;
+            transition: background 0.2s;
+            margin-right: 4px;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid #fff;
         }
 
         .sr-only {
@@ -607,121 +618,174 @@
             font-size: 0.98rem;
         }
 
+        /* UPDATED PRICING LAYOUT */
         .pricing-group {
-            margin-top: 32px;
-            display: grid;
-            gap: 18px;
-        }
-
-        .pricing-group>div:first-child {
+            margin-bottom: 60px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 4px;
         }
 
-        .pricing-group>div:first-child h3 {
+        .pricing-group:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Header Jenjang (SD/SMP/SMA) */
+        .pricing-group-header {
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .pricing-group-header h3 {
+            display: inline-block;
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            background: #eaf8f2;
+            padding: 8px 32px;
+            border-radius: 999px;
+            font-weight: 700;
+            border: 1px solid rgba(63, 166, 126, 0.2);
         }
 
-        .pricing-group>div:first-child p {
-            margin: 0;
-            color: var(--ink-soft);
-            font-size: 0.92rem;
+        .pricing-group-header p {
+            margin: 12px 0 0;
+            color: var(--ink-muted);
+            font-size: 1rem;
         }
 
+        /* Pricing Grid - Modified to avoid stretching (memanjang) */
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            /* Menggunakan auto-fill agar kartu tidak melar memenuhi lebar jika hanya ada sedikit item */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
         }
 
         @media (max-width: 768px) {
             .pricing-grid {
+                grid-template-columns: 1fr;
+                /* Di mobile tetap 1 kolom */
                 gap: 16px;
             }
         }
 
         .pricing-card {
             position: relative;
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 14px;
-            padding: 20px 18px 18px;
-            border-radius: 18px;
+            padding: 24px;
+            border-radius: 20px;
             background: var(--surface);
-            border: 1px solid var(--neutral-100);
-            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.04);
             transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            height: 100%;
+            /* Pastikan tinggi kartu sama rata */
         }
 
         .pricing-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 38px rgba(15, 23, 42, 0.08);
-            border-color: rgba(63, 166, 126, 0.28);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+            border-color: rgba(63, 166, 126, 0.4);
         }
 
         .pricing-card .badge {
+            align-self: flex-start;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 6px 12px;
             border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 600;
+            font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            background: rgba(63, 166, 126, 0.12);
+            letter-spacing: 0.05em;
+            background: rgba(63, 166, 126, 0.1);
             color: var(--primary-main);
         }
 
         .pricing-card strong {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            line-height: 1.3;
         }
 
         .pricing-price {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-dark);
+            margin: 4px 0;
         }
 
         .pricing-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             font-size: 0.9rem;
             color: var(--ink-soft);
+            padding-bottom: 12px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+            margin-bottom: 4px;
         }
+
+        .contact-row {
+    margin-bottom: 8px;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: inherit;
+}
+
+.contact-link:hover {
+    opacity: 0.9;
+}
+
 
         .pricing-features {
             list-style: none;
             padding: 0;
-            margin: 6px 0 0;
+            margin: 0;
             display: grid;
-            gap: 6px;
-            font-size: 0.9rem;
+            gap: 10px;
+            font-size: 0.92rem;
             color: var(--ink-soft);
+            flex-grow: 1;
+            /* Dorong tombol ke bawah */
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .pricing-features li::before {
-            content: '•';
-            margin-right: 6px;
+            content: '✔';
             color: var(--primary-main);
-            font-weight: 700;
+            font-weight: 800;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
 
         .pricing-actions {
-            margin-top: 6px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: flex-start;
+            margin-top: 20px;
+            width: 100%;
         }
 
         .pricing-actions .btn {
-            font-size: 0.92rem;
-            border-radius: 999px;
-            padding: 10px 18px;
+            width: 100%;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            padding: 12px;
             text-decoration: none;
+            justify-content: center;
         }
 
         .pricing-actions .btn-primary {
@@ -1265,7 +1329,6 @@
         @media (max-width: 1080px) {
 
             .articles-grid,
-            .pricing-grid,
             .highlight-grid,
             .faq-grid,
             .testimonials-grid,
@@ -1284,7 +1347,6 @@
             }
 
             .articles-grid,
-            .pricing-grid,
             .highlight-grid,
             .faq-grid,
             .testimonials-grid,
@@ -1300,6 +1362,16 @@
         $joinLink = route('join');
         $profileLink = $profileLink ?? null;
         $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
+
+        // Check for pending order
+        $pendingOrder = null;
+        if (Auth::check()) {
+            $pendingOrder = Auth::user()->orders()
+                ->where('status', 'pending')
+                ->with('package')
+                ->latest()
+                ->first();
+        }
     @endphp
 
     <header>
@@ -1322,6 +1394,19 @@
                     <a href="#faq">FAQ</a>
                     <div class="nav-actions">
                         @auth
+                            @if($pendingOrder && $pendingOrder->package)
+                                <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                    class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                    </svg>
+                                    <span class="notification-dot"></span>
+                                </a>
+                            @endif
+
                             <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
                                 aria-label="Buka profil">
                                 <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
@@ -1342,6 +1427,18 @@
                 {{-- Desktop nav-actions (visible on ≥769px) --}}
                 <div class="nav-actions nav-actions-desktop">
                     @auth
+                        @if($pendingOrder && $pendingOrder->package)
+                            <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                </svg>
+                                <span class="notification-dot"></span>
+                            </a>
+                        @endif
+
                         <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
                             aria-label="Buka profil">
                             <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
@@ -1413,41 +1510,43 @@
     <section class="pricing-section" id="paket">
         <div class="container">
             <div class="section-header" data-reveal>
-                <h2 class="section-title">Pilih Paket Favoritmu &amp; Belajar Bareng Mentor Andal</h2>
+                <h2 class="section-title">Pilih Paket Favoritmu</h2>
                 <p class="section-subtitle">
-                    Mulai dari kelas reguler, persiapan UTBK, hingga bimbingan CPNS—MayClass siap menemanimu dengan sesi
+                    Mulai dari SD, SMP, hingga SMA—MayClass siap menemanimu dengan sesi
                     interaktif dan laporan perkembangan rutin.
                 </p>
             </div>
             @php($packageCatalog = collect($landingPackages ?? []))
 
             @if ($packageCatalog->isNotEmpty())
-            @foreach ($packageCatalog as $group)
-            <div class="pricing-group">
-                <div>
-                    <h3>{{ $group['stage_label'] ?? $group['stage'] }}</h3>
-                    @php($stageDescription = $group['stage_description'] ?? '')
-                    @if (!empty($stageDescription))
-                        <p>{{ $stageDescription }}</p>
-                    @endif
-                </div>
-                <div class="pricing-grid">
-                    @foreach ($group['packages'] as $package)
-                    @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
+                @foreach ($packageCatalog as $group)
+                    <div class="pricing-group">
+                        <div class="pricing-group-header" data-reveal>
+                            <h3>{{ $group['stage_label'] ?? $group['stage'] }}</h3>
+                            @php($stageDescription = $group['stage_description'] ?? '')
+                            @if (!empty($stageDescription))
+                                <p>{{ $stageDescription }}</p>
+                            @endif
+                        </div>
+
+                        <div class="pricing-grid">
+                            @foreach ($group['packages'] as $package)
+                                @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
                                 <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 120 }}">
-                                    <span class="badge" style="background: rgba(63, 166, 126, 0.12); color: var(--primary-main);">
+                                    <span class="badge">
                                         {{ $package['tag'] ?? ($group['stage_label'] ?? $group['stage']) }}
                                     </span>
                                     <strong>{{ $package['detail_title'] }}</strong>
                                     <div class="pricing-price">{{ $package['card_price'] }}</div>
                                     <div class="pricing-meta">
-                                        <span>{{ $group['stage_label'] ?? $group['stage'] }}</span>
                                         @if (!empty($package['grade_range']))
-                                            <span>• {{ $package['grade_range'] }}</span>
+                                            <span>{{ $package['grade_range'] }}</span>
+                                        @else
+                                            <span>{{ $group['stage_label'] ?? $group['stage'] }}</span>
                                         @endif
                                     </div>
                                     @if ($package['summary'] ?? false)
-                                        <p style="margin: 0; color: var(--ink-soft); font-size: 0.95rem;">
+                                        <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
                                             {{ $package['summary'] }}
                                         </p>
                                     @endif
@@ -1463,14 +1562,14 @@
                                             Paket</a>
                                     </div>
                                 </article>
-                                @endforeach
-                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
-                    @else
-            <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 16px; width: 100%;">
-                <p style="color: var(--ink-muted); margin: 0;">Belum ada paket belajar yang tersedia.</p>
-            </div>
+                    </div>
+                @endforeach
+            @else
+                <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 16px; width: 100%;">
+                    <p style="color: var(--ink-muted); margin: 0;">Belum ada paket belajar yang tersedia.</p>
+                </div>
             @endif
         </div>
     </section>
@@ -1681,32 +1780,53 @@
                 <div>
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
-                        <div class="contact-row">
-                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            <span>Jl. Pendidikan No. 123, Jakarta Selatan, DKI Jakarta 12430</span>
-                        </div>
-                        <div class="contact-row">
-                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path
-                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.12 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                </path>
-                            </svg>
-                            <span>+62 812-3456-7890</span>
-                        </div>
-                        <div class="contact-row">
-                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                </path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                            <span>hello@mayclass.id</span>
-                        </div>
+                            <div class="contact-row">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630"
+                                target="_blank" rel="noopener noreferrer" class="contact-link">
+                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
+                                </a>
+                            </div>
+
+                            <div class="contact-row">
+                                <a href="https://wa.me/6283194085776"
+                                target="_blank" rel="noopener noreferrer" class="contact-link">
+                                    <!-- “Logo” WhatsApp sederhana (lingkaran hijau + ikon telp) -->
+                                    <svg class="contact-icon" width="20" height="20" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="11" fill="#22c55e"></circle>
+                                        <path d="M16.5 14.5c-.2.5-1 1-1.5 1.1-.4.1-.9.1-1.5 0-1.3-.3-2.7-1.1-3.7-2.1s-1.8-2.4-2.1-3.7c-.1-.6-.1-1.1 0-1.5.1-.5.6-1.3 1.1-1.5.3-.1.7 0 .9.3l.9 1.4c.2.3.2.7 0 1-.1.1-.2.3-.3.4-.1.2-.2.3-.1.5.2.5.7 1.1 1.2 1.6.5.5 1.1 1 1.6 1.2.2.1.4 0 .5-.1.1-.1.3-.2.4-.3.3-.2.7-.2 1 0l1.4.9c.3.2.4.6.3.9z"
+                                            fill="white"/>
+                                    </svg>
+                                    <span>0831-9408-5776 (WhatsApp)</span>
+                                </a>
+                            </div>
+
+                            <div class="contact-row">
+                                <a href="mailto:hello@mayclass.id" class="contact-link">
+                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <span>hello@mayclass.id</span>
+                                </a>
+                            </div>
+
+                            <div class="contact-row">
+                                <div class="contact-link">
+                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <span>Jam respon: 09.00–21.00 WIB (Setiap hari)</span>
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -1733,13 +1853,13 @@
             // Hamburger menu functionality
             const hamburger = document.querySelector('.hamburger');
             const navLinks = document.querySelector('.nav-links');
-            
+
             if (hamburger && navLinks) {
                 const toggleMenu = () => {
                     const isActive = hamburger.classList.toggle('active');
                     navLinks.classList.toggle('active');
                     hamburger.setAttribute('aria-expanded', isActive);
-                    
+
                     // Prevent body scroll when menu is open
                     if (isActive) {
                         document.body.style.overflow = 'hidden';
@@ -1761,8 +1881,8 @@
 
                 // Close menu when clicking outside
                 document.addEventListener('click', (e) => {
-                    if (navLinks.classList.contains('active') && 
-                        !navLinks.contains(e.target) && 
+                    if (navLinks.classList.contains('active') &&
+                        !navLinks.contains(e.target) &&
                         !hamburger.contains(e.target)) {
                         toggleMenu();
                     }

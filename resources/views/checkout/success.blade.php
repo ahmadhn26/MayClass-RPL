@@ -279,8 +279,12 @@
             </div>
         </div>
 
-        <a href="{{ route('student.dashboard') }}" class="btn-primary">
-            Kembali ke Dashboard
+        <p style="margin-bottom: 24px; font-size: 0.9rem; color: var(--text-muted);">
+            Silakan refresh halaman ini secara berkala untuk mengecek status pembayaran Anda.
+        </p>
+
+        <a href="{{ url('/') }}" class="btn-primary">
+            Kembali ke Beranda
         </a>
 
     </main>
