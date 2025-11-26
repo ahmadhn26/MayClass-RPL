@@ -483,7 +483,7 @@
                     {{-- 3. Materials Section --}}
                     <div class="section-header">
                         <h2 class="section-title">Materi Terbaru</h2>
-                        <a href="{{ $materialsLink }}" target="_blank" class="link-more">Lihat Semua &rarr;</a>
+                        <a href="{{ route('student.materials') }}" class="link-more">Lihat Semua &rarr;</a>
                     </div>
 
                     @if ($recentMaterials->isNotEmpty())
