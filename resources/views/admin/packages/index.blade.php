@@ -635,19 +635,15 @@
                                     </svg>
                                 </a>
 
-                                <form action="{{ route('admin.packages.destroy', $package) }}" method="POST"
-                                    onsubmit="return confirm('Yakin ingin menghapus paket ini? Data yang dihapus tidak bisa dikembalikan.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-icon delete" title="Hapus Paket">
-                                        <svg width="18" height="18" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn-icon delete btn-delete" title="Hapus Paket"
+                                    data-id="{{ $package->id }}" data-name="{{ $package->detail_title }}"
+                                    data-action="{{ route('admin.packages.destroy', $package) }}">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                        </path>
+                                    </svg>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -821,9 +817,9 @@
             const item = document.createElement('div');
             item.className = 'feature-item';
             item.innerHTML = `
-                    <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
-                    <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
-                `;
+                        <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
+                        <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
+                    `;
             list.appendChild(item);
         }
 

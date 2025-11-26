@@ -17,18 +17,59 @@ class LandingContentController extends Controller
 
     public function store(Request $request)
     {
+        // Handle Bulk Insert for FAQ
+        if ($request->input('section') === 'faq' && $request->has('items')) {
+            $items = $request->validate([
+                'items' => 'required|array',
+                'items.*.question' => 'required|string',
+                'items.*.answer' => 'required|string',
+            ])['items'];
+
+            foreach ($items as $item) {
+                \App\Models\LandingContent::create([
+                    'section' => 'faq',
+                    'content' => $item,
+                    'is_active' => true,
+                ]);
+            }
+
+            return redirect()->back()->with('status', 'FAQ berhasil ditambahkan!');
+        }
+
         $data = $request->validate([
             'section' => 'required|string',
             'title' => 'nullable|string',
             'content' => 'required|array',
+            'content.title' => 'nullable|string',
+            'content.subtitle' => 'nullable|string',
+            'content.description' => 'nullable|string',
+            'content.name' => 'nullable|string',
+            'content.role' => 'nullable|string',
+            'content.quote' => 'nullable|string',
+            'content.question' => 'nullable|string',
+            'content.answer' => 'nullable|string',
             'content.link' => 'nullable|url',
-            'image' => 'nullable|image|max:2048',
+            'content.meta' => 'nullable|array',
+            'content.meta.*' => 'nullable|string',
+            'image' => 'nullable|image|max:10240',
             'order' => 'nullable|integer',
         ]);
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('landing-images', 'public');
             $data['image'] = 'storage/' . $path;
+        } elseif ($request->input('section') === 'article' && !empty($data['content']['link'])) {
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(5)->get($data['content']['link']);
+                if ($response->successful()) {
+                    $html = $response->body();
+                    if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $matches)) {
+                        $data['image'] = $matches[1];
+                    }
+                }
+            } catch (\Exception $e) {
+                // Ignore errors, keep image null
+            }
         }
 
         \App\Models\LandingContent::create($data);
@@ -41,8 +82,18 @@ class LandingContentController extends Controller
         $data = $request->validate([
             'title' => 'nullable|string',
             'content' => 'required|array',
+            'content.title' => 'nullable|string',
+            'content.subtitle' => 'nullable|string',
+            'content.description' => 'nullable|string',
+            'content.name' => 'nullable|string',
+            'content.role' => 'nullable|string',
+            'content.quote' => 'nullable|string',
+            'content.question' => 'nullable|string',
+            'content.answer' => 'nullable|string',
             'content.link' => 'nullable|url',
-            'image' => 'nullable|image|max:2048',
+            'content.meta' => 'nullable|array',
+            'content.meta.*' => 'nullable|string',
+            'image' => 'nullable|image|max:10240',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
@@ -50,6 +101,18 @@ class LandingContentController extends Controller
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('landing-images', 'public');
             $data['image'] = 'storage/' . $path;
+        } elseif ($landingContent->section === 'article' && !empty($data['content']['link'])) {
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(5)->get($data['content']['link']);
+                if ($response->successful()) {
+                    $html = $response->body();
+                    if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $matches)) {
+                        $data['image'] = $matches[1];
+                    }
+                }
+            } catch (\Exception $e) {
+                // Ignore errors
+            }
         }
 
         $landingContent->update($data);

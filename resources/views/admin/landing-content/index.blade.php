@@ -368,6 +368,165 @@
             background: var(--primary-dark);
         }
 
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .file-upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .file-upload-zone:hover,
+        .file-upload-zone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-upload-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .file-preview {
+            margin-top: 12px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .file-preview.active {
+            display: flex;
+        }
+
+        .file-info {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-error {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* --- COMPACT PREVIEWS --- */
+        .preview-card-hero {
+            position: relative;
+            height: 120px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            background-size: cover;
+            background-position: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-card-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+            z-index: 1;
+        }
+
+        .preview-hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 16px;
+            width: 100%;
+        }
+
+        .preview-card-compact {
+            background: var(--bg-surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .preview-card-compact:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .preview-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-body);
+        }
+
+        .preview-img-square {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--bg-body);
+        }
+
+        .preview-info {
+            flex: 1;
+            min-width: 0;
+            /* Fix truncation */
+        }
+
+        .preview-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 2px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .preview-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-left: auto;
+        }
+
         @media (max-width: 768px) {
             .page-header {
                 flex-direction: column;
@@ -408,22 +567,23 @@
             </div>
             <div class="content-grid" style="grid-template-columns: 1fr;">
                 @forelse($contents['hero'] ?? [] as $item)
-                    <div class="content-card" style="flex-direction: row; align-items: center;">
-                        <div class="card-body">
-                            <h4 class="card-title">{{ $item->content['title'] ?? 'No Title' }}</h4>
-                            <p class="card-desc" style="font-size: 1rem; color: var(--text-main);">
-                                {{ $item->content['subtitle'] ?? '' }}</p>
-                            <p class="card-desc" style="margin-top: 4px;">
-                                {{ Str::limit($item->content['description'] ?? '', 150) }}</p>
+                    <div class="preview-card-hero"
+                        style="background-image: url('{{ $item->image ? asset($item->image) : '/images/stis_contoh.jpeg' }}');">
+                        <div class="preview-hero-content">
+                            <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700;">
+                                {{ $item->content['subtitle'] ?? 'No Title' }}
+                            </h4>
+                            <span style="font-size: 0.8rem; opacity: 0.9;">{{ $item->content['title'] ?? '' }}</span>
                         </div>
-                        <div class="card-actions"
-                            style="border-top: none; background: transparent; border-left: 1px solid var(--border-color); flex-direction: column; justify-content: center;">
-                            <button onclick="openModal('edit', 'hero', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                        <div style="position: absolute; top: 12px; right: 12px; z-index: 3; display: flex; gap: 8px;">
+                            <button onclick="openModal('edit', 'hero', {{ $item }})" class="btn-icon"
+                                style="background: rgba(255,255,255,0.9);">Edit</button>
+                            <button type="button" class="btn-icon text-danger btn-delete"
+                                style="background: rgba(255,255,255,0.9);" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['subtitle'] ?? 'Hero Content' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -463,11 +623,11 @@
                         </div>
                         <div class="card-actions">
                             <button onclick="openModal('edit', 'article', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['title'] ?? 'Artikel' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -489,18 +649,18 @@
             </div>
             <div class="content-grid">
                 @forelse($contents['feature'] ?? [] as $item)
-                    <div class="content-card">
-                        <div class="card-body">
-                            <h4 class="card-title">{{ $item->content['title'] ?? '' }}</h4>
-                            <p class="card-desc">{{ $item->content['description'] ?? '' }}</p>
+                    <div class="preview-card-compact">
+                        <div class="preview-info">
+                            <h4 class="preview-title">{{ $item->content['title'] ?? '' }}</h4>
+                            <p class="preview-subtitle">{{ $item->content['description'] ?? '' }}</p>
                         </div>
-                        <div class="card-actions">
+                        <div class="preview-actions">
                             <button onclick="openModal('edit', 'feature', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['title'] ?? 'Keunggulan' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -522,29 +682,23 @@
             </div>
             <div class="content-grid">
                 @forelse($contents['testimonial'] ?? [] as $item)
-                    <div class="content-card">
-                        <div class="card-body">
-                            <div class="card-meta" style="margin-top: 0; margin-bottom: 8px; padding-top: 0;">
-                                @if($item->image)
-                                    <img src="{{ asset($item->image) }}" alt="Avatar" class="meta-avatar">
-                                @else
-                                    <div class="meta-avatar" style="background: #e2e8f0;"></div>
-                                @endif
-                                <div class="meta-info">
-                                    <span class="meta-name">{{ $item->content['name'] ?? '' }}</span>
-                                    <span class="meta-role">{{ $item->content['role'] ?? '' }}</span>
-                                </div>
-                            </div>
-                            <p class="card-desc" style="font-style: italic;">
-                                "{{ Str::limit($item->content['quote'] ?? '', 100) }}"</p>
+                    <div class="preview-card-compact">
+                        @if($item->image)
+                            <img src="{{ asset($item->image) }}" alt="Avatar" class="preview-avatar">
+                        @else
+                            <div class="preview-avatar" style="background: #e2e8f0;"></div>
+                        @endif
+                        <div class="preview-info">
+                            <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
+                            <p class="preview-subtitle" style="font-style: italic;">"{{ $item->content['quote'] ?? '' }}"</p>
                         </div>
-                        <div class="card-actions">
+                        <div class="preview-actions">
                             <button onclick="openModal('edit', 'testimonial', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['name'] ?? 'Testimoni' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -566,26 +720,31 @@
             </div>
             <div class="content-grid">
                 @forelse($contents['mentor'] ?? [] as $item)
-                    <div class="content-card">
+                    <div class="preview-card-compact">
                         @if($item->image)
-                            <div class="card-img-wrapper">
-                                <img src="{{ asset($item->image) }}" alt="Mentor" class="card-img">
-                            </div>
+                            <img src="{{ asset($item->image) }}" alt="Mentor" class="preview-img-square">
+                        @else
+                            <div class="preview-img-square" style="background: #e2e8f0;"></div>
                         @endif
-                        <div class="card-body">
-                            <h4 class="card-title">{{ $item->content['name'] ?? '' }}</h4>
-                            <p class="card-desc" style="color: var(--primary); font-weight: 500;">
-                                {{ $item->content['role'] ?? '' }}</p>
-                            <p class="card-desc" style="margin-top: 4px;">"{{ Str::limit($item->content['quote'] ?? '', 80) }}"
+                        <div class="preview-info">
+                            <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
+                            <p class="preview-subtitle" style="color: var(--primary); font-weight: 500;">
+                                {{ $item->content['role'] ?? '' }}
                             </p>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+                                @foreach($item->content['meta'] ?? [] as $meta)
+                                    <span
+                                        style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
+                                @endforeach
+                            </div>
                         </div>
-                        <div class="card-actions">
+                        <div class="preview-actions">
                             <button onclick="openModal('edit', 'mentor', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['name'] ?? 'Mentor' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -610,17 +769,17 @@
                     <div class="content-card" style="flex-direction: row; align-items: center;">
                         <div class="card-body">
                             <h4 class="card-title" style="color: var(--primary); font-size: 0.9rem;">Q:
-                                {{ $item->content['question'] ?? '' }}</h4>
+                                {{ $item->content['question'] ?? '' }}
+                            </h4>
                             <p class="card-desc" style="margin-top: 2px;">A: {{ $item->content['answer'] ?? '' }}</p>
                         </div>
                         <div class="card-actions"
                             style="border-top: none; background: transparent; border-left: 1px solid var(--border-color);">
                             <button onclick="openModal('edit', 'faq', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="FAQ" data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -670,12 +829,23 @@
             sectionInput.value = section;
             dynamicFields.innerHTML = '';
 
+            // Map section to readable name
+            const sectionNames = {
+                'hero': 'Hero Section',
+                'article': 'Artikel',
+                'feature': 'Keunggulan',
+                'testimonial': 'Testimoni',
+                'mentor': 'Mentor',
+                'faq': 'FAQ'
+            };
+            const sectionName = sectionNames[section] || 'Konten';
+
             if (mode === 'edit') {
-                modalTitle.textContent = 'Edit Konten';
+                modalTitle.textContent = `Edit ${sectionName}`;
                 form.action = `/admin/landing-content/${data.id}`;
                 methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
             } else {
-                modalTitle.textContent = 'Tambah Konten';
+                modalTitle.textContent = `Tambah ${sectionName}`;
                 form.action = "{{ route('admin.landing-content.store') }}";
                 methodField.innerHTML = '';
             }
@@ -688,13 +858,13 @@
                     { name: 'content[title]', label: 'Judul Badge (Kecil)', type: 'text', value: data?.content?.title },
                     { name: 'content[subtitle]', label: 'Judul Utama (Besar)', type: 'text', value: data?.content?.subtitle },
                     { name: 'content[description]', label: 'Deskripsi', type: 'textarea', value: data?.content?.description },
+                    { name: 'image', label: 'Background Image', type: 'file' },
                 ];
             } else if (section === 'article') {
                 fields = [
                     { name: 'content[title]', label: 'Judul Artikel', type: 'text', value: data?.content?.title },
                     { name: 'content[description]', label: 'Deskripsi Singkat', type: 'textarea', value: data?.content?.description },
                     { name: 'content[link]', label: 'Link Artikel (URL)', type: 'url', value: data?.content?.link, placeholder: 'https://...' },
-                    { name: 'image', label: 'Gambar Thumbnail', type: 'file' },
                 ];
             } else if (section === 'feature') {
                 fields = [
@@ -713,15 +883,33 @@
                     { name: 'content[name]', label: 'Nama Mentor', type: 'text', value: data?.content?.name },
                     { name: 'content[role]', label: 'Bidang Studi', type: 'text', value: data?.content?.role },
                     { name: 'content[quote]', label: 'Kutipan', type: 'textarea', value: data?.content?.quote },
-                    { name: 'content[meta_1]', label: 'Info Tambahan 1 (ex: 8+ Tahun Mengajar)', type: 'text', value: data?.content?.meta_1 },
-                    { name: 'content[meta_2]', label: 'Info Tambahan 2 (ex: 700+ Siswa)', type: 'text', value: data?.content?.meta_2 },
+                    {
+                        name: 'content[meta]',
+                        label: 'Info Tambahan',
+                        type: 'dynamic_list',
+                        value: data?.content?.meta ?? [data?.content?.meta_1, data?.content?.meta_2].filter(Boolean)
+                    },
                     { name: 'image', label: 'Foto Mentor', type: 'file' },
                 ];
             } else if (section === 'faq') {
-                fields = [
-                    { name: 'content[question]', label: 'Pertanyaan', type: 'text', value: data?.content?.question },
-                    { name: 'content[answer]', label: 'Jawaban', type: 'textarea', value: data?.content?.answer },
-                ];
+                if (mode === 'create') {
+                    fields = [
+                        {
+                            name: 'items',
+                            label: 'Daftar FAQ',
+                            type: 'dynamic_group',
+                            fields: [
+                                { name: 'question', label: 'Pertanyaan', type: 'text' },
+                                { name: 'answer', label: 'Jawaban', type: 'textarea' }
+                            ]
+                        }
+                    ];
+                } else {
+                    fields = [
+                        { name: 'content[question]', label: 'Pertanyaan', type: 'text', value: data?.content?.question },
+                        { name: 'content[answer]', label: 'Jawaban', type: 'textarea', value: data?.content?.answer },
+                    ];
+                }
             }
 
             fields.forEach(field => {
@@ -731,25 +919,227 @@
                 const label = document.createElement('label');
                 label.className = 'form-label';
                 label.textContent = field.label;
+                wrapper.appendChild(label);
 
-                let input;
-                if (field.type === 'textarea') {
-                    input = document.createElement('textarea');
-                    input.rows = 3; // Reduced rows for compactness
+                if (field.type === 'dynamic_list') {
+                    const container = document.createElement('div');
+                    container.className = 'dynamic-list-container';
+
+                    const values = Array.isArray(field.value) && field.value.length ? field.value : [''];
+
+                    values.forEach((val, index) => {
+                        addListInput(container, field.name + '[]', val);
+                    });
+
+                    const addButton = document.createElement('button');
+                    addButton.type = 'button';
+                    addButton.className = 'btn-add';
+                    addButton.style.marginTop = '8px';
+                    addButton.textContent = '+ Tambah Item';
+                    addButton.onclick = () => addListInput(container, field.name + '[]', '');
+
+                    wrapper.appendChild(container);
+                    wrapper.appendChild(addButton);
+
+                } else if (field.type === 'dynamic_group') {
+                    const container = document.createElement('div');
+                    container.className = 'dynamic-group-container';
+
+                    // Initial empty group
+                    addGroupInput(container, field.name, field.fields, 0);
+
+                    const addButton = document.createElement('button');
+                    addButton.type = 'button';
+                    addButton.className = 'btn-add';
+                    addButton.style.marginTop = '8px';
+                    addButton.textContent = '+ Tambah Item';
+                    addButton.onclick = () => addGroupInput(container, field.name, field.fields);
+
+                    wrapper.appendChild(container);
+                    wrapper.appendChild(addButton);
+                } else if (field.type === 'file') {
+                    const fileWrapper = document.createElement('div');
+                    fileWrapper.className = 'file-upload-wrapper';
+
+                    const zone = document.createElement('div');
+                    zone.className = 'file-upload-zone';
+                    zone.innerHTML = `
+                                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        <div class="file-upload-text">Klik atau drag file ke sini</div>
+                                        <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 10MB</div>
+                                    `;
+
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.name = field.name;
+                    input.style.display = 'none';
+                    input.accept = 'image/*';
+
+                    const preview = document.createElement('div');
+                    preview.className = 'file-preview';
+
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'file-info';
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn-icon text-danger';
+                    removeBtn.textContent = 'X';
+
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'file-error';
+                    errorMsg.textContent = 'File terlalu besar! Maksimal 10MB.';
+
+                    preview.appendChild(fileInfo);
+                    preview.appendChild(removeBtn);
+
+                    // Event Listeners
+                    zone.onclick = () => input.click();
+
+                    zone.ondragover = (e) => {
+                        e.preventDefault();
+                        zone.classList.add('dragover');
+                    };
+
+                    zone.ondragleave = () => zone.classList.remove('dragover');
+
+                    zone.ondrop = (e) => {
+                        e.preventDefault();
+                        zone.classList.remove('dragover');
+                        if (e.dataTransfer.files.length) {
+                            input.files = e.dataTransfer.files;
+                            handleFile(input.files[0]);
+                        }
+                    };
+
+                    input.onchange = () => {
+                        if (input.files.length) {
+                            handleFile(input.files[0]);
+                        }
+                    };
+
+                    removeBtn.onclick = () => {
+                        input.value = '';
+                        preview.classList.remove('active');
+                        errorMsg.style.display = 'none';
+                    };
+
+                    function handleFile(file) {
+                        if (file.size > 10 * 1024 * 1024) { // 10MB
+                            errorMsg.style.display = 'block';
+                            input.value = ''; // Clear input
+                            preview.classList.remove('active');
+                        } else {
+                            errorMsg.style.display = 'none';
+                            fileInfo.textContent = file.name;
+                            preview.classList.add('active');
+                        }
+                    }
+
+                    fileWrapper.appendChild(zone);
+                    fileWrapper.appendChild(preview);
+                    fileWrapper.appendChild(errorMsg);
+                    fileWrapper.appendChild(input);
+                    wrapper.appendChild(fileWrapper);
+
                 } else {
-                    input = document.createElement('input');
-                    input.type = field.type;
-                    if (field.placeholder) input.placeholder = field.placeholder;
+                    let input;
+                    if (field.type === 'textarea') {
+                        input = document.createElement('textarea');
+                        input.rows = 3;
+                    } else {
+                        input = document.createElement('input');
+                        input.type = field.type;
+                        if (field.placeholder) input.placeholder = field.placeholder;
+                    }
+
+                    input.name = field.name;
+                    input.className = 'form-control';
+                    if (field.value) input.value = field.value;
+                    wrapper.appendChild(input);
                 }
 
-                input.name = field.name;
+                dynamicFields.appendChild(wrapper);
+            });
+        }
+
+        function addListInput(container, name, value) {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.gap = '8px';
+            row.style.marginBottom = '8px';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = name;
+            input.className = 'form-control';
+            input.value = value;
+            input.placeholder = 'Info tambahan...';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn-icon text-danger';
+            removeBtn.textContent = 'X';
+            removeBtn.onclick = () => row.remove();
+
+            row.appendChild(input);
+            row.appendChild(removeBtn);
+            container.appendChild(row);
+        }
+
+        function addGroupInput(container, baseName, fields, index = null) {
+            const idx = index !== null ? index : container.children.length;
+            const row = document.createElement('div');
+            row.style.border = '1px solid var(--border-color)';
+            row.style.padding = '12px';
+            row.style.borderRadius = '8px';
+            row.style.marginBottom = '12px';
+            row.style.background = '#f8fafc';
+            row.style.position = 'relative';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn-icon text-danger';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '8px';
+            removeBtn.style.right = '8px';
+            removeBtn.textContent = 'Hapus';
+            removeBtn.onclick = () => row.remove();
+
+            if (container.children.length > 0) {
+                row.appendChild(removeBtn);
+            }
+
+            fields.forEach(f => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'form-group';
+                wrapper.style.marginBottom = '8px';
+
+                const label = document.createElement('label');
+                label.className = 'form-label';
+                label.style.fontSize = '0.8rem';
+                label.textContent = f.label;
+
+                let input;
+                if (f.type === 'textarea') {
+                    input = document.createElement('textarea');
+                    input.rows = 2;
+                } else {
+                    input = document.createElement('input');
+                    input.type = f.type || 'text';
+                }
+
+                input.name = `${baseName}[${idx}][${f.name}]`;
                 input.className = 'form-control';
-                if (field.value) input.value = field.value;
 
                 wrapper.appendChild(label);
                 wrapper.appendChild(input);
-                dynamicFields.appendChild(wrapper);
+                row.appendChild(wrapper);
             });
+
+            container.appendChild(row);
         }
 
         function closeModal() {

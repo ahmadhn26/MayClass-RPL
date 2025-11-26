@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --surface: #ffffff;
@@ -292,6 +293,25 @@
                 gap: 10px;
             }
         }
+
+        /* Global Delete Button */
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
     </style>
     @stack('styles')
 </head>
@@ -399,6 +419,74 @@
             </main>
         </div>
     </div>
+    </div>
+
+    {{-- Global Hidden Form for Deletion --}}
+    <form id="global-delete-form" action="" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Global Delete Handler
+            document.body.addEventListener('click', function (e) {
+                const button = e.target.closest('.btn-delete');
+                if (button) {
+                    const id = button.dataset.id;
+                    const name = button.dataset.name;
+                    const action = button.dataset.action; // URL to delete
+                    const active = button.dataset.active === 'true'; // For students/others with active check
+
+                    if (active) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menghapus',
+                            text: `Tidak bisa menghapus "${name}" karena masih aktif/digunakan.`,
+                            confirmButtonColor: '#0f766e',
+                            confirmButtonText: 'Mengerti'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Apakah Anda yakin?',
+                            text: `Data "${name}" akan dihapus secara permanen.`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: 'Ya, Hapus!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const form = document.getElementById('global-delete-form');
+                                form.action = action;
+                                form.submit();
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Show success/error messages from session
+            @if(session('status'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: "{{ session('status') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: "{{ session('error') }}",
+                });
+            @endif
+        });
+    </script>
     @stack('scripts')
 </body>
 

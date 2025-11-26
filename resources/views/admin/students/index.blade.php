@@ -65,7 +65,8 @@
 
         .search-box input {
             width: 100%;
-            padding: 10px 16px 10px 40px; /* Space for icon */
+            padding: 10px 16px 10px 40px;
+            /* Space for icon */
             border-radius: 99px;
             border: 1px solid var(--border-color);
             background: var(--bg-body);
@@ -240,6 +241,24 @@
             background: #f0fdfa;
         }
 
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -252,6 +271,7 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .search-box {
                 width: 100%;
             }
@@ -261,7 +281,7 @@
 
 @section('content')
     <div class="page-container">
-        
+
         {{-- Header & Filter --}}
         <div class="page-header">
             <div class="header-title">
@@ -271,7 +291,10 @@
             <div class="header-actions">
                 <form class="search-box" action="#" method="GET"> {{-- Tambahkan route search jika ada --}}
                     <span class="search-icon">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                     </span>
                     <input type="text" name="q" placeholder="Cari nama atau email siswa..." value="{{ request('q') }}">
                 </form>
@@ -325,23 +348,44 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div style="display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.85rem;">
-                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <div
+                                        style="display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.85rem;">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
                                         {{ $student['ends_at'] ?? '-' }}
                                     </div>
                                 </td>
                                 <td style="text-align: right;">
                                     <a class="btn-detail" href="{{ route('admin.students.show', $student['id']) }}">
                                         Detail
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7"></path>
+                                        </svg>
                                     </a>
+                                    <button type="button" class="btn-delete" data-id="{{ $student['id'] }}"
+                                        data-name="{{ $student['name'] }}" data-active="{{ $student['status_state'] }}">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                    </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6">
                                     <div class="empty-state">
-                                        <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                        <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                            </path>
+                                        </svg>
                                         <p>Belum ada data siswa yang tersedia.</p>
                                     </div>
                                 </td>
@@ -352,4 +396,75 @@
             </div>
         </div>
     </div>
+
+    {{-- Hidden Form for Deletion --}}
+    <form id="delete-form" action="" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const deleteButtons = document.querySelectorAll('.btn-delete');
+                const deleteForm = document.getElementById('delete-form');
+
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const studentId = this.dataset.id;
+                        const studentName = this.dataset.name;
+                        const isActive = this.dataset.active === 'active'; // Check if active
+
+                        if (isActive) {
+                            // Block Deletion
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Menghapus',
+                                text: `Tidak bisa menghapus siswa "${studentName}" karena masih memiliki paket belajar aktif.`,
+                                confirmButtonColor: '#0f766e',
+                                confirmButtonText: 'Mengerti'
+                            });
+                        } else {
+                            // Confirm Deletion
+                            Swal.fire({
+                                title: 'Apakah Anda yakin?',
+                                text: `Data siswa "${studentName}" akan dihapus secara permanen.`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#ef4444',
+                                cancelButtonColor: '#64748b',
+                                confirmButtonText: 'Ya, Hapus!',
+                                cancelButtonText: 'Batal'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    deleteForm.action = `/admin/students/${studentId}`;
+                                    deleteForm.submit();
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Show success/error messages from session
+                @if(session('status'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: "{{ session('status') }}",
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: "{{ session('error') }}",
+                    });
+                @endif
+                                    });
+        </script>
+    @endpush
 @endsection
