@@ -882,6 +882,11 @@
 
                         {{-- Professional Info --}}
                         <div class="form-group">
+                            <label>Spesialisasi (Mapel) *</label>
+                            <input type="text" name="specializations" class="form-control"
+                                placeholder="Contoh: Matematika SMA" required>
+                        </div>
+                        <div class="form-group">
                             <label>Pendidikan Terakhir</label>
                             <input type="text" name="education" class="form-control"
                                 placeholder="Contoh: S1 Pendidikan Matematika">
