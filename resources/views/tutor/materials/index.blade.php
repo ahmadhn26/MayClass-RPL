@@ -363,7 +363,7 @@
             subjectSelect.innerHTML = '<option>Loading...</option>';
             subjectSelect.disabled = true;
 
-            fetch(`/tutor/materials/packages/${packageId}/subjects`)
+            fetch(`/tutor/packages/${packageId}/subjects`)
                 .then(response => response.json())
                 .then(data => {
                     subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';

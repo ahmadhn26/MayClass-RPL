@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Material;
 use App\Models\Package;
 use App\Support\UnsplashPlaceholder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class MaterialController extends BaseTutorController
 
         // AMBIL DATA PAKET UNTUK DROPDOWN MODAL
         $packages = Schema::hasTable('packages')
-            ? Package::orderBy('level')->orderBy('price')->get()
+            ? Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
             : collect();
 
         return $this->render('tutor.materials.index', [
@@ -55,7 +56,7 @@ class MaterialController extends BaseTutorController
     public function create()
     {
         $packages = Schema::hasTable('packages')
-            ? Package::orderBy('level')->orderBy('price')->get()
+            ? Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
             : collect();
 
         return $this->render('tutor.materials.create', [
@@ -129,7 +130,7 @@ class MaterialController extends BaseTutorController
         $material->load(['objectives', 'chapters']);
 
         $packages = Schema::hasTable('packages')
-            ? Package::orderBy('level')->orderBy('price')->get()
+            ? Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
             : collect();
 
         return $this->render('tutor.materials.edit', [
