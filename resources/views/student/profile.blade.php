@@ -56,20 +56,21 @@
             position: sticky;
             top: 0;
             z-index: 50;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         nav {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 24px;
-            height: 72px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .brand img {
-            height: 40px;
+            height: 110px;
             width: auto;
         }
 
@@ -82,31 +83,36 @@
         .btn-nav-back {
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--text-muted);
-            padding: 8px 16px;
+            color: white;
+            background: var(--primary);
+            padding: 10px 20px;
             border-radius: 8px;
+            transition: all 0.2s;
         }
 
         .btn-nav-back:hover {
-            background: var(--bg-body);
-            color: var(--text-main);
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(15, 118, 110, 0.2);
         }
 
         .btn-logout {
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--danger);
-            background: transparent;
-            border: 1px solid transparent;
-            padding: 8px 16px;
+            color: white;
+            background: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-logout:hover {
-            background: #fef2f2;
-            border-color: #fecaca;
+            background: #dc2626;
+            border-color: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
         }
 
         /* --- Main Layout --- */
@@ -451,7 +457,11 @@
                 <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" />
             </a>
             <div class="nav-actions">
-                <a href="{{ route('student.dashboard') }}" class="btn-nav-back">Kembali ke Dashboard</a>
+                @if($hasActivePackage ?? false)
+                    <a href="{{ route('student.dashboard') }}" class="btn-nav-back">Kembali ke Dashboard</a>
+                @else
+                    <a href="/" class="btn-nav-back">Kembali ke Beranda</a>
+                @endif
                 <form method="post" action="{{ route('logout') }}" style="margin:0">
                     @csrf
                     <button type="submit" class="btn-logout">Keluar</button>

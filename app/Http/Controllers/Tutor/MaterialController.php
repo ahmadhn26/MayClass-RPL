@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Tutor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Material;
-use App\Models\MaterialChapter;
-use App\Models\MaterialObjective;
 use App\Models\Package;
 use App\Support\UnsplashPlaceholder;
 use Illuminate\Support\Facades\DB;
@@ -40,13 +38,20 @@ class MaterialController extends BaseTutorController
                 ->get()
             : collect();
 
+        // AMBIL DATA PAKET UNTUK DROPDOWN MODAL
+        $packages = Schema::hasTable('packages')
+            ? Package::orderBy('level')->orderBy('price')->get()
+            : collect();
+
         return $this->render('tutor.materials.index', [
             'materials' => $materials,
             'search' => $search,
             'tableReady' => $tableReady,
+            'packages' => $packages, // Dikirim ke view untuk modal
         ]);
     }
 
+    // Method create() bisa dihapus atau dibiarkan (tidak terpakai lagi karena pakai modal)
     public function create()
     {
         $packages = Schema::hasTable('packages')
