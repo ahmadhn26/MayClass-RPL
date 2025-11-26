@@ -88,7 +88,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/register/password', [AuthController::class, 'showPasswordStep'])->name('register.password');
     Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
     Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
-    
+
     // Login Google
     Route::controller(GoogleController::class)->group(function () {
         Route::get('auth/google', 'redirectToGoogle')->name('auth.google');
@@ -160,6 +160,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
     Route::get('/students/{student}', [AdminStudentController::class, 'show'])->name('students.show');
     Route::post('/students/{student}/reset-password', [AdminStudentController::class, 'resetPassword'])->name('students.reset-password');
+    Route::delete('/students/{student}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
 
     Route::resource('tentors', AdminTentorController::class)->except(['show', 'create']);
 

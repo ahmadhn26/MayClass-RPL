@@ -15,7 +15,7 @@ class StudentController extends BaseAdminController
 {
     public function index(): View
     {
-        if (! Schema::hasTable('users')) {
+        if (!Schema::hasTable('users')) {
             $students = collect();
         } else {
             $hasEnrollments = Schema::hasTable('enrollments');
@@ -23,9 +23,11 @@ class StudentController extends BaseAdminController
             $query = User::query()->where('role', 'student')->orderBy('name');
 
             if ($hasEnrollments) {
-                $query->with(['enrollments' => function ($relation) {
-                    $relation->with('package')->orderByDesc('ends_at');
-                }]);
+                $query->with([
+                    'enrollments' => function ($relation) {
+                        $relation->with('package')->orderByDesc('ends_at');
+                    }
+                ]);
             }
 
             $students = $query
@@ -133,5 +135,25 @@ class StudentController extends BaseAdminController
             ->route('admin.students.show', $student)
             ->with('status', __('Kata sandi baru berhasil dibuat. Segera bagikan ke siswa melalui kanal resmi.'))
             ->with('generated_password', $newPassword);
+    }
+    public function destroy(User $student): RedirectResponse
+    {
+        if ($student->role !== 'student') {
+            return redirect()->route('admin.students.index')->with('status', __('Pengguna tersebut bukan siswa.'));
+        }
+
+        // Check for active enrollments
+        $hasActiveEnrollment = $student->enrollments()->where('is_active', true)->exists();
+
+        if ($hasActiveEnrollment) {
+            return redirect()->route('admin.students.index')
+                ->with('error', 'Tidak dapat menghapus siswa. Siswa masih memiliki paket aktif.');
+        }
+
+        // Delete related data (optional, depending on requirements, usually cascade handles this or soft delete)
+        // For now, we assume standard deletion
+        $student->delete();
+
+        return redirect()->route('admin.students.index')->with('status', 'Data siswa berhasil dihapus.');
     }
 }

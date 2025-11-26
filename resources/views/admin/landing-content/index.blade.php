@@ -571,18 +571,19 @@
                         style="background-image: url('{{ $item->image ? asset($item->image) : '/images/stis_contoh.jpeg' }}');">
                         <div class="preview-hero-content">
                             <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700;">
-                                {{ $item->content['subtitle'] ?? 'No Title' }}</h4>
+                                {{ $item->content['subtitle'] ?? 'No Title' }}
+                            </h4>
                             <span style="font-size: 0.8rem; opacity: 0.9;">{{ $item->content['title'] ?? '' }}</span>
                         </div>
                         <div style="position: absolute; top: 12px; right: 12px; z-index: 3; display: flex; gap: 8px;">
                             <button onclick="openModal('edit', 'hero', {{ $item }})" class="btn-icon"
                                 style="background: rgba(255,255,255,0.9);">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger"
-                                    style="background: rgba(255,255,255,0.9);">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete"
+                                style="background: rgba(255,255,255,0.9);" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['subtitle'] ?? 'Hero Content' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -622,11 +623,11 @@
                         </div>
                         <div class="card-actions">
                             <button onclick="openModal('edit', 'article', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['title'] ?? 'Artikel' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -655,11 +656,11 @@
                         </div>
                         <div class="preview-actions">
                             <button onclick="openModal('edit', 'feature', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['title'] ?? 'Keunggulan' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -693,11 +694,11 @@
                         </div>
                         <div class="preview-actions">
                             <button onclick="openModal('edit', 'testimonial', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['name'] ?? 'Testimoni' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -732,17 +733,18 @@
                             </p>
                             <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
                                 @foreach($item->content['meta'] ?? [] as $meta)
-                                    <span style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
+                                    <span
+                                        style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
                                 @endforeach
                             </div>
                         </div>
                         <div class="preview-actions">
                             <button onclick="openModal('edit', 'mentor', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['name'] ?? 'Mentor' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -774,11 +776,10 @@
                         <div class="card-actions"
                             style="border-top: none; background: transparent; border-left: 1px solid var(--border-color);">
                             <button onclick="openModal('edit', 'faq', {{ $item }})" class="btn-icon">Edit</button>
-                            <form action="{{ route('admin.landing-content.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus konten ini?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-icon text-danger">Hapus</button>
-                            </form>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="FAQ" data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 @empty
@@ -963,12 +964,12 @@
                     const zone = document.createElement('div');
                     zone.className = 'file-upload-zone';
                     zone.innerHTML = `
-                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>
-                                    <div class="file-upload-text">Klik atau drag file ke sini</div>
-                                    <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 10MB</div>
-                                `;
+                                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        <div class="file-upload-text">Klik atau drag file ke sini</div>
+                                        <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 10MB</div>
+                                    `;
 
                     const input = document.createElement('input');
                     input.type = 'file';
