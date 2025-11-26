@@ -39,9 +39,9 @@ class QuizController extends BaseTutorController
                 ->get()
             : collect();
 
-        // AMBIL DATA PAKET UNTUK DROPDOWN MODAL
+        // AMBIL DATA PAKET UNTUK DROPDOWN MODAL (hanya paket tutor ini)
         $packages = Schema::hasTable('packages')
-            ? Package::orderBy('level')->orderBy('price')->get()
+            ? \Illuminate\Support\Facades\Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
             : collect();
 
         return $this->render('tutor.quizzes.index', [
@@ -52,11 +52,11 @@ class QuizController extends BaseTutorController
         ]);
     }
 
-    // Method create tidak dipakai lagi, tapi dibiarkan jika ingin fallback
+    // Method create tidak dipakai lagi (pakai modal), tapi dibiarkan jika ingin fallback
     public function create()
     {
         $packages = Schema::hasTable('packages')
-            ? Package::orderBy('level')->orderBy('price')->get()
+            ? \Illuminate\Support\Facades\Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
             : collect();
 
         return $this->render('tutor.quizzes.create', [
@@ -66,13 +66,13 @@ class QuizController extends BaseTutorController
 
     public function store(Request $request): RedirectResponse
     {
-        if (! Schema::hasTable('quizzes')) {
+        if (!Schema::hasTable('quizzes')) {
             return redirect()
                 ->route('tutor.quizzes.index')
                 ->with('alert', __('Tabel quiz belum siap. Jalankan migrasi database terlebih dahulu.'));
         }
 
-        if (! Schema::hasTable('packages')) {
+        if (!Schema::hasTable('packages')) {
             return redirect()
                 ->route('tutor.quizzes.index')
                 ->with('alert', __('Tabel paket belum siap. Pastikan migrasi paket sudah dijalankan.'));
@@ -105,7 +105,7 @@ class QuizController extends BaseTutorController
                 Log::warning('Subject tidak ditemukan', [
                     'subject_id' => $data['subject_id']
                 ]);
-                
+
                 return back()
                     ->withErrors(['subject_id' => 'Mata pelajaran tidak ditemukan.'])
                     ->withInput();
@@ -157,7 +157,7 @@ class QuizController extends BaseTutorController
         $quiz->load(['levels', 'takeaways']);
 
         $packages = Schema::hasTable('packages')
-            ? Package::orderBy('level')->orderBy('price')->get()
+            ? \Illuminate\Support\Facades\Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
             : collect();
 
         return $this->render('tutor.quizzes.edit', [
@@ -168,13 +168,13 @@ class QuizController extends BaseTutorController
 
     public function update(Request $request, Quiz $quiz): RedirectResponse
     {
-        if (! Schema::hasTable('quizzes')) {
+        if (!Schema::hasTable('quizzes')) {
             return redirect()
                 ->route('tutor.quizzes.index')
                 ->with('alert', __('Tabel quiz belum siap. Jalankan migrasi database terlebih dahulu.'));
         }
 
-        if (! Schema::hasTable('packages')) {
+        if (!Schema::hasTable('packages')) {
             return redirect()
                 ->route('tutor.quizzes.index')
                 ->with('alert', __('Tabel paket belum siap. Pastikan migrasi paket sudah dijalankan.'));
@@ -260,10 +260,10 @@ class QuizController extends BaseTutorController
         $quiz->levels()->delete();
 
         $payloads = collect($levels)
-            ->map(fn ($value) => trim((string) $value))
+            ->map(fn($value) => trim((string) $value))
             ->filter()
             ->values()
-            ->map(fn ($label, $index) => [
+            ->map(fn($label, $index) => [
                 'label' => $label,
                 'position' => $index + 1,
             ]);
@@ -272,7 +272,7 @@ class QuizController extends BaseTutorController
             return;
         }
 
-        $payloads->each(fn ($attributes) => $quiz->levels()->create($attributes));
+        $payloads->each(fn($attributes) => $quiz->levels()->create($attributes));
     }
 
     private function syncTakeaways(Quiz $quiz, array $takeaways): void
@@ -281,10 +281,10 @@ class QuizController extends BaseTutorController
         $quiz->takeaways()->delete();
 
         $payloads = collect($takeaways)
-            ->map(fn ($value) => trim((string) $value))
+            ->map(fn($value) => trim((string) $value))
             ->filter()
             ->values()
-            ->map(fn ($description, $index) => [
+            ->map(fn($description, $index) => [
                 'description' => $description,
                 'position' => $index + 1,
             ]);
@@ -293,6 +293,6 @@ class QuizController extends BaseTutorController
             return;
         }
 
-        $payloads->each(fn ($attributes) => $quiz->takeaways()->create($attributes));
+        $payloads->each(fn($attributes) => $quiz->takeaways()->create($attributes));
     }
 }

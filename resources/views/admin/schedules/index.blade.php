@@ -344,54 +344,116 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
             align-items: center;
             justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
         }
 
         .modal-overlay.active {
             display: flex;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .modal-content {
             background: white;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 500px;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
             width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-header {
-            margin-bottom: 24px;
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            border-radius: 20px 20px 0 0;
         }
 
         .modal-header h3 {
             margin: 0;
             font-size: 1.5rem;
+            font-weight: 700;
             color: var(--text-main);
         }
 
         .modal-body {
+            padding: 32px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
         .modal-footer {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
             display: flex;
             gap: 12px;
-            margin-top: 24px;
+            justify-content: flex-end;
+            background: #f8fafc;
+            border-radius: 0 0 20px 20px;
         }
 
         .modal-footer button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px 24px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             border: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .modal-footer .btn-cancel {
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .modal-footer .btn-cancel:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .modal-footer .btn-submit {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+        }
+
+        .modal-footer .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+        }
+
+        .modal-footer .btn-submit:active {
+            transform: translateY(0);
         }
 
         /* --- 4. AGENDA TIMELINE --- */
