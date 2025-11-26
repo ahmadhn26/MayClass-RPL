@@ -8,7 +8,7 @@
             /* Menggunakan palet warna yang sama dengan Manajemen Materi untuk konsistensi */
             --primary-color: #3fa67e;
             --primary-dark: #2f8a67;
-            --accent-purple: #8b5cf6; /* Aksen khusus untuk Quiz */
+            --accent-purple: #2f8a67; /* Aksen khusus untuk Quiz */
             --bg-surface: #ffffff;
             --bg-muted: #f8fafc;
             --border-color: #e2e8f0;
@@ -44,17 +44,17 @@
         }
 
         .stats-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 12px;
-            background: #f5f3ff; /* Purple tint for Quiz */
-            color: var(--accent-purple);
-            border-radius: 99px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            border: 1px solid #ddd6fe;
-            margin-bottom: 8px;
-        }
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #ecfdf5; /* Ganti ke Hijau Muda (sama kayak materi) */
+    color: var(--primary-dark); /* Ganti ke Hijau Gelap */
+    border-radius: 99px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid #d1fae5; /* Border Hijau */
+    /* Hapus margin-bottom: 8px; agar tidak mendorong judul ke bawah */
+}
 
         .btn-add {
             background: var(--primary-color);
@@ -297,12 +297,9 @@
     {{-- Header Section --}}
     <div class="page-header">
         <div class="header-title">
-            <div class="stats-badge">
-                {{ $tableReady ? $quizzes->count() : 0 }} Quiz Aktif
-            </div>
-            <h1>Manajemen Quiz</h1>
-            <p>Siapkan evaluasi pembelajaran yang terstruktur untuk siswa.</p>
-        </div>
+    <h1>Manajemen Quiz</h1> <p style="margin-bottom: 12px;">Siapkan evaluasi pembelajaran yang terstruktur untuk siswa.</p> <div class="stats-badge"> {{ $tableReady ? $quizzes->count() : 0 }} Quiz Aktif
+    </div>
+</div>
         <a href="{{ route('tutor.quizzes.create') }}" class="btn-add">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />

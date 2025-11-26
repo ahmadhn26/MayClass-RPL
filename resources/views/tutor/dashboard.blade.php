@@ -134,7 +134,7 @@
         background: currentColor;
     }
 
-    .stat-card.accent-blue { color: #2563eb; }
+    .stat-card.accent-blue { color: #3fa67e; }
     .stat-card.accent-mint { color: #10b981; }
     .stat-card.accent-orange { color: #f97316; }
     .stat-card.accent-purple { color: #8b5cf6; }
@@ -396,17 +396,17 @@
         @else
             <ul class="timeline">
                 @foreach ($todaySessions as $session)
-                    <li class="timeline-item {{ !empty($session['highlight']) ? 'is-highlight' : '' }}">
-                        <div class="time">{{ $session['time_range'] }}</div>
+                    <li class="timeline-item {{ !empty(data_get($session, 'highlight')) ? 'is-highlight' : '' }}">
+                        <div class="time">{{ data_get($session, 'time_range', '-') }}</div>
                         <div class="details">
-                            <strong>{{ $session['title'] }}</strong>
+                            <strong>{{ data_get($session, 'title', '-') }}</strong>
                             
                             {{-- Sedikit perapihan HTML structure agar CSS pseudo-element jalan --}}
                             <div style="display:flex; flex-direction:column; gap:4px;">
-                                <span>{{ $session['subject'] }} ({{ $session['class_level'] }})</span>
-                                <span>{{ $session['location'] }}</span>
+                                <span>{{ data_get($session, 'subject', data_get($session, 'category', '-')) }} ({{ data_get($session, 'class_level', '-') }})</span>
+                                <span>{{ data_get($session, 'location', '-') }}</span>
                                 <span>
-                                    {{ $session['student_count'] ? $session['student_count'] . ' Siswa' : 'Jumlah siswa -' }}
+                                    {{ data_get($session, 'student_count') ? data_get($session, 'student_count') . ' Siswa' : 'Jumlah siswa -' }}
                                 </span>
                             </div>
                         </div>
