@@ -39,13 +39,20 @@ class QuizController extends BaseTutorController
                 ->get()
             : collect();
 
+        // AMBIL DATA PAKET UNTUK DROPDOWN MODAL
+        $packages = Schema::hasTable('packages')
+            ? Package::orderBy('level')->orderBy('price')->get()
+            : collect();
+
         return $this->render('tutor.quizzes.index', [
             'quizzes' => $quizzes,
             'search' => $search,
             'tableReady' => $tableReady,
+            'packages' => $packages, // Kirim ke view
         ]);
     }
 
+    // Method create tidak dipakai lagi, tapi dibiarkan jika ingin fallback
     public function create()
     {
         $packages = Schema::hasTable('packages')
