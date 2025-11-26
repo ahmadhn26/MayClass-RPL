@@ -57,6 +57,8 @@
                 border-radius: var(--student-radius-lg);
                 box-shadow: 0 36px 80px rgba(27, 119, 110, 0.14);
                 backdrop-filter: blur(16px);
+                position: relative;
+                z-index: 1002;
             }
 
             .student-navbar__brand {
@@ -65,6 +67,7 @@
                 gap: 14px;
                 font-weight: 600;
                 color: var(--student-primary);
+                flex-shrink: 0;
             }
 
             .student-navbar__brand img {
@@ -72,6 +75,44 @@
                 height: 70px;
                 border-radius: 12px;
                 object-fit: cover;
+            }
+
+            /* Hamburger menu button */
+            .student-navbar__hamburger {
+                display: none;
+                flex-direction: column;
+                gap: 5px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 8px;
+                z-index: 1005;
+            }
+
+            .student-navbar__hamburger span {
+                width: 25px;
+                height: 3px;
+                background: var(--student-primary);
+                border-radius: 3px;
+                transition: all 0.3s ease;
+            }
+
+            .student-navbar__hamburger.active {
+                position: fixed;
+                right: 20px;
+                top: 24px; /* Adjust based on navbar padding */
+            }
+
+            .student-navbar__hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(8px, 8px);
+            }
+
+            .student-navbar__hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .student-navbar__hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
             }
 
             .student-navbar__links {
@@ -108,6 +149,16 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 16px;
+            }
+
+            /* Desktop nav-actions - visible on desktop, hidden on mobile */
+            .student-navbar__actions--desktop {
+                display: flex;
+            }
+
+            /* Mobile nav-actions (inside menu) - hidden on desktop */
+            .student-navbar__links .student-navbar__actions--mobile {
+                display: none;
             }
 
             .student-navbar__profile {
@@ -296,20 +347,111 @@
                 color: var(--student-text-muted);
             }
 
-            @media (max-width: 960px) {
+            /* Mobile Menu Styles */
+            .student-mobile-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                display: flex;
+                flex-direction: column;
+                padding: 80px 24px 24px;
+                gap: 24px;
+                box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+                transition: right 0.3s ease;
+                z-index: 1003;
+                overflow-y: auto;
+            }
+
+            .student-mobile-menu.active {
+                right: 0;
+            }
+
+            .student-mobile-menu__links {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .student-mobile-menu__actions {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 8px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .student-mobile-menu__actions .student-navbar__profile {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .student-mobile-menu__actions .student-navbar__logout {
+                width: 100%;
+            }
+
+            @media (max-width: 768px) {
                 .student-navbar {
-                    flex-wrap: wrap;
-                    justify-content: center;
+                    padding: 12px 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                
+                .student-navbar__brand {
+                    flex-shrink: 0;
                 }
 
+                .student-navbar__hamburger {
+                    display: flex;
+                    margin-left: auto;
+                    padding: 8px;
+                }
+
+                /* Hide desktop elements on mobile */
+                .student-navbar__actions--desktop,
                 .student-navbar__links {
-                    justify-content: center;
+                    display: none !important;
                 }
 
-                .student-navbar__actions {
-                    flex-wrap: wrap;
-                    justify-content: center;
+                .student-navbar__brand img {
+                    width: 60px;
+                    height: 48px;
                 }
+                
+                /* Mobile menu link styles */
+                .student-navbar__link {
+                    font-size: 1.1rem;
+                    padding: 8px 0;
+                    width: 100%;
+                }
+                
+                .student-navbar__link.is-active::after {
+                    bottom: 0;
+                }
+            }
+
+            /* Overlay for mobile menu */
+            .student-navbar__overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .student-navbar__overlay.active {
+                display: block;
+                opacity: 1;
             }
         </style>
         @stack('styles')
@@ -319,11 +461,12 @@
         @php($navAvatar = \App\Support\ProfileAvatar::forUser($user))
         @php($hasActivePackage = $hasActivePackage ?? ($studentHasActivePackage ?? false))
         <div class="student-shell">
-            <header class="student-navbar">
-                <a href="{{ route('student.dashboard') }}" class="student-navbar__brand">
-                        <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" />
-                </a>
-                <nav class="student-navbar__links">
+            <!-- Overlay for mobile menu -->
+            <div class="student-navbar__overlay" id="navOverlay"></div>
+            
+            <!-- Mobile Menu (Moved outside navbar to fix position:fixed relative to viewport) -->
+            <div class="student-mobile-menu" id="mobileMenu">
+                <nav class="student-mobile-menu__links">
                     <a href="{{ route('student.dashboard') }}" class="student-navbar__link {{ request()->routeIs('student.dashboard') ? 'is-active' : '' }}">Beranda</a>
                     @if ($hasActivePackage)
                         <a href="{{ route('student.materials') }}" class="student-navbar__link {{ request()->routeIs('student.materials*') ? 'is-active' : '' }}">Materi</a>
@@ -331,7 +474,8 @@
                         <a href="{{ route('student.schedule') }}" class="student-navbar__link {{ request()->routeIs('student.schedule') ? 'is-active' : '' }}">Jadwal</a>
                     @endif
                 </nav>
-                <div class="student-navbar__actions">
+                
+                <div class="student-mobile-menu__actions">
                     <a class="student-navbar__profile" href="{{ route('student.profile') }}">
                         <img class="student-navbar__avatar" src="{{ $navAvatar }}" alt="Foto profil {{ $user?->name ?? 'Siswa' }}" />
                         <span>{{ $user?->name ?? 'Siswa' }}</span>
@@ -341,6 +485,41 @@
                         <button type="submit" class="student-navbar__logout">Keluar</button>
                     </form>
                 </div>
+            </div>
+            
+            <header class="student-navbar">
+                <a href="{{ route('student.dashboard') }}" class="student-navbar__brand">
+                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" />
+                </a>
+                
+                <!-- Desktop Navigation -->
+                <nav class="student-navbar__links">
+                    <a href="{{ route('student.dashboard') }}" class="student-navbar__link {{ request()->routeIs('student.dashboard') ? 'is-active' : '' }}">Beranda</a>
+                    @if ($hasActivePackage)
+                        <a href="{{ route('student.materials') }}" class="student-navbar__link {{ request()->routeIs('student.materials*') ? 'is-active' : '' }}">Materi</a>
+                        <a href="{{ route('student.quiz') }}" class="student-navbar__link {{ request()->routeIs('student.quiz*') ? 'is-active' : '' }}">Quiz</a>
+                        <a href="{{ route('student.schedule') }}" class="student-navbar__link {{ request()->routeIs('student.schedule') ? 'is-active' : '' }}">Jadwal</a>
+                    @endif
+                </nav>
+                
+                <!-- Desktop actions -->
+                <div class="student-navbar__actions student-navbar__actions--desktop">
+                    <a class="student-navbar__profile" href="{{ route('student.profile') }}">
+                        <img class="student-navbar__avatar" src="{{ $navAvatar }}" alt="Foto profil {{ $user?->name ?? 'Siswa' }}" />
+                        <span>{{ $user?->name ?? 'Siswa' }}</span>
+                    </a>
+                    <form method="post" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="student-navbar__logout">Keluar</button>
+                    </form>
+                </div>
+                
+                <!-- Hamburger button -->
+                <button class="student-navbar__hamburger" id="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </header>
 
             @if (session('subscription_notice'))
@@ -377,6 +556,65 @@
 
             <footer class="student-footer">© {{ now()->year }} MayClass. Portal siswa diperbarui otomatis.</footer>
         </div>
+        
+        <script>
+            // Hamburger menu toggle
+            document.addEventListener('DOMContentLoaded', function() {
+                const hamburger = document.getElementById('hamburger');
+                const mobileMenu = document.getElementById('mobileMenu');
+                const navOverlay = document.getElementById('navOverlay');
+                
+                // Function to lock body scroll
+                function lockBodyScroll() {
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                }
+                
+                // Function to unlock body scroll
+                function unlockBodyScroll() {
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                }
+                
+                if (hamburger && mobileMenu && navOverlay) {
+                    // Toggle menu
+                    hamburger.addEventListener('click', function() {
+                        const isActive = hamburger.classList.toggle('active');
+                        mobileMenu.classList.toggle('active');
+                        navOverlay.classList.toggle('active');
+                        
+                        // Lock/unlock body scroll based on menu state
+                        if (isActive) {
+                            lockBodyScroll();
+                        } else {
+                            unlockBodyScroll();
+                        }
+                    });
+                    
+                    // Close menu when clicking overlay
+                    navOverlay.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        mobileMenu.classList.remove('active');
+                        navOverlay.classList.remove('active');
+                        unlockBodyScroll();
+                    });
+                    
+                    // Close menu when clicking a link
+                    const links = mobileMenu.querySelectorAll('.student-navbar__link');
+                    links.forEach(link => {
+                        link.addEventListener('click', function() {
+                            hamburger.classList.remove('active');
+                            mobileMenu.classList.remove('active');
+                            navOverlay.classList.remove('active');
+                            unlockBodyScroll();
+                        });
+                    });
+                }
+            });
+        </script>
+        
         @stack('scripts')
     </body>
 </html>

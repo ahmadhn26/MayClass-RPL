@@ -12,7 +12,7 @@ class QuizLevel extends Model
 
     protected $fillable = [
         'quiz_id',
-        'label',
+        'label', // FIELD YANG BENAR
         'position',
     ];
 
