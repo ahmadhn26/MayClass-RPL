@@ -640,13 +640,12 @@
         .pricing-group-header h3 {
             display: inline-block;
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: var(--primary-dark);
-            background: #eaf8f2;
+            background: rgba(63, 166, 126, 0.1);
             padding: 8px 32px;
-            border-radius: 999px;
+            border-radius: 12px;
             font-weight: 700;
-            border: 1px solid rgba(63, 166, 126, 0.2);
         }
 
         .pricing-group-header p {
@@ -655,11 +654,11 @@
             font-size: 1rem;
         }
 
-        /* Pricing Grid - Modified to avoid stretching (memanjang) */
+        /* Pricing Grid - Modified with auto-fill to prevent stretching */
         .pricing-grid {
             display: grid;
-            /* Menggunakan auto-fill agar kartu tidak melar memenuhi lebar jika hanya ada sedikit item */
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            /* Menggunakan auto-fill agar jika hanya ada 1 item, dia tidak akan melar memenuhi layar */
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
             justify-content: center;
             width: 100%;
@@ -700,7 +699,7 @@
             align-items: center;
             justify-content: center;
             padding: 6px 12px;
-            border-radius: 999px;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
@@ -710,8 +709,9 @@
         }
 
         .pricing-card strong {
-            font-size: 1.25rem;
-            line-height: 1.3;
+            font-size: 1.15rem;
+            line-height: 1.4;
+            color: var(--ink-strong);
         }
 
         .pricing-price {
@@ -722,36 +722,19 @@
         }
 
         .pricing-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 0.9rem;
+            display: inline-block;
+            font-size: 0.85rem;
             color: var(--ink-soft);
-            padding-bottom: 12px;
-            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
-            margin-bottom: 4px;
+            padding: 4px 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            align-self: flex-start;
         }
-
-        .contact-row {
-    margin-bottom: 8px;
-}
-
-.contact-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: inherit;
-}
-
-.contact-link:hover {
-    opacity: 0.9;
-}
-
 
         .pricing-features {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 8px 0 0;
             display: grid;
             gap: 10px;
             font-size: 0.92rem;
@@ -1257,6 +1240,19 @@
             color: var(--primary-main);
         }
 
+        .contact-link {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .contact-link:hover {
+            opacity: 0.9;
+            color: #ffffff;
+        }
+
         .social-icons {
             display: flex;
             gap: 12px;
@@ -1283,12 +1279,14 @@
         .footer-bottom {
             padding-top: 32px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
             gap: 16px;
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            width: 100%;
         }
 
         .footer-legal {
@@ -1516,35 +1514,84 @@
                     interaktif dan laporan perkembangan rutin.
                 </p>
             </div>
-            @php($packageCatalog = collect($landingPackages ?? []))
+            
+            @php
+            // REGROUPING LOGIC (Menggabungkan kelas-kelas ke dalam Jenjang Besar)
+            $rawCatalog = collect($landingPackages ?? []);
+            
+            // Inisialisasi wadah untuk jenjang besar
+            $groupedLevels = [
+                'SD' => [
+                    'label' => 'Jenjang Sekolah Dasar (SD)',
+                    'desc' => 'Membangun pondasi akademik yang kuat dan menyenangkan.',
+                    'items' => collect()
+                ],
+                'SMP' => [
+                    'label' => 'Jenjang SMP',
+                    'desc' => 'Persiapan matang untuk ujian sekolah dan penguatan materi.',
+                    'items' => collect()
+                ],
+                'SMA' => [
+                    'label' => 'Jenjang SMA & Alumni',
+                    'desc' => 'Fokus intensif menembus PTN Impian dan Sekolah Kedinasan.',
+                    'items' => collect()
+                ],
+                'Lainnya' => [
+                    'label' => 'Program Lainnya',
+                    'desc' => 'Program pengembangan skill dan persiapan khusus.',
+                    'items' => collect()
+                ]
+            ];
 
-            @if ($packageCatalog->isNotEmpty())
-                @foreach ($packageCatalog as $group)
+            // Loop data mentah dan masukkan ke wadah yang sesuai
+            foreach($rawCatalog as $group) {
+                $label = strtoupper($group['stage_label'] ?? $group['stage'] ?? '');
+                $packages = collect($group['packages'] ?? []);
+
+                if (str_contains($label, 'SD') || str_contains($label, 'SEKOLAH DASAR')) {
+                    $groupedLevels['SD']['items'] = $groupedLevels['SD']['items']->merge($packages);
+                } elseif (str_contains($label, 'SMP')) {
+                    $groupedLevels['SMP']['items'] = $groupedLevels['SMP']['items']->merge($packages);
+                } elseif (str_contains($label, 'SMA') || str_contains($label, 'SMK') || str_contains($label, 'ALUMNI')) {
+                    $groupedLevels['SMA']['items'] = $groupedLevels['SMA']['items']->merge($packages);
+                } else {
+                    $groupedLevels['Lainnya']['items'] = $groupedLevels['Lainnya']['items']->merge($packages);
+                }
+            }
+            @endphp
+
+            @php($hasAnyPackage = false)
+
+            @foreach ($groupedLevels as $key => $levelGroup)
+                @if ($levelGroup['items']->isNotEmpty())
+                    @php($hasAnyPackage = true)
                     <div class="pricing-group">
                         <div class="pricing-group-header" data-reveal>
-                            <h3>{{ $group['stage_label'] ?? $group['stage'] }}</h3>
-                            @php($stageDescription = $group['stage_description'] ?? '')
-                            @if (!empty($stageDescription))
-                                <p>{{ $stageDescription }}</p>
-                            @endif
+                            <h3>{{ $levelGroup['label'] }}</h3>
+                            <p>{{ $levelGroup['desc'] }}</p>
                         </div>
 
                         <div class="pricing-grid">
-                            @foreach ($group['packages'] as $package)
+                            @foreach ($levelGroup['items'] as $package)
                                 @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
-                                <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 120 }}">
+                                <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
                                     <span class="badge">
-                                        {{ $package['tag'] ?? ($group['stage_label'] ?? $group['stage']) }}
+                                        {{ $package['tag'] ?? $key }}
                                     </span>
                                     <strong>{{ $package['detail_title'] }}</strong>
                                     <div class="pricing-price">{{ $package['card_price'] }}</div>
-                                    <div class="pricing-meta">
-                                        @if (!empty($package['grade_range']))
-                                            <span>{{ $package['grade_range'] }}</span>
-                                        @else
-                                            <span>{{ $group['stage_label'] ?? $group['stage'] }}</span>
-                                        @endif
-                                    </div>
+                                    
+                                    @if (!empty($package['grade_range']))
+                                        <div class="pricing-meta">
+                                            {{-- Jika isinya angka saja (misal "8"), tambahkan kata "Kelas" --}}
+                                            @if(is_numeric($package['grade_range']))
+                                                Kelas {{ $package['grade_range'] }}
+                                            @else
+                                                {{ $package['grade_range'] }}
+                                            @endif
+                                        </div>
+                                    @endif
+                                    
                                     @if ($package['summary'] ?? false)
                                         <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
                                             {{ $package['summary'] }}
@@ -1565,8 +1612,10 @@
                             @endforeach
                         </div>
                     </div>
-                @endforeach
-            @else
+                @endif
+            @endforeach
+
+            @if (!$hasAnyPackage)
                 <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 16px; width: 100%;">
                     <p style="color: var(--ink-muted); margin: 0;">Belum ada paket belajar yang tersedia.</p>
                 </div>
@@ -1780,63 +1829,44 @@
                 <div>
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
-                            <div class="contact-row">
-                                <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630"
-                                target="_blank" rel="noopener noreferrer" class="contact-link">
-                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
-                                </a>
-                            </div>
-
-                            <div class="contact-row">
-                                <a href="https://wa.me/6283194085776"
-                                target="_blank" rel="noopener noreferrer" class="contact-link">
-                                    <!-- “Logo” WhatsApp sederhana (lingkaran hijau + ikon telp) -->
-                                    <svg class="contact-icon" width="20" height="20" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="11" fill="#22c55e"></circle>
-                                        <path d="M16.5 14.5c-.2.5-1 1-1.5 1.1-.4.1-.9.1-1.5 0-1.3-.3-2.7-1.1-3.7-2.1s-1.8-2.4-2.1-3.7c-.1-.6-.1-1.1 0-1.5.1-.5.6-1.3 1.1-1.5.3-.1.7 0 .9.3l.9 1.4c.2.3.2.7 0 1-.1.1-.2.3-.3.4-.1.2-.2.3-.1.5.2.5.7 1.1 1.2 1.6.5.5 1.1 1 1.6 1.2.2.1.4 0 .5-.1.1-.1.3-.2.4-.3.3-.2.7-.2 1 0l1.4.9c.3.2.4.6.3.9z"
-                                            fill="white"/>
-                                    </svg>
-                                    <span>0831-9408-5776 (WhatsApp)</span>
-                                </a>
-                            </div>
-
-                            <div class="contact-row">
-                                <a href="mailto:hello@mayclass.id" class="contact-link">
-                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                    <span>hello@mayclass.id</span>
-                                </a>
-                            </div>
-
-                            <div class="contact-row">
-                                <div class="contact-link">
-                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                    <span>Jam respon: 09.00–21.00 WIB (Setiap hari)</span>
-                                </div>
-                            </div>
+                        <div class="contact-row">
+                            <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630" target="_blank" rel="noopener noreferrer" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
+                            </a>
+                        </div>
+                        <div class="contact-row">
+                            <a href="https://wa.me/6283194085776" target="_blank" rel="noopener noreferrer" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.12 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                    </path>
+                                </svg>
+                                <span>+62 831-9408-5776</span>
+                            </a>
+                        </div>
+                        <div class="contact-row">
+                            <a href="mailto:hello@mayclass.id" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>hello@mayclass.id</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; {{ date('Y') }} MayClass Education. All rights reserved.</p>
-                <div class="footer-legal">
-                    <a href="#">Kebijakan Privasi</a>
-                    <a href="#">Syarat & Ketentuan</a>
-                </div>
+                <p>&copy; 2025 MayClass Education. All rights reserved.</p>
             </div>
         </div>
     </footer>
