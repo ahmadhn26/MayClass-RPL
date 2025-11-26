@@ -289,6 +289,69 @@
                 color: #b91c1c;
             }
 
+            /* Mobile Header */
+            .mobile-header {
+                display: none;
+            }
+
+            /* Overlay */
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 995;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            /* Hamburger Button */
+            .hamburger-btn {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                padding: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                z-index: 1002;
+            }
+
+            .hamburger-btn span {
+                display: block;
+                width: 24px;
+                height: 2px;
+                background-color: var(--text-main);
+                border-radius: 2px;
+                transition: all 0.3s ease;
+            }
+
+            .hamburger-btn.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger-btn.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger-btn.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            html, body {
+                overflow-x: hidden;
+                width: 100%;
+            }
+
             @media (max-width: 1240px) {
                 .dashboard-shell {
                     grid-template-columns: 240px 1fr;
@@ -297,28 +360,52 @@
             }
 
             @media (max-width: 1024px) {
+                .mobile-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 24px;
+                    width: 100%;
+                }
+
                 .dashboard-shell {
-                    grid-template-columns: 1fr;
-                    padding: 24px;
+                    display: block; /* Remove grid */
+                    padding: 20px;
+                    width: 100%;
+                    box-sizing: border-box;
                 }
 
                 .nav-panel {
-                    top: 24px;
-                    z-index: 20;
-                    flex-direction: row;
-                    align-items: center;
-                    gap: 20px;
-                    overflow-x: auto;
-                    min-height: auto;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    height: 100vh;
+                    width: 280px;
+                    max-width: 85vw;
+                    transform: translateX(-100%);
+                    border-radius: 0 24px 24px 0;
+                    z-index: 1000;
+                    box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 32px;
+                    overflow-y: auto;
+                    overscroll-behavior: contain;
+                    transition: transform 0.3s ease;
+                }
+
+                .nav-panel.active {
+                    transform: translateX(0);
                 }
 
                 .navigation {
-                    flex-direction: row;
-                    gap: 12px;
+                    flex-direction: column;
+                    gap: 8px;
                 }
 
                 .nav-footer {
-                    display: none;
+                    display: flex; /* Show footer in sidebar */
+                    margin-top: auto;
                 }
 
                 .main-header {
@@ -332,7 +419,7 @@
 
             @media (max-width: 640px) {
                 .dashboard-shell {
-                    padding: 20px;
+                    padding: 16px;
                 }
 
                 .main-header {
@@ -348,7 +435,22 @@
     </head>
     <body>
         <div class="dashboard-shell">
-            <aside class="nav-panel">
+            {{-- Mobile Header --}}
+            <div class="mobile-header">
+                <div class="logo-area">
+                    <span style="font-weight: 700; font-size: 1.25rem; color: var(--text-main);">Tutor Panel</span>
+                </div>
+                <button class="hamburger-btn" id="tutorHamburger" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            {{-- Sidebar Overlay --}}
+            <div class="sidebar-overlay" id="tutorOverlay"></div>
+
+            <aside class="nav-panel" id="tutorSidebar">
                 @php
                     // Pastikan tutor ada untuk menghindari error pada method static
                     $tutorSummaryAvatar = isset($tutor) ? \App\Support\ProfileAvatar::forUser($tutor) : asset('images/default-avatar.png');
@@ -386,9 +488,7 @@
                             ],
                         ];
 
-                        // 2. Logika Penentuan Menu (Perbaikan Utama)
-                        // Jika variabel $menuItems ada DAN berupa array, gunakan itu.
-                        // Jika tidak, gunakan $defaultMenuItems.
+                        // 2. Logika Penentuan Menu
                         if (isset($menuItems) && is_array($menuItems) && count($menuItems) > 0) {
                             $layoutMenuItems = $menuItems;
                         } else {
@@ -455,6 +555,45 @@
                 </main>
             </div>
         </div>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Mobile Sidebar Toggle
+                const hamburger = document.getElementById('tutorHamburger');
+                const sidebar = document.getElementById('tutorSidebar');
+                const overlay = document.getElementById('tutorOverlay');
+
+                function toggleSidebar() {
+                    hamburger.classList.toggle('active');
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                    
+                    if (sidebar.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                }
+
+                if (hamburger) {
+                    hamburger.addEventListener('click', toggleSidebar);
+                }
+
+                if (overlay) {
+                    overlay.addEventListener('click', toggleSidebar);
+                }
+
+                // Close sidebar when clicking a link
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        if (window.innerWidth <= 1024) {
+                            toggleSidebar();
+                        }
+                    });
+                });
+            });
+        </script>
         @stack('scripts')
     </body>
 </html>

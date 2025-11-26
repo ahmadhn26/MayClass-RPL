@@ -180,6 +180,40 @@
             transform: none;
             box-shadow: none;
         }
+
+        /* Responsive Fixes */
+        @media (max-width: 640px) {
+            .form-card {
+                padding: 20px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .form-card h1 {
+                font-size: 1.5rem;
+            }
+
+            input[type="text"],
+            input[type="url"],
+            input[type="number"],
+            input[type="email"],
+            textarea,
+            select {
+                padding: 12px 14px; /* Slightly smaller padding for inputs */
+                font-size: 0.95rem;
+                width: 100%;
+                box-sizing: border-box; /* Ensure padding doesn't add to width */
+                max-width: 100%; /* Prevent overflow */
+            }
+
+            .dynamic-group {
+                padding: 14px;
+            }
+
+            .dynamic-item {
+                padding: 12px;
+            }
+        }
     </style>
 @endpush
 
