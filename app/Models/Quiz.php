@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Quiz extends Model
 {
@@ -22,7 +23,28 @@ class Quiz extends Model
         'thumbnail_url',
         'duration_label',
         'question_count',
+        'link_url', // PASTIKAN INI ADA
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($quiz) {
+            if (empty($quiz->slug)) {
+                $baseSlug = Str::slug($quiz->title);
+                $slug = $baseSlug;
+                $counter = 1;
+                
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+                
+                $quiz->slug = $slug;
+            }
+        });
+    }
 
     public function levels(): HasMany
     {
@@ -56,4 +78,3 @@ class Quiz extends Model
         return $this->belongsTo(Subject::class);
     }
 }
-

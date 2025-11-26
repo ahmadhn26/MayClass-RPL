@@ -12,7 +12,7 @@ class QuizTakeaway extends Model
 
     protected $fillable = [
         'quiz_id',
-        'description',
+        'description', // FIELD YANG BENAR
         'position',
     ];
 
