@@ -433,11 +433,34 @@
             }
 
             .hero-card {
-                padding: 32px;
+                padding: 24px; /* Reduced padding */
             }
 
             .hero-content h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
+            }
+
+            /* Metrics Row Mobile Optimization */
+            .metrics-row {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
+                gap: 8px;
+            }
+
+            .metric-pill {
+                min-width: 0; /* Allow shrinking */
+                padding: 12px 8px; /* Compact padding */
+                align-items: center;
+                text-align: center;
+            }
+
+            .metric-pill span {
+                font-size: 0.7rem;
+                white-space: nowrap;
+            }
+
+            .metric-pill strong {
+                font-size: 1.25rem;
             }
         }
     </style>

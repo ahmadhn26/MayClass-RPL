@@ -321,7 +321,40 @@
     @media (max-width: 640px) {
         .dashboard-content { gap: 24px; }
         .hero-panel h1 { font-size: 1.75rem; }
-        .stat-grid { grid-template-columns: 1fr; }
+        
+        /* Stats Grid Mobile Optimization */
+        .stat-grid { 
+            grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
+            gap: 8px; /* Tighter gap */
+        }
+
+        .stat-card {
+            padding: 12px; /* Smaller padding */
+            text-align: center; /* Center text */
+            align-items: center;
+        }
+
+        .stat-card .value-row {
+            justify-content: center;
+        }
+
+        .stat-card .value-row strong {
+            font-size: 1.5rem; /* Smaller number */
+        }
+
+        .stat-card .label {
+            font-size: 0.7rem; /* Smaller label */
+            text-align: center;
+            line-height: 1.2;
+            white-space: nowrap; /* Prevent wrapping if possible, or allow if needed */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Hide description on mobile to save space if needed, or keep it */
+        .stat-card p {
+            display: none; 
+        }
     }
 </style>
 @endpush

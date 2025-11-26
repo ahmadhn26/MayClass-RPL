@@ -293,8 +293,27 @@
         }
 
         @media (max-width: 768px) {
-            .status-summary { grid-template-columns: 1fr; }
             .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+            /* Force Status Summary to Single Row */
+            .status-summary {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+
+            .status-box {
+                padding: 10px 4px;
+                gap: 2px;
+            }
+
+            .status-box strong {
+                font-size: 1rem;
+            }
+
+            .status-box span {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+            }
         }
     </style>
 @endpush

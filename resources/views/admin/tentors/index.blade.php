@@ -657,6 +657,27 @@
             .form-group.full-width {
                 grid-column: span 1;
             }
+
+            /* Force Stats Grid to Single Row */
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 12px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+                white-space: nowrap;
+            }
         }
     </style>
 @endpush
