@@ -49,6 +49,7 @@
             grid-template-columns: 280px 1fr;
             gap: 32px;
             padding: 32px 40px;
+            align-items: start;
         }
 
         /* Mobile Header */
@@ -87,7 +88,8 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            z-index: 1002; /* Higher than sidebar */
+            z-index: 1002;
+            /* Higher than sidebar */
         }
 
         .hamburger-btn span {
@@ -119,12 +121,16 @@
             display: flex;
             flex-direction: column;
             gap: 24px;
+            position: -webkit-sticky;
             position: sticky;
             top: 32px;
             align-self: start;
-            min-height: calc(100vh - 64px);
+            height: calc(100vh - 64px);
+            overflow-y: auto;
             z-index: 1000;
             transition: transform 0.3s ease;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
         }
 
         .navigation {
@@ -337,8 +343,9 @@
             }
         }
 
-        html, body {
-            overflow-x: hidden; /* Global horizontal scroll prevention */
+        html,
+        body {
+            /* Global horizontal scroll prevention */
             width: 100%;
         }
 
@@ -350,7 +357,8 @@
             }
 
             .dashboard-shell {
-                display: block; /* Remove grid */
+                display: block;
+                /* Remove grid */
                 padding: 16px;
                 width: 100%;
                 box-sizing: border-box;
@@ -366,9 +374,11 @@
                 transform: translateX(-100%);
                 border-radius: 0 24px 24px 0;
                 z-index: 1000;
-                box-shadow: 4px 0 24px rgba(0,0,0,0.1);
-                overflow-y: auto; /* Enable scrolling */
-                overscroll-behavior: contain; /* Prevent body scroll chaining */
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+                overflow-y: auto;
+                /* Enable scrolling */
+                overscroll-behavior: contain;
+                /* Prevent body scroll chaining */
             }
 
             .nav-panel.active {
@@ -377,7 +387,8 @@
 
             .navigation {
                 display: flex;
-                flex-direction: column; /* Keep vertical */
+                flex-direction: column;
+                /* Keep vertical */
                 gap: 12px;
             }
 
@@ -560,7 +571,7 @@
                 hamburger.classList.toggle('active');
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
-                
+
                 if (sidebar.classList.contains('active')) {
                     document.body.style.overflow = 'hidden';
                 } else {
@@ -579,7 +590,7 @@
             // Close sidebar when clicking a link (optional)
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function () {
                     if (window.innerWidth <= 1024) {
                         toggleSidebar();
                     }

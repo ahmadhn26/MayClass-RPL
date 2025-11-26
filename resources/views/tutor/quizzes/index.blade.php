@@ -599,9 +599,23 @@
                 </div>
 
                 {{-- Link Quiz --}}
-                <div class="form-group">
-                    <label class="form-label">Link Quiz (Google Form / Platform Lainnya)</label>
-                    <input type="url" name="link_url" class="form-control" placeholder="https://" required>
+                {{-- Link Quiz Dynamic --}}
+                <div class="dynamic-group span-full">
+                    <div class="dynamic-group__header">
+                        <span>Link Quiz (Google Form / Lainnya)</span>
+                        <button type="button" class="dynamic-add" data-add-link>+ Tambah Link</button>
+                    </div>
+                    <div class="dynamic-group__items" data-link-urls>
+                        <div class="dynamic-item">
+                            <div class="dynamic-item__row">
+                                <input type="url" name="link_urls[]" placeholder="https://" required />
+                            </div>
+                            <div class="dynamic-item__actions">
+                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                    @error('link_urls.*') <div class="error-text">{{ $message }}</div> @enderror
                 </div>
 
                 <button type="submit" class="btn-submit">✓ Simpan Quiz</button>
@@ -662,6 +676,52 @@
                     subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
                 });
         }
+
+        // --- Dynamic Inputs Logic ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const linkContainer = document.querySelector('[data-link-urls]');
+            const addLinkBtn = document.querySelector('[data-add-link]');
+
+            // Template for new link row
+            const createLinkRow = () => {
+                const div = document.createElement('div');
+                div.className = 'dynamic-item';
+                div.innerHTML = `
+                        <div class="dynamic-item__row">
+                            <input type="url" name="link_urls[]" placeholder="https://" required />
+                        </div>
+                        <div class="dynamic-item__actions">
+                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                        </div>
+                    `;
+                return div;
+            };
+
+            // Add new row
+            if (addLinkBtn && linkContainer) {
+                addLinkBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newRow = createLinkRow();
+                    linkContainer.appendChild(newRow);
+                });
+            }
+
+            // Remove row (event delegation)
+            if (linkContainer) {
+                linkContainer.addEventListener('click', (e) => {
+                    if (e.target.closest('[data-remove-row]')) {
+                        e.preventDefault();
+                        const row = e.target.closest('.dynamic-item');
+                        if (linkContainer.children.length > 1) {
+                            row.remove();
+                        } else {
+                            // If it's the last row, just clear the input
+                            row.querySelector('input').value = '';
+                        }
+                    }
+                });
+            }
+        });
     </script>
 @endpush
 @endsection

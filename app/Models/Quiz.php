@@ -26,6 +26,10 @@ class Quiz extends Model
         'link_url', // PASTIKAN INI ADA
     ];
 
+    protected $casts = [
+        'link_url' => 'array',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -35,12 +39,12 @@ class Quiz extends Model
                 $baseSlug = Str::slug($quiz->title);
                 $slug = $baseSlug;
                 $counter = 1;
-                
+
                 while (static::where('slug', $slug)->exists()) {
                     $slug = $baseSlug . '-' . $counter;
                     $counter++;
                 }
-                
+
                 $quiz->slug = $slug;
             }
         });

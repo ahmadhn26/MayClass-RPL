@@ -20,7 +20,14 @@ class Material extends Model
         'level',
         'summary',
         'thumbnail_url',
+        'thumbnail_url',
         'resource_path',
+        'quiz_urls',
+    ];
+
+    protected $casts = [
+        'resource_path' => 'array',
+        'quiz_urls' => 'array',
     ];
 
     public function objectives(): HasMany
@@ -40,19 +47,11 @@ class Material extends Model
         return ImageRepository::url("materials.$key");
     }
 
-    public function getResourceUrlAttribute(): ?string
+    public function getResourceUrlAttribute(): array
     {
-        $path = $this->attributes['resource_path'] ?? null;
-
-        if (! $path) {
-            return null;
-        }
-
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return $this->attributes['resource_path']
+            ? json_decode($this->attributes['resource_path'], true)
+            : [];
     }
 
     public function package(): BelongsTo

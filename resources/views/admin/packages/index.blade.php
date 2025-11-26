@@ -717,10 +717,7 @@
             @csrf
             <div class="modal-body">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Slug *</label>
-                        <input type="text" name="slug" class="form-control" required>
-                    </div>
+
                     <div class="form-group">
                         <label>Jenjang Pendidikan *</label>
                         <select name="level" class="form-control" required>
@@ -749,12 +746,8 @@
                             placeholder="Kosongkan jika tak terbatas">
                     </div>
                     <div class="form-group">
-                        <label>Label Harga Kartu *</label>
+                        <label>Label Harga *</label>
                         <input type="text" name="card_price_label" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Label Harga Detail *</label>
-                        <input type="text" name="detail_price_label" class="form-control" required>
                     </div>
                     <div class="form-group full-width">
                         <label>Judul Paket *</label>
@@ -848,9 +841,9 @@
             const item = document.createElement('div');
             item.className = 'feature-item';
             item.innerHTML = `
-                            <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
-                            <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
-                        `;
+                                <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
+                                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
+                            `;
             list.appendChild(item);
         }
 

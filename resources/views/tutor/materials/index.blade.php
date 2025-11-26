@@ -147,7 +147,7 @@
         }
 
         /* CSS Thumbnail dihapus karena elemennya sudah tidak dipakai, 
-                               tapi layout card-content akan otomatis menyesuaikan */
+                                       tapi layout card-content akan otomatis menyesuaikan */
 
         .card-content {
             flex: 1;
@@ -840,87 +840,45 @@
             {{-- Hidden Level (Auto-filled from package) --}}
             <input type="hidden" name="level" id="hiddenLevel" required>
 
-            {{-- Modern File Upload --}}
-            <div class="form-group">
-                <label class="form-label">Upload File Materi <small style="color: #64748b;">(PDF, PPT, DOC - Max
-                        10MB)</small></label>
-                <div class="file-upload-area" id="fileUploadArea">
-                    <input type="file" name="attachment" id="fileInput" accept=".pdf,.ppt,.pptx,.doc,.docx"
-                        style="display: none;">
-                    <div class="upload-placeholder" id="uploadPlaceholder">
-                        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            style="color: #94a3b8; margin-bottom: 12px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        <div class="upload-text">
-                            <strong style="color: #334155;">Klik untuk upload</strong>
-                            <span style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">atau
-                                drag & drop file disini</span>
+            {{-- Dynamic GDrive Links --}}
+            <div class="dynamic-group span-full">
+                <div class="dynamic-group__header">
+                    <span>Link Materi (Google Drive)</span>
+                    <button type="button" class="dynamic-add" data-add-gdrive>+ Tambah Link</button>
+                </div>
+                <div class="dynamic-group__items" data-gdrive-links>
+                    <div class="dynamic-item">
+                        <div class="dynamic-item__row">
+                            <input type="url" name="gdrive_links[]" placeholder="https://drive.google.com/..."
+                                required />
+                        </div>
+                        <div class="dynamic-item__actions">
+                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
                         </div>
                     </div>
-                    <div class="file-preview" id="filePreview" style="display: none;">
-                        <div class="file-icon">
-                            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                </div>
+                @error('gdrive_links.*') <div class="error-text">{{ $message }}</div> @enderror
+            </div>
+
+            {{-- Dynamic Quiz Links --}}
+            <div class="dynamic-group span-full">
+                <div class="dynamic-group__header">
+                    <span>Link Quiz</span>
+                    <button type="button" class="dynamic-add" data-add-quiz>+ Tambah Quiz</button>
+                </div>
+                <div class="dynamic-group__items" data-quiz-urls>
+                    <div class="dynamic-item">
+                        <div class="dynamic-item__row">
+                            <input type="url" name="quiz_urls[]" placeholder="https://forms.google.com/..." />
                         </div>
-                        <div class="file-info">
-                            <div class="file-name" id="fileName"></div>
-                            <div class="file-size" id="fileSize"></div>
+                        <div class="dynamic-item__actions">
+                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
                         </div>
-                        <button type="button" class="file-remove" id="fileRemove">
-                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
+                @error('quiz_urls.*') <div class="error-text">{{ $message }}</div> @enderror
             </div>
 
-            {{-- Divider with "OR" --}}
-            <div class="divider-container">
-                <div class="divider-line"></div>
-                <span class="divider-text">atau</span>
-                <div class="divider-line"></div>
-            </div>
-
-            {{-- Google Drive Link Input --}}
-            <div class="form-group">
-                <label class="form-label">
-                    Link Google Drive
-                    <small style="color: #64748b; font-weight: 500;">(Opsional - jika tidak upload file)</small>
-                </label>
-                <div class="gdrive-input-wrapper">
-                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" class="gdrive-icon">
-                        <path
-                            d="M12.01 2.011c1.74 0 3.28.67 4.44 1.77l-1.79 1.79c-.71-.71-1.69-1.14-2.65-1.14-2.06 0-3.73 1.67-3.73 3.73 0 .96.43 1.94 1.14 2.65l-1.79 1.79C6.68 10.62 6 9.08 6 7.34c0-3.31 2.69-6 6.01-6zm0 20c-3.32 0-6.01-2.69-6.01-6 0-1.74.68-3.28 1.83-4.43l1.79 1.79c-.71.71-1.14 1.69-1.14 2.65 0 2.06 1.67 3.73 3.73 3.73.96 0 1.94-.43 2.65-1.14l1.79 1.79c-1.15 1.15-2.69 1.83-4.43 1.83z"
-                            fill="#4285f4" />
-                        <path d="M21.99 13H14.4l3.8-6.6h7.59c.33 0 .6.27.6.6v5.4c0 .33-.27.6-.6.6z" fill="#ea4335" />
-                        <path d="M14.4 13l-7.6 13.18c-.16.28-.52.37-.79.21-.28-.16-.37-.52-.21-.79L13.4 12h1z"
-                            fill="#34a853" />
-                    </svg>
-                    <input type="url" name="gdrive_link" id="gdriveInput" class="form-control gdrive-input"
-                        placeholder="https://drive.google.com/file/d/...">
-                    <button type="button" id="clearGdriveBtn" class="clear-gdrive-btn" style="display: none;"
-                        title="Hapus link">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <small class="gdrive-hint">
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        style="display: inline-block; vertical-align: middle; color: #64748b;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Pastikan file dapat diakses oleh siapa saja dengan link
-                </small>
-            </div>
 
             <div class="form-group">
                 <label class="form-label">Ringkasan Materi</label>

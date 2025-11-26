@@ -6,83 +6,299 @@
     <style>
         /* --- OVERLAY & MODAL STYLE --- */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);
-            z-index: 9999; display: flex; justify-content: center; align-items: center;
-            padding: 20px; overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
         }
 
         .form-card {
-            background: #fff; border-radius: 16px; width: 100%; max-width: 900px;
-            max-height: 90vh; display: flex; flex-direction: column;
+            background: #fff;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            position: relative; animation: popIn 0.3s ease-out;
+            position: relative;
+            animation: popIn 0.3s ease-out;
         }
 
-        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes popIn {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 
         .form-header {
-            padding: 24px 32px; border-bottom: 1px solid #e2e8f0; display: flex;
-            justify-content: space-between; align-items: center; background: white;
-            border-top-left-radius: 16px; border-top-right-radius: 16px;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
         }
 
-        .form-header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #0f172a; }
-        .close-btn { font-size: 1.5rem; color: #94a3b8; text-decoration: none; line-height: 1; cursor: pointer; transition: color 0.2s; }
-        .close-btn:hover { color: #ef4444; }
+        .form-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #ef4444;
+        }
 
         .form-body {
-            padding: 32px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;
+            padding: 32px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
-        
-        .form-body::-webkit-scrollbar { width: 6px; }
-        .form-body::-webkit-scrollbar-track { background: transparent; }
-        .form-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+        .form-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .form-body::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
 
         /* --- GRID SYSTEM --- */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-        .span-full { grid-column: 1 / -1; }
-
-        /* --- INPUTS --- */
-        label span { display: block; font-weight: 600; font-size: 0.9rem; color: #1e293b; margin-bottom: 8px; }
-
-        input[type="text"], textarea, select {
-            width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px;
-            font-family: inherit; font-size: 0.95rem; background-color: #fff; transition: border-color 0.2s;
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
         }
 
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #3fa67e; box-shadow: 0 0 0 3px rgba(63, 166, 126, 0.1); }
-        textarea { min-height: 120px; resize: vertical; }
+        .span-full {
+            grid-column: 1 / -1;
+        }
+
+        /* --- INPUTS --- */
+        label span {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3fa67e;
+            box-shadow: 0 0 0 3px rgba(63, 166, 126, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
 
         /* --- DYNAMIC GROUPS --- */
-        .dynamic-group { border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f8fafc; }
-        .dynamic-group__header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
-        .dynamic-item { display: grid; gap: 12px; padding: 16px; border-radius: 10px; background: #fff; border: 1px solid #e2e8f0; margin-bottom: 12px; }
-        .dynamic-item__row { display: grid; gap: 12px; }
-        .dynamic-item__actions { display: flex; justify-content: flex-end; }
-        .dynamic-item__remove { border: none; background: transparent; color: #ef4444; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
-        .dynamic-add { border: none; border-radius: 8px; padding: 8px 16px; background: rgba(63, 166, 126, 0.1); color: #3fa67e; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+        .dynamic-group {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            background: #f8fafc;
+        }
+
+        .dynamic-group__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .dynamic-item {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+
+        .dynamic-item__row {
+            display: grid;
+            gap: 12px;
+        }
+
+        .dynamic-item__actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .dynamic-item__remove {
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .dynamic-add {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            background: rgba(63, 166, 126, 0.1);
+            color: #3fa67e;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
 
         /* --- UPLOAD & FILE INFO --- */
-        .upload-field { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 32px; text-align: center; color: #64748b; background: #f8fafc; cursor: pointer; transition: border-color 0.2s; }
-        .upload-field:hover { border-color: #3fa67e; }
+        .upload-field {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            color: #64748b;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
 
-        .current-file { margin-top: 12px; padding: 10px 16px; background: #f1f5f9; border-radius: 8px; display: inline-block; font-size: 0.9rem; color: #475569; }
-        .current-file a { color: #3fa67e; font-weight: 600; text-decoration: none; }
-        .current-file a:hover { text-decoration: underline; }
+        .upload-field:hover {
+            border-color: #3fa67e;
+        }
+
+        .current-file {
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .current-file a {
+            color: #3fa67e;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .current-file a:hover {
+            text-decoration: underline;
+        }
 
         /* --- ACTIONS --- */
-        .form-actions { margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 16px; }
-        .btn-cancel { padding: 12px 24px; border-radius: 10px; font-weight: 600; text-decoration: none; color: #64748b; background: white; border: 1px solid #e2e8f0; transition: all 0.2s; }
-        .btn-cancel:hover { background: #f1f5f9; color: #0f172a; }
-        .btn-save { background: #3fa67e; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3); }
-        .btn-save:hover { background: #2f8a67; transform: translateY(-1px); }
-        .error-text { color: #ef4444; font-size: 0.85rem; margin-top: 4px; }
+        .form-actions {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+        }
+
+        .btn-cancel {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #64748b;
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .btn-save {
+            background: #3fa67e;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
+        }
+
+        .btn-save:hover {
+            background: #2f8a67;
+            transform: translateY(-1px);
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
 
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-card { height: 100vh; max-height: 100vh; border-radius: 0; }
-            .form-header { border-radius: 0; }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-card {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .form-header {
+                border-radius: 0;
+            }
         }
     </style>
 @endpush
@@ -91,7 +307,8 @@
     @php
         $objectiveValues = collect(old('objectives', $material->objectives->pluck('description')->all()))
             ->map(fn($value) => is_string($value) ? $value : '');
-        if ($objectiveValues->isEmpty()) $objectiveValues = collect(['']);
+        if ($objectiveValues->isEmpty())
+            $objectiveValues = collect(['']);
 
         $chapterValues = collect(old('chapters', $material->chapters->map(fn($chapter) => [
             'title' => $chapter->title,
@@ -104,14 +321,25 @@
                 ];
             });
 
-        if ($chapterValues->isEmpty()) $chapterValues = collect([['title' => '', 'description' => '']]);
+        if ($chapterValues->isEmpty())
+            $chapterValues = collect([['title' => '', 'description' => '']]);
 
         $chapterNextIndex = $chapterValues->keys()->max() + 1;
+
+        // Prepare GDrive Links
+        $gdriveLinks = collect(old('gdrive_links', $material->resource_url ?? []));
+        if ($gdriveLinks->isEmpty())
+            $gdriveLinks = collect(['']);
+
+        // Prepare Quiz URLs
+        $quizUrls = collect(old('quiz_urls', $material->quiz_urls ?? []));
+        if ($quizUrls->isEmpty())
+            $quizUrls = collect(['']);
     @endphp
 
     <div class="modal-overlay">
         <div class="form-card">
-            
+
             <div class="form-header">
                 <h1>Edit Materi</h1>
                 <a href="{{ route('tutor.materials.index') }}" class="close-btn">&times;</a>
@@ -119,7 +347,8 @@
 
             <div class="form-body">
                 @if ($errors->any())
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <div
+                        style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
                         <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
                         <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
                             @foreach ($errors->all() as $error)
@@ -129,13 +358,15 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('tutor.materials.update', $material) }}" enctype="multipart/form-data" id="material-form">
+                <form method="POST" action="{{ route('tutor.materials.update', $material) }}" enctype="multipart/form-data"
+                    id="material-form">
                     @csrf
                     @method('PUT')
-                    
+
                     {{-- 🟢 PERBAIKAN: Menambahkan Hidden Input Level --}}
                     {{-- Nilai diambil dari old input atau relasi subject level saat ini --}}
-                    <input type="hidden" name="level" id="hidden-level" value="{{ old('level', $material->subject->level ?? '') }}">
+                    <input type="hidden" name="level" id="hidden-level"
+                        value="{{ old('level', $material->subject->level ?? '') }}">
 
                     <div class="form-grid">
                         <label>
@@ -184,7 +415,8 @@
                                 @foreach ($objectiveValues as $value)
                                     <div class="dynamic-item" data-objective-row>
                                         <div class="dynamic-item__row">
-                                            <input type="text" name="objectives[]" value="{{ $value }}" placeholder="Contoh: Memahami konsep persamaan linear" />
+                                            <input type="text" name="objectives[]" value="{{ $value }}"
+                                                placeholder="Contoh: Memahami konsep persamaan linear" />
                                         </div>
                                         <div class="dynamic-item__actions">
                                             <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
@@ -204,8 +436,10 @@
                                 @foreach ($chapterValues as $index => $chapter)
                                     <div class="dynamic-item" data-chapter-row>
                                         <div class="dynamic-item__row">
-                                            <input type="text" name="chapters[{{ $index }}][title]" value="{{ $chapter['title'] }}" placeholder="Judul bab" />
-                                            <textarea name="chapters[{{ $index }}][description]" placeholder="Ringkasan singkat bab">{{ $chapter['description'] }}</textarea>
+                                            <input type="text" name="chapters[{{ $index }}][title]"
+                                                value="{{ $chapter['title'] }}" placeholder="Judul bab" />
+                                            <textarea name="chapters[{{ $index }}][description]"
+                                                placeholder="Ringkasan singkat bab">{{ $chapter['description'] }}</textarea>
                                         </div>
                                         <div class="dynamic-item__actions">
                                             <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
@@ -216,26 +450,47 @@
                             @error('chapters.*') <div class="error-text">{{ $message }}</div> @enderror
                         </div>
 
-                        <label class="span-full">
-                            <span>Upload File (PDF, PPT, DOC)</span>
-                            <div class="upload-field">
-                                <input type="file" name="attachment" accept=".pdf,.ppt,.pptx,.doc,.docx" />
-                                <div style="margin-top: 8px; font-size: 0.85rem;">Unggah file baru untuk mengganti lampiran.</div>
-                                
-                                @if ($material->resource_path)
-                                    @php($isExternal = str_starts_with($material->resource_path, 'http'))
-                                    <div class="current-file">
-                                        File saat ini: 
-                                        <a href="{{ $isExternal ? $material->resource_path : route('tutor.materials.preview', $material->slug) }}" target="_blank" rel="noopener">
-                                            Lihat Lampiran
-                                        </a>
-                                    </div>
-                                @else
-                                    <div class="current-file">Belum ada file terunggah.</div>
-                                @endif
+                        <div class="dynamic-group span-full">
+                            <div class="dynamic-group__header">
+                                <span>Link Materi (Google Drive)</span>
+                                <button type="button" class="dynamic-add" data-add-gdrive>+ Tambah Link</button>
                             </div>
-                            @error('attachment') <div class="error-text">{{ $message }}</div> @enderror
-                        </label>
+                            <div class="dynamic-group__items" data-gdrive-links>
+                                @foreach ($gdriveLinks as $link)
+                                    <div class="dynamic-item">
+                                        <div class="dynamic-item__row">
+                                            <input type="url" name="gdrive_links[]" value="{{ $link }}"
+                                                placeholder="https://drive.google.com/..." required />
+                                        </div>
+                                        <div class="dynamic-item__actions">
+                                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('gdrive_links.*') <div class="error-text">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="dynamic-group span-full">
+                            <div class="dynamic-group__header">
+                                <span>Link Quiz</span>
+                                <button type="button" class="dynamic-add" data-add-quiz>+ Tambah Quiz</button>
+                            </div>
+                            <div class="dynamic-group__items" data-quiz-urls>
+                                @foreach ($quizUrls as $link)
+                                    <div class="dynamic-item">
+                                        <div class="dynamic-item__row">
+                                            <input type="url" name="quiz_urls[]" value="{{ $link }}"
+                                                placeholder="https://forms.google.com/..." />
+                                        </div>
+                                        <div class="dynamic-item__actions">
+                                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('quiz_urls.*') <div class="error-text">{{ $message }}</div> @enderror
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -263,13 +518,13 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'dynamic-item';
                 wrapper.innerHTML = `
-                    <div class="dynamic-item__row">
-                        <input type="text" name="objectives[]" placeholder="Contoh: Memahami konsep persamaan linear" />
-                    </div>
-                    <div class="dynamic-item__actions">
-                        <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                    </div>
-                `;
+                            <div class="dynamic-item__row">
+                                <input type="text" name="objectives[]" placeholder="Contoh: Memahami konsep persamaan linear" />
+                            </div>
+                            <div class="dynamic-item__actions">
+                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                            </div>
+                        `;
                 return wrapper;
             };
 
@@ -278,20 +533,20 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'dynamic-item';
                 wrapper.innerHTML = `
-                    <div class="dynamic-item__row">
-                        <input type="text" name="chapters[${index}][title]" placeholder="Judul bab" />
-                        <textarea name="chapters[${index}][description]" placeholder="Ringkasan singkat bab"></textarea>
-                    </div>
-                    <div class="dynamic-item__actions">
-                        <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                    </div>
-                `;
+                            <div class="dynamic-item__row">
+                                <input type="text" name="chapters[${index}][title]" placeholder="Judul bab" />
+                                <textarea name="chapters[${index}][description]" placeholder="Ringkasan singkat bab"></textarea>
+                            </div>
+                            <div class="dynamic-item__actions">
+                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                            </div>
+                        `;
                 return wrapper;
             };
 
             // Helper: Bind Remove Button
             const bindRemoval = (row) => {
-                row.querySelector('[data-remove-row]')?.addEventListener('click', function() {
+                row.querySelector('[data-remove-row]')?.addEventListener('click', function () {
                     if (row.parentElement.children.length > 1) row.remove();
                 });
             };
@@ -322,9 +577,43 @@
                 bindRemoval(row);
             });
 
+            // --- Logic Dynamic Inputs (GDrive & Quiz) ---
+            const gdriveContainer = document.querySelector('[data-gdrive-links]');
+            const quizContainer = document.querySelector('[data-quiz-urls]');
+
+            const templateLink = (name, placeholder) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'dynamic-item';
+                wrapper.innerHTML = `
+                            <div class="dynamic-item__row">
+                                <input type="url" name="${name}[]" placeholder="${placeholder}" required />
+                            </div>
+                            <div class="dynamic-item__actions">
+                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                            </div>
+                        `;
+                return wrapper;
+            };
+
+            document.querySelector('[data-add-gdrive]')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!gdriveContainer) return;
+                const row = templateLink('gdrive_links', 'https://drive.google.com/...');
+                gdriveContainer.appendChild(row);
+                bindRemoval(row);
+            });
+
+            document.querySelector('[data-add-quiz]')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!quizContainer) return;
+                const row = templateLink('quiz_urls', 'https://forms.google.com/...');
+                quizContainer.appendChild(row);
+                bindRemoval(row);
+            });
+
             // 🟢 PERBAIKAN: Listener saat Mapel Berubah untuk update Hidden Level
             if (subjectSelect) {
-                subjectSelect.addEventListener('change', function() {
+                subjectSelect.addEventListener('change', function () {
                     const selectedOption = this.options[this.selectedIndex];
                     const level = selectedOption.getAttribute('data-level') || ''; // Ambil data level
                     if (hiddenLevelInput) {
@@ -340,19 +629,19 @@
                     subjectSelect.disabled = true;
 
                     if (packageId) {
-                        fetch(/tutor/packages/${packageId}/subjects)
+                        fetch(/tutor/packages / ${ packageId } / subjects)
                             .then(response => response.json())
                             .then(data => {
                                 subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
                                 data.forEach(subject => {
                                     const option = document.createElement('option');
                                     option.value = subject.id;
-                                    
+
                                     // 🟢 PERBAIKAN: Simpan Level di Atribut Data
                                     option.setAttribute('data-level', subject.level || '');
-                                    
+
                                     option.textContent = subject.name + ' (' + subject.level + ')';
-                                    
+
                                     if (selectedId && String(subject.id) === String(selectedId)) {
                                         option.selected = true;
                                         // 🟢 PERBAIKAN: Jika ini mapel terpilih saat load, isi hidden input
@@ -372,9 +661,9 @@
                     }
                 };
 
-                packageSelect.addEventListener('change', function() {
+                packageSelect.addEventListener('change', function () {
                     loadSubjects(this.value);
-                    if(hiddenLevelInput) hiddenLevelInput.value = ''; // Reset level jika paket ganti
+                    if (hiddenLevelInput) hiddenLevelInput.value = ''; // Reset level jika paket ganti
                 });
 
                 // Initial load

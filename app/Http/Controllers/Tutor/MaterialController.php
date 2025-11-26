@@ -84,8 +84,10 @@ class MaterialController extends BaseTutorController
             'subject_id' => ['required', 'exists:subjects,id'],
             'level' => ['required', 'string', 'max:120'],
             'summary' => ['required', 'string'],
-            'attachment' => ['nullable', 'file', 'mimes:pdf,ppt,pptx,doc,docx', 'max:10240'],
-            'gdrive_link' => ['nullable', 'url', 'max:500'],
+            'gdrive_links' => ['nullable', 'array'],
+            'gdrive_links.*' => ['required', 'url', 'max:500'],
+            'quiz_urls' => ['nullable', 'array'],
+            'quiz_urls.*' => ['required', 'url', 'max:500'],
             'objectives' => ['nullable', 'array'],
             'objectives.*' => ['nullable', 'string', 'max:255'],
             'chapters' => ['nullable', 'array'],
@@ -100,15 +102,7 @@ class MaterialController extends BaseTutorController
             $uniqueSlug = $slug . '-' . $counter++;
         }
 
-        $path = null;
-        // Prioritize gdrive_link if provided, otherwise use file upload
-        if (!empty($data['gdrive_link'])) {
-            $path = $data['gdrive_link'];
-        } elseif ($request->file('attachment')) {
-            $path = $request->file('attachment')->store('materials', 'public');
-        }
-
-        DB::transaction(function () use ($data, $path, $uniqueSlug, $request) {
+        DB::transaction(function () use ($data, $uniqueSlug, $request) {
             $material = Material::create([
                 'slug' => $uniqueSlug,
                 'package_id' => $data['package_id'],
@@ -117,7 +111,8 @@ class MaterialController extends BaseTutorController
                 'level' => $data['level'],
                 'summary' => $data['summary'],
                 'thumbnail_url' => UnsplashPlaceholder::material(\App\Models\Subject::find($data['subject_id'])->name ?? 'Material'),
-                'resource_path' => $path,
+                'resource_path' => $data['gdrive_links'] ?? [],
+                'quiz_urls' => $data['quiz_urls'] ?? [],
             ]);
 
             $this->syncObjectives($material, $request->input('objectives', []));
@@ -163,8 +158,10 @@ class MaterialController extends BaseTutorController
             'subject_id' => ['required', 'exists:subjects,id'],
             'level' => ['required', 'string', 'max:120'],
             'summary' => ['required', 'string'],
-            'attachment' => ['nullable', 'file', 'mimes:pdf,ppt,pptx,doc,docx', 'max:10240'],
-            'gdrive_link' => ['nullable', 'url', 'max:500'],
+            'gdrive_links' => ['nullable', 'array'],
+            'gdrive_links.*' => ['required', 'url', 'max:500'],
+            'quiz_urls' => ['nullable', 'array'],
+            'quiz_urls.*' => ['required', 'url', 'max:500'],
             'objectives' => ['nullable', 'array'],
             'objectives.*' => ['nullable', 'string', 'max:255'],
             'chapters' => ['nullable', 'array'],
@@ -180,25 +177,8 @@ class MaterialController extends BaseTutorController
             'summary' => $data['summary'],
         ];
 
-        // Handle resource path update: gdrive_link or file upload
-        if (!empty($data['gdrive_link'])) {
-            // If GDrive link provided, use it (and delete old file if exists)
-            if ($material->resource_path && !str_starts_with($material->resource_path, 'http')) {
-                Storage::disk('public')->delete($material->resource_path);
-            }
-            $payload['resource_path'] = $data['gdrive_link'];
-        } elseif (!$material->resource_path || $request->hasFile('attachment')) {
-            // If file uploaded or no resource exists
-            if ($material->resource_path && !str_starts_with($material->resource_path, 'http')) {
-                Storage::disk('public')->delete($material->resource_path);
-            }
-
-            if ($request->file('attachment')) {
-                $payload['resource_path'] = $request->file('attachment')->store('materials', 'public');
-            } else {
-                $payload['resource_path'] = null;
-            }
-        }
+        $payload['resource_path'] = $data['gdrive_links'] ?? [];
+        $payload['quiz_urls'] = $data['quiz_urls'] ?? [];
 
         if ($material->subject_id !== $data['subject_id']) {
             $payload['thumbnail_url'] = UnsplashPlaceholder::material(\App\Models\Subject::find($data['subject_id'])->name ?? 'Material');
@@ -275,30 +255,7 @@ class MaterialController extends BaseTutorController
         $payloads->each(fn($attributes) => $material->chapters()->create($attributes));
     }
 
-    private function serveAttachment(Material $material, bool $download)
-    {
-        $path = $material->resource_path;
 
-        if (!$path) {
-            return redirect()->route('tutor.materials.index')
-                ->with('alert', __('Tidak ada lampiran untuk materi ini.'));
-        }
-
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return redirect()->away($path);
-        }
-
-        if (!Storage::disk('public')->exists($path)) {
-            return redirect()->route('tutor.materials.index')
-                ->with('alert', __('Berkas lampiran tidak ditemukan di penyimpanan.'));
-        }
-
-        $filename = Str::slug($material->title) . '.' . strtolower(pathinfo($path, PATHINFO_EXTENSION) ?: 'pdf');
-
-        return $download
-            ? Storage::disk('public')->download($path, $filename)
-            : Storage::disk('public')->response($path, $filename);
-    }
 
     public function getPackageSubjects(Package $package): \Illuminate\Http\JsonResponse
     {

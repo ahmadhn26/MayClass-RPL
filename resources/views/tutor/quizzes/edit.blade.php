@@ -11,8 +11,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Background Gelap Transparan */
-            backdrop-filter: blur(5px); /* Efek Blur */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Background Gelap Transparan */
+            backdrop-filter: blur(5px);
+            /* Efek Blur */
             z-index: 9999;
             display: flex;
             justify-content: center;
@@ -25,7 +27,8 @@
             background: #fff;
             border-radius: 16px;
             width: 100%;
-            max-width: 800px; /* Lebar proporsional */
+            max-width: 800px;
+            /* Lebar proporsional */
             max-height: 90vh;
             display: flex;
             flex-direction: column;
@@ -35,8 +38,15 @@
         }
 
         @keyframes popIn {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* Header Modal */
@@ -67,7 +77,10 @@
             cursor: pointer;
             transition: color 0.2s;
         }
-        .close-btn:hover { color: #ef4444; }
+
+        .close-btn:hover {
+            color: #ef4444;
+        }
 
         /* Body Form (Scrollable) */
         .form-body {
@@ -76,20 +89,32 @@
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 transparent;
         }
-        
-        .form-body::-webkit-scrollbar { width: 6px; }
-        .form-body::-webkit-scrollbar-track { background: transparent; }
-        .form-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+        .form-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .form-body::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
 
         /* --- GRID SYSTEM --- */
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 Kolom */
+            grid-template-columns: 1fr 1fr;
+            /* 2 Kolom */
             gap: 24px;
             align-items: start;
         }
 
-        .span-full { grid-column: 1 / -1; }
+        .span-full {
+            grid-column: 1 / -1;
+        }
 
         /* --- INPUTS --- */
         label span {
@@ -114,7 +139,9 @@
             transition: border-color 0.2s;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: #3fa67e;
             box-shadow: 0 0 0 3px rgba(63, 166, 126, 0.1);
@@ -151,10 +178,15 @@
             border: 1px solid #e2e8f0;
             transition: all 0.2s;
         }
-        .btn-cancel:hover { background: #f1f5f9; color: #0f172a; }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
 
         .btn-save {
-            background: #3fa67e; /* HIJAU */
+            background: #3fa67e;
+            /* HIJAU */
             color: white;
             border: none;
             padding: 12px 32px;
@@ -164,26 +196,50 @@
             transition: all 0.2s;
             box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
         }
-        .btn-save:hover { background: #2f8a67; transform: translateY(-1px); }
-        .btn-save:disabled { background: #9ca3af; cursor: not-allowed; }
+
+        .btn-save:hover {
+            background: #2f8a67;
+            transform: translateY(-1px);
+        }
+
+        .btn-save:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-card { height: 100vh; max-height: 100vh; border-radius: 0; }
-            .form-header { border-radius: 0; }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-card {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .form-header {
+                border-radius: 0;
+            }
         }
     </style>
 @endpush
 
 @section('content')
+    @php
+        // Prepare Link URLs
+        $linkUrls = collect(old('link_urls', $quiz->link_url ?? []));
+        if ($linkUrls->isEmpty())
+            $linkUrls = collect(['']);
+    @endphp
 
     {{-- WRAPPER OVERLAY --}}
     <div class="modal-overlay">
-        
+
         {{-- CARD FORM --}}
         <div class="form-card">
-            
+
             {{-- Header Form --}}
             <div class="form-header">
                 <h1>Edit Quiz</h1>
@@ -193,7 +249,8 @@
             {{-- Body Form --}}
             <div class="form-body">
                 @if ($errors->any())
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <div
+                        style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
                         <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
                         <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
                             @foreach ($errors->all() as $error)
@@ -207,15 +264,15 @@
                     @csrf
                     @method('PUT')
 
-                    {{-- 
-                        DATA TERSEMBUNYI (HIDDEN)
-                        Ini wajib ada karena di Controller kolom ini 'required'.
-                        Kita kirim data lama ($quiz->...) agar tidak error saat disimpan.
+                    {{--
+                    DATA TERSEMBUNYI (HIDDEN)
+                    Ini wajib ada karena di Controller kolom ini 'required'.
+                    Kita kirim data lama ($quiz->...) agar tidak error saat disimpan.
                     --}}
                     <input type="hidden" name="class_level" value="{{ $quiz->class_level ?? '-' }}">
                     <input type="hidden" name="duration_label" value="{{ $quiz->duration_label ?? '-' }}">
                     <input type="hidden" name="question_count" value="{{ $quiz->question_count ?? 0 }}">
-                    
+
                     <div class="form-grid">
                         {{-- Paket Belajar --}}
                         <label>
@@ -236,7 +293,8 @@
                         {{-- Judul Quiz --}}
                         <label>
                             <span>Judul Quiz</span>
-                            <input type="text" name="title" value="{{ old('title', $quiz->title) }}" placeholder="Contoh: Quiz Persamaan Linear" required />
+                            <input type="text" name="title" value="{{ old('title', $quiz->title) }}"
+                                placeholder="Contoh: Quiz Persamaan Linear" required />
                             @error('title') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
 
@@ -244,7 +302,8 @@
                         <label class="span-full">
                             <span>Mata Pelajaran</span>
                             {{-- data-old digunakan untuk recovery saat validation error --}}
-                            <select name="subject_id" id="subject-select" data-old="{{ old('subject_id', $quiz->subject_id) }}" required>
+                            <select name="subject_id" id="subject-select"
+                                data-old="{{ old('subject_id', $quiz->subject_id) }}" required>
                                 <option value="">Pilih paket terlebih dahulu</option>
                             </select>
                             @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
@@ -253,16 +312,38 @@
                         {{-- Deskripsi --}}
                         <label class="span-full">
                             <span>Deskripsi</span>
-                            <textarea name="summary" placeholder="Tuliskan deskripsi singkat quiz..." required>{{ old('summary', $quiz->summary) }}</textarea>
+                            <textarea name="summary" placeholder="Tuliskan deskripsi singkat quiz..."
+                                required>{{ old('summary', $quiz->summary) }}</textarea>
                             @error('summary') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
 
-                        {{-- Link Quiz --}}
-                        <label class="span-full">
-                            <span>Link Quiz</span>
-                            <input type="url" name="link_url" value="{{ old('link_url', $quiz->link) }}" placeholder="https://" required />
-                            @error('link_url') <div class="error-text">{{ $message }}</div> @enderror
-                        </label>
+                        {{-- Link Quiz Dynamic --}}
+                        <div class="dynamic-group span-full">
+                            <div class="dynamic-group__header"
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">Link Quiz (Google Form /
+                                    Lainnya)</span>
+                                <button type="button" class="dynamic-add" data-add-link
+                                    style="background: #3fa67e; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;">+
+                                    Tambah Link</button>
+                            </div>
+                            <div class="dynamic-group__items" data-link-urls>
+                                @foreach ($linkUrls as $link)
+                                    <div class="dynamic-item"
+                                        style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                                        <div class="dynamic-item__row" style="flex: 1;">
+                                            <input type="url" name="link_urls[]" value="{{ $link }}" placeholder="https://"
+                                                required />
+                                        </div>
+                                        <div class="dynamic-item__actions">
+                                            <button type="button" class="dynamic-item__remove" data-remove-row
+                                                style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;">Hapus</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('link_urls.*') <div class="error-text">{{ $message }}</div> @enderror
+                        </div>
                     </div>
 
                     {{-- Footer Actions --}}
@@ -296,7 +377,7 @@
                     subjectSelect.disabled = true;
 
                     if (packageId) {
-                        fetch(/tutor/packages/${packageId}/subjects)
+                        fetch(/tutor/packages / ${ packageId } / subjects)
                             .then(response => response.json())
                             .then(data => {
                                 subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
@@ -322,7 +403,7 @@
                     }
                 };
 
-                packageSelect.addEventListener('change', function() {
+                packageSelect.addEventListener('change', function () {
                     loadSubjects(this.value);
                 });
 
@@ -333,10 +414,55 @@
             }
 
             // Disable button saat submit
-            form?.addEventListener('submit', function() {
+            form?.addEventListener('submit', function () {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Menyimpan...';
             });
+
+            // --- Dynamic Inputs Logic ---
+            const linkContainer = document.querySelector('[data-link-urls]');
+            const addLinkBtn = document.querySelector('[data-add-link]');
+
+            // Template for new link row
+            const createLinkRow = () => {
+                const div = document.createElement('div');
+                div.className = 'dynamic-item';
+                div.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: center;';
+                div.innerHTML = `
+                        <div class="dynamic-item__row" style="flex: 1;">
+                            <input type="url" name="link_urls[]" placeholder="https://" required />
+                        </div>
+                        <div class="dynamic-item__actions">
+                            <button type="button" class="dynamic-item__remove" data-remove-row style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;">Hapus</button>
+                        </div>
+                    `;
+                return div;
+            };
+
+            // Add new row
+            if (addLinkBtn && linkContainer) {
+                addLinkBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newRow = createLinkRow();
+                    linkContainer.appendChild(newRow);
+                });
+            }
+
+            // Remove row (event delegation)
+            if (linkContainer) {
+                linkContainer.addEventListener('click', (e) => {
+                    if (e.target.closest('[data-remove-row]')) {
+                        e.preventDefault();
+                        const row = e.target.closest('.dynamic-item');
+                        if (linkContainer.children.length > 1) {
+                            row.remove();
+                        } else {
+                            // If it's the last row, just clear the input
+                            row.querySelector('input').value = '';
+                        }
+                    }
+                });
+            }
         });
     </script>
 @endpush

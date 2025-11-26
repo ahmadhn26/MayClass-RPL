@@ -203,13 +203,7 @@
         <p style="color: var(--text-muted); margin-top: 6px;">Perbarui detail paket untuk menjaga konsistensi informasi.</p>
 
         <div class="form-grid">
-            <div>
-                <label for="slug">Slug</label>
-                <input type="text" id="slug" name="slug" value="{{ old('slug', $package->slug) }}" required />
-                @error('slug')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
+
             <div>
                 <label for="level">Jenjang Pendidikan</label>
                 <select id="level" name="level" required style="width: 100%; border-radius: 14px; border: 1px solid rgba(15, 23, 42, 0.12); padding: 12px 14px; font-size: 0.95rem; background: rgba(248, 250, 252, 0.9);">
@@ -260,16 +254,9 @@
                 @enderror
             </div>
             <div>
-                <label for="card_price_label">Label Harga Kartu</label>
+                <label for="card_price_label">Label Harga</label>
                 <input type="text" id="card_price_label" name="card_price_label" value="{{ old('card_price_label', $package->card_price_label) }}" required />
                 @error('card_price_label')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
-            <div>
-                <label for="detail_price_label">Label Harga Detail</label>
-                <input type="text" id="detail_price_label" name="detail_price_label" value="{{ old('detail_price_label', $package->detail_price_label) }}" required />
-                @error('detail_price_label')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>

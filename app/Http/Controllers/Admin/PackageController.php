@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+
+
 
 class PackageController extends BaseAdminController
 {
@@ -101,14 +104,13 @@ class PackageController extends BaseAdminController
     {
         $stageKeys = array_keys($this->stageOptions());
 
-        return $request->validate([
-            'slug' => ['required', 'string', 'max:255', Rule::unique(Package::class)->ignore($packageId)],
+        $validated = $request->validate([
+            // Slug is auto-generated
             'level' => ['required', 'string', 'max:255', Rule::in($stageKeys)],
             'grade_range' => ['required', 'string', 'max:255'],
             'tag' => ['nullable', 'string', 'max:50'],
             'card_price_label' => ['required', 'string', 'max:50'],
             'detail_title' => ['required', 'string', 'max:255'],
-            'detail_price_label' => ['required', 'string', 'max:50'],
             'image_url' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'max_students' => ['nullable', 'integer', 'min:1'],
@@ -120,6 +122,30 @@ class PackageController extends BaseAdminController
             'card_features' => ['nullable', 'array'],
             'card_features.*' => ['nullable', 'string', 'max:255'],
         ]);
+
+        // Mirror card_price_label to detail_price_label
+        $validated['detail_price_label'] = $validated['card_price_label'];
+
+        // Auto-generate slug if not present (create) or if title changed (update)
+        if (!isset($validated['slug'])) {
+            $validated['slug'] = $this->generateUniqueSlug($validated['detail_title'], $packageId);
+        }
+
+        return $validated;
+    }
+
+    private function generateUniqueSlug(string $title, ?int $ignoreId = null): string
+    {
+        $slug = Str::slug($title);
+        $originalSlug = $slug;
+        $count = 2;
+
+        while (Package::where('slug', $slug)->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = "{$originalSlug}-{$count}";
+            $count++;
+        }
+
+        return $slug;
     }
 
     /**
