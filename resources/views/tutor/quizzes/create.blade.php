@@ -29,7 +29,8 @@
 
         input[type="text"],
         input[type="url"],
-        textarea {
+        textarea,
+        select {
             width: 100%;
             padding: 14px 18px;
             border: 1px solid #d9e0ea;
@@ -105,27 +106,46 @@
         .form-actions {
             display: flex;
             gap: 16px;
-            margin-top: 28px;
+            margin-top: 32px;
+            align-items: center;
+            justify-content: flex-end;
         }
 
-        .form-actions a,
-        .form-actions button {
-            padding: 14px 24px;
-            border-radius: 16px;
+        .btn-cancel {
+            padding: 12px 24px;
+            border-radius: 12px;
             font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
+            text-decoration: none;
+            color: #64748b;
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            font-size: 1rem;
+            display: inline-block;
         }
 
-        .form-actions a {
-            border: 1px solid #d9e0ea;
-            color: #1f2937;
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: #0f172a;
         }
 
-        .form-actions button {
+        .btn-save {
+            background: #3fa67e;
+            color: white;
             border: none;
-            background: var(--primary);
-            color: #fff;
+            padding: 12px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
+        }
+
+        .btn-save:hover {
+            background: #2f8a67;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px -1px rgba(63, 166, 126, 0.4);
         }
 
         .error-text {
@@ -182,7 +202,7 @@
             <label>
                 <span>Mata Pelajaran</span>
                 <select name="subject_id" id="subject-select" required style="width: 100%; padding: 14px 18px; border: 1px solid #d9e0ea; border-radius: 16px; font-family: inherit; font-size: 1rem;">
-                    <option value="">Pilih paket terlebih dahulu</option>
+                    <option value="">Memuat...</option>
                 </select>
                 @error('subject_id')
                     <div class="error-text">{{ $message }}</div>
@@ -224,7 +244,7 @@
             <div class="dynamic-group">
                 <div class="dynamic-group__header">
                     <span>Level atau Kompetensi</span>
-                    <button class="dynamic-add" data-add-level>Tambah level</button>
+                    <button class="dynamic-add" data-add-level type="button">Tambah level</button>
                 </div>
                 <div class="dynamic-group__items" data-levels>
                     @foreach ($levelValues as $value)
@@ -247,7 +267,7 @@
             <div class="dynamic-group">
                 <div class="dynamic-group__header">
                     <span>Highlight Pembelajaran</span>
-                    <button class="dynamic-add" data-add-takeaway>Tambah highlight</button>
+                    <button class="dynamic-add" data-add-takeaway type="button">Tambah highlight</button>
                 </div>
                 <div class="dynamic-group__items" data-takeaways>
                     @foreach ($takeawayValues as $value)
@@ -276,8 +296,12 @@
             </label>
 
             <div class="form-actions">
-                <a href="{{ route('tutor.quizzes.index') }}">Batal</a>
-                <button type="submit">Simpan Draft</button>
+                <a href="{{ route('tutor.quizzes.index') }}" class="btn-cancel">
+                    Batal
+                </a>
+                <button type="submit" class="btn-save">
+                    Simpan Quiz
+                </button>
             </div>
         </form>
     </div>
@@ -338,13 +362,13 @@
                 bindRemoval(row);
             });
 
-            // AJAX Subject Dropdown
+            // AJAX Subject Dropdown - SAMA PERSIS DENGAN EDIT
             const packageSelect = document.querySelector('select[name="package_id"]');
             const subjectSelect = document.getElementById('subject-select');
+            const currentSubjectId = "{{ old('subject_id') }}";
 
             if (packageSelect && subjectSelect) {
-                packageSelect.addEventListener('change', function() {
-                    const packageId = this.value;
+                const loadSubjects = (packageId, selectedId = null) => {
                     subjectSelect.innerHTML = '<option value="">Memuat...</option>';
                     subjectSelect.disabled = true;
 
@@ -357,6 +381,9 @@
                                     const option = document.createElement('option');
                                     option.value = subject.id;
                                     option.textContent = subject.name + ' (' + subject.level + ')';
+                                    if (selectedId && String(subject.id) === String(selectedId)) {
+                                        option.selected = true;
+                                    }
                                     subjectSelect.appendChild(option);
                                 });
                                 subjectSelect.disabled = false;
@@ -369,10 +396,15 @@
                         subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
                         subjectSelect.disabled = true;
                     }
+                };
+
+                packageSelect.addEventListener('change', function() {
+                    loadSubjects(this.value);
                 });
 
+                // Jika package sudah dipilih (setelah validation error), load subjects
                 if (packageSelect.value) {
-                    packageSelect.dispatchEvent(new Event('change'));
+                    loadSubjects(packageSelect.value, currentSubjectId);
                 }
             }
         });

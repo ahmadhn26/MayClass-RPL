@@ -103,31 +103,51 @@
         }
 
         .form-actions {
-            display: flex;
-            gap: 16px;
-            margin-top: 28px;
-        }
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+    align-items: center;
+    justify-content: flex-end; /* Rapat kanan */
+}
 
-        .form-actions a,
-        .form-actions button {
-            padding: 14px 24px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-        }
+/* Tombol Batal */
+.btn-cancel {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    font-size: 1rem;
+    display: inline-block;
+}
 
-        .form-actions a {
-            border: 1px solid #d9e0ea;
-            color: #1f2937;
-        }
+.btn-cancel:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
 
-        .form-actions button {
-            border: none;
-            background: var(--primary);
-            color: #fff;
-        }
+/* Tombol Simpan (Hijau) */
+.btn-save {
+    background: #3fa67e; /* Hijau sesuai tema */
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
+}
 
+.btn-save:hover {
+    background: #2f8a67;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -1px rgba(63, 166, 126, 0.4);
+}
         .error-text {
             color: #dc2626;
             font-size: 0.9rem;
@@ -279,9 +299,14 @@
             </label>
 
             <div class="form-actions">
-                <a href="{{ route('tutor.quizzes.index') }}">Batal</a>
-                <button type="submit">Simpan Perubahan</button>
-            </div>
+    <a href="{{ route('tutor.quizzes.index') }}" class="btn-cancel">
+        Batal
+    </a>
+
+    <button type="submit" class="btn-save">
+        Simpan Quiz
+    </button>
+</div>
         </form>
     </div>
 @endsection
