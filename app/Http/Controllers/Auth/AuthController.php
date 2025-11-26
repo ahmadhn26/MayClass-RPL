@@ -221,9 +221,9 @@ class AuthController extends Controller
 
         try {
             if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-                return back()->withErrors([
-                    'username' => __('auth.failed'),
-                ])->onlyInput('username');
+                return back()
+                    ->withInput($request->only('username'))
+                    ->with('error', __('Peringatan: Username atau Password salah.'));
             }
 
             $user = Auth::user();
@@ -236,15 +236,15 @@ class AuthController extends Controller
             ) {
                 Auth::logout();
 
-                return back()->withErrors([
-                    'username' => __('Akun tentor ini sedang dinonaktifkan oleh admin.'),
-                ])->onlyInput('username');
+                return back()
+                    ->withInput($request->only('username'))
+                    ->with('error', __('Akun tentor ini sedang dinonaktifkan oleh admin.'));
             }
         } catch (QueryException | PDOException $exception) {
             if ($this->isDatabaseConnectionIssue($exception)) {
-                return back()->withErrors([
-                    'username' => __('Koneksi ke database gagal. Pastikan layanan MySQL/XAMPP sudah berjalan dan pengaturan DB_HOST, DB_PORT, DB_USERNAME di file .env sesuai.'),
-                ])->onlyInput('username');
+                return back()
+                    ->withInput($request->only('username'))
+                    ->with('error', __('Koneksi ke database gagal. Pastikan layanan MySQL/XAMPP sudah berjalan dan pengaturan DB_HOST, DB_PORT, DB_USERNAME di file .env sesuai.'));
             }
 
             throw $exception;
