@@ -380,6 +380,157 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                display: flex; /* Switch to flex to avoid grid overflow */
+                flex-direction: column;
+                gap: 16px;
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden; /* Extra safety */
+            }
+
+            /* Hero Section Mobile */
+            .hero-panel {
+                padding: 16px;
+                gap: 16px;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                min-width: 0; /* Allow shrinking */
+                box-sizing: border-box;
+            }
+
+            .hero-content {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .hero-content h2 {
+                font-size: 1.25rem;
+                line-height: 1.3;
+                word-wrap: break-word; /* Prevent long words breaking layout */
+            }
+            
+            .hero-content p {
+                font-size: 0.9rem;
+            }
+
+            .hero-stats-sidebar {
+                padding: 16px;
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            .hero-trend-box .amount {
+                font-size: 1.2rem;
+            }
+
+            /* KPI Grid Mobile */
+            .kpi-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+            }
+
+            .kpi-card {
+                padding: 16px;
+                width: 100%;
+                min-width: 0; /* Allow shrinking */
+                box-sizing: border-box;
+            }
+
+            .kpi-value {
+                font-size: 1.35rem;
+            }
+            
+            .kpi-header {
+                font-size: 0.8rem;
+            }
+
+            /* Dashboard Grid Mobile */
+            .dashboard-grid {
+                gap: 16px;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .main-column,
+            .side-column {
+                width: 100%;
+                max-width: 100%;
+                min-width: 0; /* Critical for flex items to shrink */
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .section-card {
+                padding: 16px;
+                width: 100%;
+                max-width: 100%; /* Force strict width */
+                min-width: 0;
+                box-sizing: border-box;
+                display: block; /* Switch to block to avoid flex expansion issues */
+                overflow: hidden; /* Ensure card doesn't expand */
+            }
+
+            .card-title h3 {
+                font-size: 1rem;
+            }
+
+            /* Table Mobile */
+            .modern-table th, 
+            .modern-table td {
+                padding: 10px;
+            }
+            
+            .modern-table th {
+                font-size: 0.7rem;
+            }
+
+            .modern-table td {
+                font-size: 0.8rem;
+            }
+            
+            /* Scrollable Chart Container */
+            .chart-scroll-wrapper {
+                display: block;
+                overflow-x: auto;
+                width: 100%;
+                max-width: 100%;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 12px; /* More space for scrollbar */
+            }
+
+            .chart-min-width,
+            #revenueChart {
+                min-width: 600px !important; /* Force width with !important */
+                width: 600px; /* Explicit width */
+                display: block;
+            }
+
+            /* Ensure charts don't overflow */
+            .apexcharts-canvas {
+                max-width: none !important; /* Allow chart to exceed screen width */
+                width: 600px !important; /* Force chart width */
+            }
+
+            /* Ensure table wrapper scrolls */
+            .table-wrapper {
+                display: block;
+                overflow-x: auto;
+                width: 100%;
+                max-width: 100%; /* Strict constraint */
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 8px;
+            }
+        }
     </style>
 @endpush
 
@@ -482,7 +633,11 @@
                     @if ($monthlyRevenue->sum('value') === 0)
                         <div class="empty-state">Belum ada data transaksi untuk ditampilkan</div>
                     @else
-                        <div id="revenueChart"></div>
+                        <div class="chart-scroll-wrapper">
+                            <div class="chart-min-width">
+                                <div id="revenueChart"></div>
+                            </div>
+                        </div>
                     @endif
                 </div>
 
@@ -625,6 +780,7 @@
                 chart: {
                     type: 'area',
                     height: 240,
+                    width: window.innerWidth < 768 ? 600 : '100%', // Force 600px width on mobile to enable scrolling
                     toolbar: { show: false },
                     fontFamily: 'Poppins, sans-serif'
                 },

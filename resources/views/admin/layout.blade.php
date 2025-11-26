@@ -51,6 +51,66 @@
             padding: 32px 40px;
         }
 
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: var(--sidebar);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 990;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mobile-brand img {
+            height: 32px;
+            width: auto;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1002; /* Higher than sidebar */
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        /* Hamburger Animation */
+        .hamburger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
         .nav-panel {
             background: var(--sidebar);
             border-radius: 24px;
@@ -63,6 +123,8 @@
             top: 32px;
             align-self: start;
             min-height: calc(100vh - 64px);
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .navigation {
@@ -248,6 +310,26 @@
             font-weight: 500;
         }
 
+        /* Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 995;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         @media (max-width: 1240px) {
             .dashboard-shell {
                 grid-template-columns: 240px 1fr;
@@ -255,23 +337,47 @@
             }
         }
 
+        html, body {
+            overflow-x: hidden; /* Global horizontal scroll prevention */
+            width: 100%;
+        }
+
         @media (max-width: 1024px) {
+            .mobile-header {
+                display: flex;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
             .dashboard-shell {
-                grid-template-columns: 1fr;
-                padding: 20px;
+                display: block; /* Remove grid */
+                padding: 16px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .nav-panel {
-                position: static;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 16px;
-                max-height: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 280px;
+                max-width: 85vw;
+                transform: translateX(-100%);
+                border-radius: 0 24px 24px 0;
+                z-index: 1000;
+                box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+                overflow-y: auto; /* Enable scrolling */
+                overscroll-behavior: contain; /* Prevent body scroll chaining */
+            }
+
+            .nav-panel.active {
+                transform: translateX(0);
             }
 
             .navigation {
                 display: flex;
-                flex-wrap: wrap;
+                flex-direction: column; /* Keep vertical */
                 gap: 12px;
             }
 
@@ -317,8 +423,24 @@
 </head>
 
 <body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="mobile-brand">
+            <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo">
+            <span>Admin Panel</span>
+        </div>
+        <button class="hamburger-btn" id="adminHamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </header>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="adminOverlay"></div>
+
     <div class="dashboard-shell">
-        <aside class="nav-panel">
+        <aside class="nav-panel" id="adminSidebar">
             <nav class="navigation">
                 @php
                     $admin = auth()->user();
@@ -429,6 +551,41 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Mobile Sidebar Toggle
+            const hamburger = document.getElementById('adminHamburger');
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.getElementById('adminOverlay');
+
+            function toggleSidebar() {
+                hamburger.classList.toggle('active');
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+                
+                if (sidebar.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (hamburger) {
+                hamburger.addEventListener('click', toggleSidebar);
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', toggleSidebar);
+            }
+
+            // Close sidebar when clicking a link (optional)
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 1024) {
+                        toggleSidebar();
+                    }
+                });
+            });
+
             // Global Delete Handler
             document.body.addEventListener('click', function (e) {
                 const button = e.target.closest('.btn-delete');
