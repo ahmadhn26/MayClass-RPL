@@ -18,7 +18,7 @@
             --bg-page: #f8fafc;
         }
 
-        .page-content {
+        .schedule-content {
             max-width: 1280px;
             margin: 0 auto;
             display: flex;
@@ -39,15 +39,28 @@
             overflow: hidden;
         }
 
-        .hero-card::before, .hero-card::after {
+        .hero-card::before,
+        .hero-card::after {
             content: '';
             position: absolute;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.06);
             z-index: 1;
         }
-        .hero-card::before { width: 300px; height: 300px; top: -100px; right: -50px; }
-        .hero-card::after { width: 200px; height: 200px; bottom: -50px; left: 10%; }
+
+        .hero-card::before {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -50px;
+        }
+
+        .hero-card::after {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            left: 10%;
+        }
 
         .hero-header {
             position: relative;
@@ -130,7 +143,8 @@
         /* --- HEADER JUDUL (Perbaikan agar angka turun ke bawah) --- */
         .section-header {
             display: flex;
-            flex-direction: column; /* Ini kuncinya: susun ke bawah */
+            flex-direction: column;
+            /* Ini kuncinya: susun ke bawah */
             gap: 4px;
             margin-bottom: 16px;
         }
@@ -157,7 +171,8 @@
         /* --- EMPTY STATE (Kotak Kosong) --- */
         .empty-state {
             text-align: center;
-            padding: 32px; /* Padding lebih kecil biar ga terlalu tinggi */
+            padding: 32px;
+            /* Padding lebih kecil biar ga terlalu tinggi */
             background: #f8fafc;
             border-radius: 16px;
             border: 2px dashed #cbd5e1;
@@ -166,7 +181,8 @@
             flex-direction: column;
             align-items: center;
             gap: 12px;
-            min-height: 140px; /* Tinggi minimum yang pas */
+            min-height: 140px;
+            /* Tinggi minimum yang pas */
             justify-content: center;
         }
 
@@ -187,7 +203,8 @@
             grid-template-columns: auto 1fr;
             gap: 24px;
             overflow: hidden;
-            margin-bottom: 24px; /* Jarak antar kartu */
+            margin-bottom: 24px;
+            /* Jarak antar kartu */
         }
 
         .session-card:hover {
@@ -200,14 +217,18 @@
         .session-card::before {
             content: '';
             position: absolute;
-            left: 0; top: 0; bottom: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
             width: 4px;
             background: currentColor;
         }
 
         .session-card.today {
-            border-color: var(--primary-solid); /* Warna Hijau Teal */
-            background: #f0fdfa; /* Background Hijau Muda */
+            border-color: var(--primary-solid);
+            /* Warna Hijau Teal */
+            background: #f0fdfa;
+            /* Background Hijau Muda */
             color: var(--primary-solid);
         }
 
@@ -225,7 +246,8 @@
         }
 
         .session-card.today .date-box {
-            background: var(--primary-solid); /* Kotak tanggal jadi hijau solid */
+            background: var(--primary-solid);
+            /* Kotak tanggal jadi hijau solid */
             color: white;
             border: none;
         }
@@ -237,7 +259,10 @@
             letter-spacing: 0.05em;
             margin-bottom: 2px;
         }
-        .session-card.today .date-box .day { color: rgba(255,255,255,0.8); }
+
+        .session-card.today .date-box .day {
+            color: rgba(255, 255, 255, 0.8);
+        }
 
         .date-box .date {
             font-size: 1.75rem;
@@ -245,14 +270,20 @@
             color: var(--text-main);
             line-height: 1;
         }
-        .session-card.today .date-box .date { color: white; }
+
+        .session-card.today .date-box .date {
+            color: white;
+        }
 
         .date-box .month {
             font-size: 0.8rem;
             color: var(--text-muted);
             font-weight: 500;
         }
-        .session-card.today .date-box .month { color: rgba(255,255,255,0.8); }
+
+        .session-card.today .date-box .month {
+            color: rgba(255, 255, 255, 0.8);
+        }
 
         .session-details {
             display: flex;
@@ -368,32 +399,60 @@
             display: inline-block;
         }
 
-        .status-completed { background: #dcfce7; color: #166534; }
-        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         @media (max-width: 1024px) {
-            .schedule-grid { grid-template-columns: 1fr; }
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 640px) {
-            .session-card { grid-template-columns: 1fr; }
-            .date-box { flex-direction: row; gap: 12px; padding: 12px; justify-content: flex-start; }
-            .date-box .date { font-size: 1.25rem; margin: 0; }
-            .hero-card { padding: 32px; }
-            .hero-content h1 { font-size: 2rem; }
+            .session-card {
+                grid-template-columns: 1fr;
+            }
+
+            .date-box {
+                flex-direction: row;
+                gap: 12px;
+                padding: 12px;
+                justify-content: flex-start;
+            }
+
+            .date-box .date {
+                font-size: 1.25rem;
+                margin: 0;
+            }
+
+            .hero-card {
+                padding: 32px;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="page-content">
-        
+    <div class="schedule-content">
+
         {{-- 1. HERO SECTION --}}
         <section class="hero-card">
             <div class="hero-header">
                 <div class="hero-content">
                     <h1>Agenda Mengajar</h1>
-                    <p>Kelola dan pantau jadwal sesi kelas Anda. Pastikan hadir tepat waktu untuk memberikan pengalaman belajar terbaik.</p>
+                    <p>Kelola dan pantau jadwal sesi kelas Anda. Pastikan hadir tepat waktu untuk memberikan pengalaman
+                        belajar terbaik.</p>
                 </div>
             </div>
             <div class="metrics-row">
@@ -413,10 +472,10 @@
         </section>
 
         <div class="schedule-grid">
-            
+
             {{-- 2. KOLOM JADWAL (KIRI) --}}
             <div class="main-schedule">
-                
+
                 {{-- JADWAL HARI INI --}}
                 <div class="section-container">
                     <div class="section-header">
@@ -426,8 +485,10 @@
 
                     @if ($todaySessions->isEmpty())
                         <div class="empty-state">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 40px; height: 40px;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" style="width: 40px; height: 40px;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <p>Tidak ada jadwal mengajar hari ini.</p>
                         </div>
@@ -441,13 +502,15 @@
                                         <span class="date">{{ $date ? $date->format('d') : '-' }}</span>
                                         <span class="month">{{ $date ? $date->locale('id')->isoFormat('MMM') : '-' }}</span>
                                     </div>
-                                    
+
                                     <div class="session-details">
                                         <div class="session-header">
                                             <h3 class="session-title">{{ $session['title'] }}</h3>
                                             <div class="time-badge">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" width="16" height="16">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 {{ $session['time_range'] }}
                                             </div>
@@ -455,27 +518,36 @@
 
                                         <div class="meta-row">
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                                 </svg>
                                                 {{ $session['package'] }}
                                             </div>
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                                 </svg>
                                                 {{ $session['subject'] }}
                                             </div>
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 {{ $session['location'] }}
                                             </div>
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                                 </svg>
                                                 {{ $session['participant_summary'] }}
                                             </div>
@@ -496,8 +568,10 @@
 
                     @if ($futureSessions->isEmpty())
                         <div class="empty-state">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 40px; height: 40px;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" style="width: 40px; height: 40px;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                             </svg>
                             <p>Belum ada jadwal mendatang lainnya.</p>
                         </div>
@@ -505,19 +579,22 @@
                         <div class="session-list" id="future-sessions-list">
                             @foreach ($futureSessions as $index => $session)
                                 @php $date = $session['start_at']; @endphp
-                                <div class="session-card" data-session-index="{{ $index }}" style="{{ $index >= 10 ? 'display: none;' : '' }}">
+                                <div class="session-card" data-session-index="{{ $index }}"
+                                    style="{{ $index >= 10 ? 'display: none;' : '' }}">
                                     <div class="date-box">
                                         <span class="day">{{ $date ? $date->locale('id')->isoFormat('ddd') : '-' }}</span>
                                         <span class="date">{{ $date ? $date->format('d') : '-' }}</span>
                                         <span class="month">{{ $date ? $date->locale('id')->isoFormat('MMM Y') : '-' }}</span>
                                     </div>
-                                    
+
                                     <div class="session-details">
                                         <div class="session-header">
                                             <h3 class="session-title">{{ $session['title'] }}</h3>
                                             <div class="time-badge">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" width="16" height="16">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 {{ $session['time_range'] }}
                                             </div>
@@ -526,27 +603,36 @@
                                         <div class="meta-row">
                                             {{-- Meta items sama seperti di atas --}}
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                                 </svg>
                                                 {{ $session['package'] }}
                                             </div>
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                                 </svg>
                                                 {{ $session['subject'] }}
                                             </div>
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 {{ $session['location'] }}
                                             </div>
                                             <div class="meta-item">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                                 </svg>
                                                 {{ $session['participant_summary'] }}
                                             </div>
@@ -555,10 +641,11 @@
                                 </div>
                             @endforeach
                         </div>
-                        
+
                         @if ($futureSessions->count() > 10)
                             <div style="text-align: center; margin-top: 24px;">
-                                <button id="toggle-future-btn" onclick="toggleFutureSessions()" style="background: var(--primary-solid); color: white; border: none; padding: 12px 32px; border-radius: 99px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.2s;">
+                                <button id="toggle-future-btn" onclick="toggleFutureSessions()"
+                                    style="background: var(--primary-solid); color: white; border: none; padding: 12px 32px; border-radius: 99px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.2s;">
                                     Tampilkan Lebih Banyak ({{ $futureSessions->count() - 10 }} sesi lagi)
                                 </button>
                             </div>
@@ -585,7 +672,8 @@
                                 </div>
                                 <div class="history-content">
                                     <h4>{{ $session['title'] }}</h4>
-                                    <span class="history-status status-{{ $session['status_variant'] === 'success' ? 'completed' : 'cancelled' }}">
+                                    <span
+                                        class="history-status status-{{ $session['status_variant'] === 'success' ? 'completed' : 'cancelled' }}">
                                         {{ $session['status_label'] }}
                                     </span>
                                 </div>
@@ -599,27 +687,27 @@
     </div>
 
     <script>
-    let showingAllFuture = false;
-    function toggleFutureSessions() {
-        const sessions = document.querySelectorAll('[data-session-index]');
-        const btn = document.getElementById('toggle-future-btn');
-        
-        showingAllFuture = !showingAllFuture;
-        
-        sessions.forEach((session, index) => {
-            const sessionIndex = parseInt(session.getAttribute('data-session-index'));
-            if (sessionIndex >= 10) {
-                session.style.display = showingAllFuture ? 'grid' : 'none';
+        let showingAllFuture = false;
+        function toggleFutureSessions() {
+            const sessions = document.querySelectorAll('[data-session-index]');
+            const btn = document.getElementById('toggle-future-btn');
+
+            showingAllFuture = !showingAllFuture;
+
+            sessions.forEach((session, index) => {
+                const sessionIndex = parseInt(session.getAttribute('data-session-index'));
+                if (sessionIndex >= 10) {
+                    session.style.display = showingAllFuture ? 'grid' : 'none';
+                }
+            });
+
+            if (showingAllFuture) {
+                btn.textContent = 'Tampilkan Lebih Sedikit';
+            } else {
+                const totalSessions = sessions.length;
+                const hiddenCount = totalSessions - 10;
+                btn.textContent = `Tampilkan Lebih Banyak (${hiddenCount} sesi lagi)`;
             }
-        });
-        
-        if (showingAllFuture) {
-            btn.textContent = 'Tampilkan Lebih Sedikit';
-        } else {
-            const totalSessions = sessions.length;
-            const hiddenCount = totalSessions - 10;
-            btn.textContent = `Tampilkan Lebih Banyak (${hiddenCount} sesi lagi)`;
         }
-    }
     </script>
 @endsection
