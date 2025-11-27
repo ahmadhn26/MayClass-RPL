@@ -79,7 +79,8 @@ class MaterialController extends BaseTutorController
         }
 
         $data = $request->validate([
-            'package_id' => ['required', 'exists:packages,id'],
+            'package_ids' => ['required', 'array', 'min:1'],
+            'package_ids.*' => ['required', 'exists:packages,id'],
             'title' => ['required', 'string', 'max:255'],
             'subject_id' => ['required', 'exists:subjects,id'],
             'level' => ['required', 'string', 'max:120'],
@@ -105,7 +106,6 @@ class MaterialController extends BaseTutorController
         DB::transaction(function () use ($data, $uniqueSlug, $request) {
             $material = Material::create([
                 'slug' => $uniqueSlug,
-                'package_id' => $data['package_id'],
                 'subject_id' => $data['subject_id'],
                 'title' => $data['title'],
                 'level' => $data['level'],
@@ -114,6 +114,9 @@ class MaterialController extends BaseTutorController
                 'resource_path' => $data['gdrive_links'] ?? [],
                 'quiz_urls' => $data['quiz_urls'] ?? [],
             ]);
+
+            // Sync packages to pivot table
+            $material->packages()->sync($data['package_ids']);
 
             $this->syncObjectives($material, $request->input('objectives', []));
             $this->syncChapters($material, $request->input('chapters', []));
@@ -126,7 +129,7 @@ class MaterialController extends BaseTutorController
 
     public function edit(Material $material)
     {
-        $material->load(['objectives', 'chapters']);
+        $material->load(['objectives', 'chapters', 'packages']);
 
         $packages = Schema::hasTable('packages')
             ? Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
@@ -135,6 +138,7 @@ class MaterialController extends BaseTutorController
         return $this->render('tutor.materials.edit', [
             'material' => $material,
             'packages' => $packages,
+            'selectedPackageIds' => $material->packages->pluck('id')->toArray(),
         ]);
     }
 
@@ -153,7 +157,8 @@ class MaterialController extends BaseTutorController
         }
 
         $data = $request->validate([
-            'package_id' => ['required', 'exists:packages,id'],
+            'package_ids' => ['required', 'array', 'min:1'],
+            'package_ids.*' => ['required', 'exists:packages,id'],
             'title' => ['required', 'string', 'max:255'],
             'subject_id' => ['required', 'exists:subjects,id'],
             'level' => ['required', 'string', 'max:120'],
@@ -170,7 +175,6 @@ class MaterialController extends BaseTutorController
         ]);
 
         $payload = [
-            'package_id' => $data['package_id'],
             'subject_id' => $data['subject_id'],
             'title' => $data['title'],
             'level' => $data['level'],
@@ -184,8 +188,11 @@ class MaterialController extends BaseTutorController
             $payload['thumbnail_url'] = UnsplashPlaceholder::material(\App\Models\Subject::find($data['subject_id'])->name ?? 'Material');
         }
 
-        DB::transaction(function () use ($material, $payload, $request) {
+        DB::transaction(function () use ($material, $payload, $request, $data) {
             $material->update($payload);
+
+            // Sync packages
+            $material->packages()->sync($data['package_ids']);
 
             $material->objectives()->delete();
             $material->chapters()->delete();

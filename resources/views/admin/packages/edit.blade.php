@@ -268,13 +268,6 @@
                 @enderror
             </div>
             <div class="full">
-                <label for="image_url">Kunci Gambar (unsplash)</label>
-                <input type="text" id="image_url" name="image_url" value="{{ old('image_url', $package->image_url) }}" required />
-                @error('image_url')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
-            <div class="full">
                 <label for="summary">Ringkasan</label>
                 <textarea id="summary" name="summary" required>{{ old('summary', $package->summary) }}</textarea>
                 @error('summary')

@@ -147,7 +147,7 @@
         }
 
         /* CSS Thumbnail dihapus karena elemennya sudah tidak dipakai, 
-                                           tapi layout card-content akan otomatis menyesuaikan */
+                                                       tapi layout card-content akan otomatis menyesuaikan */
 
         .card-content {
             flex: 1;
@@ -409,6 +409,88 @@
             background: #f8fafc;
             color: #94a3b8;
             cursor: not-allowed;
+        }
+
+        /* Package Multi-Select Checkbox */
+        .package-selector {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            background: white;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .package-checkbox-item {
+            margin-bottom: 8px;
+
+            last-of-type {
+                margin-bottom: 0;
+            }
+        }
+
+        .package-checkbox {
+            display: none;
+        }
+
+        .package-checkbox-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .package-checkbox-label:hover {
+            border-color: var(--primary-color);
+            background: rgba(63, 166, 126, 0.05);
+        }
+
+        .package-checkbox:checked+.package-checkbox-label {
+            border-color: var(--primary-color);
+            background: rgba(63, 166, 126, 0.1);
+        }
+
+        .package-checkbox:checked+.package-checkbox-label::before {
+            content: '✓';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .package-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .package-level {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-right: 28px;
+        }
+
+        .package-checkbox:checked+.package-checkbox-label .package-level {
+            background: rgba(63, 166, 126, 0.15);
+            color: var(--primary-color);
         }
 
         /* Dynamic Lists */
@@ -903,15 +985,23 @@
             {{-- Paket & Mapel --}}
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Pilih Paket Belajar</label>
-                    <select name="package_id" id="packageSelect" class="form-control" required
-                        onchange="fetchSubjects(this.value)">
-                        <option value="">-- Pilih Paket --</option>
+                    <label class="form-label">Pilih Paket Belajar (bisa lebih dari 1)</label>
+                    <div class="package-selector" id="packageSelector">
                         @foreach($packages as $package)
-                            <option value="{{ $package->id }}" data-level="{{ $package->level }}">{{ $package->name }}
-                                ({{ $package->level }})</option>
+                            <div class="package-checkbox-item">
+                                <input type="checkbox" name="package_ids[]" id="package_{{ $package->id }}"
+                                    value="{{ $package->id }}" data-level="{{ $package->level }}" class="package-checkbox"
+                                    onchange="handlePackageSelection()">
+                                <label for="package_{{ $package->id }}" class="package-checkbox-label">
+                                    <span class="package-name">{{ $package->name }}</span>
+                                    <span class="package-level">{{ $package->level }}</span>
+                                </label>
+                            </div>
                         @endforeach
-                    </select>
+                    </div>
+                    @error('package_ids')
+                        <span class="error-text">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label">Mata Pelajaran</label>
@@ -1124,6 +1214,36 @@
         gdriveInput.focus();
     });
 
+    // Handle Package Multi-Selection
+    function handlePackageSelection() {
+        const checkboxes = document.querySelectorAll('.package-checkbox:checked');
+        const levelInput = document.getElementById('levelInput');
+
+        if (checkboxes.length > 0) {
+            // Get first selected package to fetch subjects
+            const firstPackage = checkboxes[0];
+            const packageId = firstPackage.value;
+            const packageLevel = firstPackage.dataset.level;
+
+            // Update level
+            if (levelInput) {
+                levelInput.value = packageLevel;
+            }
+
+            // Fetch subjects for first selected package
+            fetchSubjects(packageId);
+        } else {
+            // No package selected
+            const subjectSelect = document.getElementById('subjectSelect');
+            subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+            subjectSelect.disabled = true;
+
+            if (levelInput) {
+                levelInput.value = '';
+            }
+        }
+    }
+
     // AJAX Fetch Subjects
     function fetchSubjects(packageId) {
         const subjectSelect = document.getElementById('subjectSelect');
@@ -1237,7 +1357,7 @@
     const bindRemoveButton = (row) => {
         const removeBtn = row.querySelector('[data-remove-row]');
         if (removeBtn) {
-            removeBtn.addEventListener('click', function() {
+            removeBtn.addEventListener('click', function () {
                 const parent = this.closest('.dynamic-item').parentElement;
                 if (parent.children.length > 1) {
                     row.remove();

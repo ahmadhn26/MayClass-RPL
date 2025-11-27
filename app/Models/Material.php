@@ -6,6 +6,7 @@ use App\Support\ImageRepository;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Material extends Model
@@ -54,9 +55,9 @@ class Material extends Model
             : [];
     }
 
-    public function package(): BelongsTo
+    public function packages(): BelongsToMany
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsToMany(Package::class)->withTimestamps();
     }
 
     public function subject(): BelongsTo

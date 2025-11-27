@@ -56,10 +56,29 @@ class PackageController extends BaseAdminController
         return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil dibuat.'));
     }
 
-    public function edit(Package $package): View
+    public function edit(Package $package, Request $request): View|\Illuminate\Http\JsonResponse
     {
-        $package->load(['subjects', 'cardFeatures']);
+        $package->load(['subjects', 'cardFeatures', 'tutors']);
 
+        // Return JSON for AJAX requests (modal)
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'id' => $package->id,
+                'level' => $package->level,
+                'grade_range' => $package->grade_range,
+                'tag' => $package->tag,
+                'price' => $package->price,
+                'max_students' => $package->max_students,
+                'card_price_label' => $package->card_price_label,
+                'detail_title' => $package->detail_title,
+                'summary' => $package->summary,
+                'card_features' => $package->cardFeatures->pluck('label')->toArray(),
+                'subject_ids' => $package->subjects->pluck('id')->toArray(),
+                'tutor_ids' => $package->tutors->pluck('id')->toArray(),
+            ]);
+        }
+
+        // Return view for regular page access (fallback)
         return $this->render('admin.packages.edit', [
             'package' => $package,
             'stages' => $this->stageOptions(),

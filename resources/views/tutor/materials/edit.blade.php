@@ -285,6 +285,40 @@
             margin-top: 4px;
         }
 
+        /* Package Multi-Select Styling */
+        .package-checkbox-edit:checked + label {
+            border-color: #3fa67e !important;
+            background: rgba(63, 166, 126, 0.1) !important;
+        }
+
+        .package-checkbox-edit:checked + label::before {
+            content: '✓';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: #3fa67e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .package-checkbox-edit + label:hover {
+            border-color: #3fa67e !important;
+            background: rgba(63, 166, 126, 0.05) !important;
+        }
+
+        .package-checkbox-edit:checked + label span:last-child {
+            background: rgba(63, 166, 126, 0.15) !important;
+            color: #3fa67e !important;
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -370,18 +404,30 @@
 
                     <div class="form-grid">
                         <label>
-                            <span>Paket Belajar</span>
-                            <select name="package_id" id="package-select" required>
-                                <option value="">Pilih paket yang tersedia</option>
+                            <span>Pilih Paket Belajar (bisa lebih dari 1)</span>
+                            <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: white; max-height: 250px; overflow-y: auto;">
                                 @forelse ($packages as $package)
-                                    <option value="{{ $package->id }}" @selected(old('package_id', $material->package_id) == $package->id)>
-                                        {{ $package->detail_title ?? $package->title }}
-                                    </option>
+                                    <div style="margin-bottom: 8px;">
+                                        <input 
+                                            type="checkbox" 
+                                            name="package_ids[]" 
+                                            id="edit_package_{{ $package->id }}" 
+                                            value="{{ $package->id }}" 
+                                            data-level="{{ $package->level }}"
+                                            class="package-checkbox-edit"
+                                            onchange="handleEditPackageSelection()"
+                                            {{ in_array($package->id, $selectedPackageIds) ? 'checked' : '' }}
+                                            style="display: none;">
+                                        <label for="edit_package_{{ $package->id }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: all 0.2s; position: relative;">
+                                            <span style="font-weight: 600; color: #1e293b;">{{ $package->detail_title ?? $package->title }}</span>
+                                            <span style="font-size: 0.85rem; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; margin-right: 28px;">{{ $package->level }}</span>
+                                        </label>
+                                    </div>
                                 @empty
-                                    <option value="" disabled>Belum ada paket yang tersedia</option>
+                                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Belum ada paket yang tersedia</div>
                                 @endforelse
-                            </select>
-                            @error('package_id') <div class="error-text">{{ $message }}</div> @enderror
+                            </div>
+                            @error('package_ids') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
 
                         <label>
@@ -392,7 +438,7 @@
 
                         <label>
                             <span>Mata Pelajaran</span>
-                            <select name="subject_id" id="subject-select" required>
+                            <select name="subject_id" id="subject-select" required>>
                                 <option value="">Memuat...</option>
                             </select>
                             @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
@@ -622,54 +668,76 @@
                 });
             }
 
-            // --- AJAX Subject Dropdown ---
-            if (packageSelect && subjectSelect) {
-                const loadSubjects = (packageId, selectedId = null) => {
-                    subjectSelect.innerHTML = '<option value="">Memuat...</option>';
-                    subjectSelect.disabled = true;
-
-                    if (packageId) {
-                        fetch(/tutor/packages / ${ packageId } / subjects)
-                            .then(response => response.json())
-                            .then(data => {
-                                subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
-                                data.forEach(subject => {
-                                    const option = document.createElement('option');
-                                    option.value = subject.id;
-
-                                    // 🟢 PERBAIKAN: Simpan Level di Atribut Data
-                                    option.setAttribute('data-level', subject.level || '');
-
-                                    option.textContent = subject.name + ' (' + subject.level + ')';
-
-                                    if (selectedId && String(subject.id) === String(selectedId)) {
-                                        option.selected = true;
-                                        // 🟢 PERBAIKAN: Jika ini mapel terpilih saat load, isi hidden input
-                                        if (hiddenLevelInput) hiddenLevelInput.value = subject.level || '';
-                                    }
-                                    subjectSelect.appendChild(option);
-                                });
-                                subjectSelect.disabled = false;
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
-                            });
-                    } else {
-                        subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
-                        subjectSelect.disabled = true;
+            // Handle Package Multi-Selection in Edit Form
+            window.handleEditPackageSelection = function() {
+                const checkboxes = document.querySelectorAll('.package-checkbox-edit:checked');
+                
+                if (checkboxes.length > 0) {
+                    // Get first selected package to fetch subjects
+                    const firstPackage = checkboxes[0];
+                    const packageId = firstPackage.value;
+                    const packageLevel = firstPackage.dataset.level;
+                    
+                    // Update level
+                    if (hiddenLevelInput) {
+                        hiddenLevelInput.value = packageLevel;
                     }
-                };
-
-                packageSelect.addEventListener('change', function () {
-                    loadSubjects(this.value);
-                    if (hiddenLevelInput) hiddenLevelInput.value = ''; // Reset level jika paket ganti
-                });
-
-                // Initial load
-                if (packageSelect.value) {
-                    loadSubjects(packageSelect.value, currentSubjectId);
+                    
+                    // Fetch subjects for first selected package
+                    loadSubjects(packageId, currentSubjectId);
+                } else {
+                    // No package selected
+                    subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+                    subjectSelect.disabled = true;
+                    
+                    if (hiddenLevelInput) {
+                        hiddenLevelInput.value = '';
+                    }
                 }
+            };
+
+            // --- AJAX Subject Dropdown ---
+            const loadSubjects = (packageId, selectedId = null) => {
+                subjectSelect.innerHTML = '<option value="">Memuat...</option>';
+                subjectSelect.disabled = true;
+
+                if (packageId) {
+                    fetch(`/tutor/packages/${packageId}/subjects`)
+                        .then(response => response.json())
+                        .then(data => {
+                            subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+                            data.forEach(subject => {
+                                const option = document.createElement('option');
+                                option.value = subject.id;
+
+                                // 🟢 PERBAIKAN: Simpan Level di Atribut Data
+                                option.setAttribute('data-level', subject.level || '');
+
+                                option.textContent = subject.name + ' (' + subject.level + ')';
+
+                                if (selectedId && String(subject.id) === String(selectedId)) {
+                                    option.selected = true;
+                                    // 🟢 PERBAIKAN: Jika ini mapel terpilih saat load, isi hidden input
+                                    if (hiddenLevelInput) hiddenLevelInput.value = subject.level || '';
+                                }
+                                subjectSelect.appendChild(option);
+                            });
+                            subjectSelect.disabled = false;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
+                        });
+                } else {
+                    subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
+                    subjectSelect.disabled = true;
+                }
+            };
+
+            // Initial load - get first checked package
+            const firstCheckedPackage = document.querySelector('.package-checkbox-edit:checked');
+            if (firstCheckedPackage) {
+                loadSubjects(firstCheckedPackage.value, currentSubjectId);
             }
         });
     </script>
