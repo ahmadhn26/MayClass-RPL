@@ -10,6 +10,7 @@ use App\Support\StudentIdGenerator;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class FinanceController extends BaseAdminController
@@ -195,6 +196,26 @@ class FinanceController extends BaseAdminController
         return $default;
     }
 
+    public function downloadProof(Order $order)
+    {
+        if (!$order->payment_proof_path) {
+            abort(404);
+        }
+
+        // Use Storage facade to check existence and serve file
+        // This handles mime types and headers more reliably
+        if (!Storage::disk('public')->exists($order->payment_proof_path)) {
+            abort(404);
+        }
+
+        // Clear any previous output buffering to prevent file corruption
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        return Storage::disk('public')->response($order->payment_proof_path);
+    }
+
     private function ordersForReview()
     {
         if (!Schema::hasTable('orders')) {
@@ -218,7 +239,7 @@ class FinanceController extends BaseAdminController
                     'status' => $status,
                     'status_label' => $badge['label'],
                     'status_class' => $badge['class'],
-                    'proof' => $order->payment_proof_path ? asset('storage/' . $order->payment_proof_path) : null,
+                    'proof' => $order->payment_proof_path ? route('admin.finance.proof', $order->id) : null,
                     'proof_name' => $order->payment_proof_path ? basename($order->payment_proof_path) : null,
                     'canApprove' => $status === 'pending',
                     'canReject' => $status === 'pending',

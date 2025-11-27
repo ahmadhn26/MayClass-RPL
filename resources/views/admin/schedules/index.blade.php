@@ -868,6 +868,7 @@
                                                             action="{{ route('admin.schedule.templates.update', $template['id']) }}">
                                                             @csrf @method('PUT')
                                                             <input type="hidden" name="user_id" value="{{ $template['user_id'] }}">
+                                                            <input type="hidden" name="subject_id" value="{{ $template['subject_id'] ?? '' }}">
 
                                                             <td style="min-width: 200px;">
                                                                 <input type="text" name="title" value="{{ $template['title'] }}" class="table-input"
@@ -908,10 +909,10 @@
                                                         </form>
                                                         <form method="POST"
                                                             action="{{ route('admin.schedule.templates.destroy', $template['id']) }}"
-                                                            onsubmit="return confirm('Hapus pola ini?');">
+                                                            class="delete-schedule-form">
                                                             @csrf @method('DELETE')
                                                             <input type="hidden" name="redirect_tutor_id" value="{{ $schedule['activeFilter'] }}">
-                                                            <button type="submit" class="btn-sm btn-delete">Hapus</button>
+                                                            <button type="button" class="btn-sm btn-delete btn-delete-schedule">Hapus</button>
                                                         </form>
                                         </div>
                                         </td>
@@ -1237,6 +1238,35 @@
                 btn.textContent = `Tampilkan Lebih Banyak (${hiddenCount} hari lagi)`;
             }
         }
+
+        // Handle delete template with SweetAlert
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use click event on button instead of form submit
+            document.querySelectorAll('.btn-delete-schedule').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const form = this.closest('form');
+                    
+                    Swal.fire({
+                        title: 'Hapus Pola Jadwal?',
+                        text: 'Pola jadwal ini akan dihapus dan sesi mendatang akan dibatalkan.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
 
     </script>
 @endsection

@@ -145,15 +145,23 @@ class ScheduleController extends BaseAdminController
                 ->values()
                 ->map(function (ScheduleTemplate $template) {
                     $nextDate = $this->nextDateForDay($template->day_of_week);
+                    
+                    // Format start_time to H:i (remove seconds if present)
+                    $startTime = $template->start_time;
+                    if ($startTime && strlen($startTime) > 5) {
+                        // If format is HH:MM:SS, convert to HH:MM
+                        $startTime = substr($startTime, 0, 5);
+                    }
 
                     return [
                         'id' => $template->id,
                         'package_id' => $template->package_id,
+                        'subject_id' => $template->subject_id,  // Added for edit form validation
                         'title' => $template->title,
                         'category' => $template->category,
                         'class_level' => $template->class_level,
                         'location' => $template->location,
-                        'start_time' => $template->start_time,
+                        'start_time' => $startTime,  // Formatted to H:i
                         'duration_minutes' => $template->duration_minutes,
                         'student_count' => $template->student_count,
                         'user_id' => $template->user_id,
