@@ -614,6 +614,66 @@
                 text-align: left;
             }
         }
+
+        /* Modern Error Alert */
+        .error-alert {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dc2626;
+            margin-bottom: 12px;
+        }
+
+        .error-header svg {
+            flex-shrink: 0;
+        }
+
+        .error-header strong {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .error-list li {
+            color: #991b1b;
+            font-size: 0.9rem;
+            padding: 6px 0 6px 36px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .error-list li:before {
+            content: "•";
+            position: absolute;
+            left: 16px;
+            font-weight: 700;
+            color: #dc2626;
+        }
     </style>
 @endpush
 
@@ -683,6 +743,23 @@
                         <form method="POST" action="{{ route('admin.schedule.templates.store') }}" class="form-stack">
                             @csrf
                             <input type="hidden" name="user_id" value="{{ $schedule['selectedTutorId'] }}">
+
+                            {{-- Modern Error Alert --}}
+                            @if($errors->any())
+                                <div class="error-alert">
+                                    <div class="error-header">
+                                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <strong>Gagal menyimpan jadwal!</strong>
+                                    </div>
+                                    <ul class="error-list">
+                                        @foreach($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
 
                             <div class="form-group">
                                 <label>Paket Belajar</label>

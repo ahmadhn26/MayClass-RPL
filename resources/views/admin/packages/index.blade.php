@@ -787,6 +787,67 @@
                 grid-column: span 1;
             }
         }
+
+        /* Modern Error Alert */
+        .error-alert {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dc2626;
+            margin-bottom: 12px;
+        }
+
+        .error-header svg {
+            flex-shrink: 0;
+        }
+
+        .error-header strong {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .error-list li {
+            color: #991b1b;
+            font-size: 0.9rem;
+            padding: 6px 0 6px 36px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .error-list li:before {
+            content: "•";
+            position: absolute;
+            left: 16px;
+            font-weight: 700;
+            color: #dc2626;
+        }
     </style>
 @endpush
 
@@ -949,6 +1010,23 @@
         <form action="{{ route('admin.packages.store') }}" method="POST">
             @csrf
             <div class="modal-body">
+                {{-- Modern Error Alert --}}
+                @if($errors->any())
+                    <div class="error-alert">
+                        <div class="error-header">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <strong>Gagal menambahkan paket!</strong>
+                        </div>
+                        <ul class="error-list">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="form-grid">
 
                     <div class="form-group">
@@ -1160,9 +1238,9 @@
             const item = document.createElement('div');
             item.className = 'feature-item';
             item.innerHTML = `
-                                                        <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
-                                                        <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
-                                                    `;
+                                                                <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
+                                                                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
+                                                            `;
             list.appendChild(item);
         }
 
@@ -1217,8 +1295,8 @@
                 @foreach(['SD', 'SMP', 'SMA'] as $level)
                     @if(isset($subjectsByLevel['{{ $level }}']) && $subjectsByLevel['{{ $level }}']->isNotEmpty())
                         const {{ $level }}_div = document.createElement('div');
-                                                                        {{ $level }}_div.className = 'subject-group';
-                                                                        {{ $level }}_div.innerHTML = '<h4>{{ $level }}</h4><div class="subject-checkboxes" id="edit-subjects-{{ $level }}"></div>';
+                                                                                                {{ $level }}_div.className = 'subject-group';
+                                                                                                {{ $level }}_div.innerHTML = '<h4>{{ $level }}</h4><div class="subject-checkboxes" id="edit-subjects-{{ $level }}"></div>';
                         subjectSelection.appendChild({{ $level }}_div);
 
                         @foreach($subjectsByLevel[$level] as $subject)
@@ -1226,16 +1304,16 @@
                             sub_{{ $subject->id }}.className = 'checkbox-label';
                             const isChecked = data.subject_ids.includes({{ $subject->id }});
                             sub_{{ $subject->id }}.innerHTML = `
-                                                                                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" ${isChecked ? 'checked' : ''}>
-                                                                                                {{ $subject->name }}
-                                                                                            `;
+                                                                                                                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" ${isChecked ? 'checked' : ''}>
+                                                                                                                                {{ $subject->name }}
+                                                                                                                            `;
                             document.getElementById('edit-subjects-{{ $level }}').appendChild(sub_{{ $subject->id }});
                         @endforeach
                     @endif
                 @endforeach
 
-                                // Populate tutors checkboxes
-                                const tutorSelection = document.getElementById('edit-tutor-selection');
+                                        // Populate tutors checkboxes
+                                        const tutorSelection = document.getElementById('edit-tutor-selection');
                 tutorSelection.innerHTML = '';
                 @if($tutors->isNotEmpty())
                     const tutorDiv = document.createElement('div');
@@ -1245,9 +1323,9 @@
                         tutor_{{ $tutor->id }}.className = 'checkbox-label';
                         const tutorChecked = data.tutor_ids.includes({{ $tutor->id }});
                         tutor_{{ $tutor->id }}.innerHTML = `
-                                                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" ${tutorChecked ? 'checked' : ''}>
-                                                                            {{ $tutor->name }}
-                                                                        `;
+                                                                                                    <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" ${tutorChecked ? 'checked' : ''}>
+                                                                                                    {{ $tutor->name }}
+                                                                                                `;
                         tutorDiv.appendChild(tutor_{{ $tutor->id }});
                     @endforeach
                     tutorSelection.appendChild(tutorDiv);
@@ -1275,9 +1353,9 @@
             const item = document.createElement('div');
             item.className = 'feature-item';
             item.innerHTML = `
-                                <input type="text" name="card_features[]" value="${value}" placeholder="Contoh: 6x kelas live per bulan" />
-                                <button type="button" class="btn-remove" onclick="removeEditFeature(this)">Hapus</button>
-                            `;
+                                        <input type="text" name="card_features[]" value="${value}" placeholder="Contoh: 6x kelas live per bulan" />
+                                        <button type="button" class="btn-remove" onclick="removeEditFeature(this)">Hapus</button>
+                                    `;
             list.appendChild(item);
         }
 

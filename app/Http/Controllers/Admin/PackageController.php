@@ -36,6 +36,9 @@ class PackageController extends BaseAdminController
     {
         $data = $this->validatePayload($request);
 
+        // Set default empty string for image_url if not provided
+        $data['image_url'] = $data['image_url'] ?? '';
+
         $package = Package::create($data);
 
         // Sync subjects
@@ -130,7 +133,7 @@ class PackageController extends BaseAdminController
             'tag' => ['nullable', 'string', 'max:50'],
             'card_price_label' => ['required', 'string', 'max:50'],
             'detail_title' => ['required', 'string', 'max:255'],
-            'image_url' => ['required', 'string', 'max:255'],
+            'image_url' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'max_students' => ['nullable', 'integer', 'min:1'],
             'summary' => ['required', 'string'],

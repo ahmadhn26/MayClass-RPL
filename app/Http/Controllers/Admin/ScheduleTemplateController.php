@@ -18,19 +18,26 @@ class ScheduleTemplateController extends BaseAdminController
 {
     public function store(Request $request): RedirectResponse
     {
-        if (! Schema::hasTable('schedule_templates')) {
+        if (!Schema::hasTable('schedule_templates')) {
             return redirect()->route('admin.schedules.index')
                 ->with('alert', __('Tabel template jadwal belum tersedia. Jalankan migrasi terbaru.'));
         }
 
-        $data = $this->validatedData($request);
+        try {
+            $data = $this->validatedData($request);
 
-        $template = ScheduleTemplate::create($data);
+            $template = ScheduleTemplate::create($data);
 
-        ScheduleTemplateGenerator::refreshTemplate($template);
+            ScheduleTemplateGenerator::refreshTemplate($template);
 
-        return redirect()->route('admin.schedules.index', ['tutor_id' => $data['user_id']])
-            ->with('status', __('Jadwal berhasil ditambahkan.'));
+            return redirect()->route('admin.schedules.index', ['tutor_id' => $data['user_id']])
+                ->with('status', __('Jadwal berhasil ditambahkan.'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Flash validation errors to session for display
+            return redirect()->route('admin.schedules.index', ['tutor_id' => $request->input('user_id')])
+                ->withErrors($e->validator)
+                ->withInput();
+        }
     }
 
     public function update(Request $request, ScheduleTemplate $template): RedirectResponse
@@ -71,7 +78,7 @@ class ScheduleTemplateController extends BaseAdminController
         $payload = $request->validate([
             'user_id' => [
                 'required',
-                Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', 'tutor')),
+                Rule::exists('users', 'id')->where(fn($query) => $query->where('role', 'tutor')),
             ],
             'package_id' => ['required', 'exists:packages,id'],
             'subject_id' => ['required', 'exists:subjects,id'],
@@ -122,7 +129,7 @@ class ScheduleTemplateController extends BaseAdminController
         $overlapping = ScheduleTemplate::query()
             ->where('user_id', $userId)
             ->where('day_of_week', $dayOfWeek)
-            ->when($excludeId, fn ($query) => $query->where('id', '!=', $excludeId))
+            ->when($excludeId, fn($query) => $query->where('id', '!=', $excludeId))
             ->get()
             ->filter(function (ScheduleTemplate $template) use ($newStartMinutes, $newEndMinutes) {
                 [$hours, $minutes] = explode(':', $template->start_time);

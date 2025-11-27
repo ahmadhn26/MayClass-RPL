@@ -344,9 +344,10 @@ class CheckoutController extends Controller
 
     private function resolveDraftOrder(int $userId, Package $package, bool $lock = false): Order
     {
+        // Price calculation - NO TAX, NO ADDITIONAL FEES
         $subtotal = $package->price;
-        $tax = round($subtotal * 0.11, 2);
-        $total = $subtotal + $tax;
+        $tax = 0; // Tax removed - price is exactly as shown in package
+        $total = $subtotal; // Total = Package price (no additional fees)
         $expiresAt = now()->addMinutes(30);
 
         $draftQuery = Order::where('user_id', $userId)

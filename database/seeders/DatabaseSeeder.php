@@ -19,7 +19,9 @@ class DatabaseSeeder extends Seeder
         // Other data will be managed manually via Admin panel
 
         $this->call([
-            DemoAdminSeeder::class,  // Active: Creates default admin user for login
+            DemoAdminSeeder::class,
+            SubjectSeeder::class,  
+            PackageSeeder::class,
         ]);
         // LandingContentSeeder::class,
         // PackageSeeder::class,

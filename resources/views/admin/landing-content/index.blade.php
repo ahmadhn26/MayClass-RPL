@@ -873,7 +873,7 @@
                 ];
             } else if (section === 'testimonial') {
                 fields = [
-                    { name: 'content[name]', label: 'Nama Siswa', type: 'text', value: data?.content?.name },
+                    { name: 'content[name]', label: 'Nama Siswa / Nama Orang tua Siswa', type: 'text', value: data?.content?.name },
                     { name: 'content[role]', label: 'Status/Role (ex: Lulus UI)', type: 'text', value: data?.content?.role },
                     { name: 'content[quote]', label: 'Testimoni', type: 'textarea', value: data?.content?.quote },
                     { name: 'image', label: 'Foto Profil', type: 'file' },
