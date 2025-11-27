@@ -88,7 +88,9 @@ class DashboardController extends Controller
 
         $recentMaterials = $materialsAvailable
             ? Material::query()
-                ->where('package_id', $packageId)
+                ->whereHas('packages', function($query) use ($packageId) {
+                    $query->where('packages.id', $packageId);
+                })
                 ->with('subject')
                 ->when($materialChaptersReady, fn ($query) => $query->withCount('chapters'))
                 ->when($materialObjectivesReady, fn ($query) => $query->withCount('objectives'))
@@ -133,18 +135,26 @@ class DashboardController extends Controller
             : collect();
 
         $materialsTotal = $materialsAvailable
-            ? Material::where('package_id', $packageId)->count()
+            ? Material::whereHas('packages', function($query) use ($packageId) {
+                $query->where('packages.id', $packageId);
+            })->count()
             : 0;
         $recentMaterialsCount = $materialsAvailable
-            ? Material::where('package_id', $packageId)
+            ? Material::whereHas('packages', function($query) use ($packageId) {
+                $query->where('packages.id', $packageId);
+            })
                 ->where('created_at', '>=', now()->subDays(14))
                 ->count()
             : 0;
         $subjectsTotal = $materialsAvailable
-            ? Material::where('package_id', $packageId)->distinct('subject_id')->count('subject_id')
+            ? Material::whereHas('packages', function($query) use ($packageId) {
+                $query->where('packages.id', $packageId);
+            })->distinct('subject_id')->count('subject_id')
             : 0;
         $materialLevels = $materialsAvailable
-            ? Material::where('package_id', $packageId)->select('level')->distinct()->pluck('level')->filter()->values()->all()
+            ? Material::whereHas('packages', function($query) use ($packageId) {
+                $query->where('packages.id', $packageId);
+            })->select('level')->distinct()->pluck('level')->filter()->values()->all()
             : [];
 
         $quizzesTotal = $quizzesAvailable

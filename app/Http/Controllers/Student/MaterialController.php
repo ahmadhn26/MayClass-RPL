@@ -49,7 +49,9 @@ class MaterialController extends Controller
         }
 
         $materials = Material::query()
-            ->where('package_id', optional($package)->id)
+            ->whereHas('packages', function($query) use ($package) {
+                $query->where('packages.id', optional($package)->id);
+            })
             ->with('subject')
             ->when($objectivesReady, fn ($query) => $query->withCount('objectives'))
             ->when($chaptersReady, fn ($query) => $query->withCount('chapters'))
@@ -111,7 +113,9 @@ class MaterialController extends Controller
 
         $material = Material::query()
             ->where('slug', $slug)
-            ->where('package_id', optional($package)->id)
+            ->whereHas('packages', function($query) use ($package) {
+                $query->where('packages.id', optional($package)->id);
+            })
             ->with('subject')
             ->when($objectivesReady, fn ($query) => $query->with('objectives'))
             ->when($chaptersReady, fn ($query) => $query->with('chapters'))
@@ -153,7 +157,9 @@ class MaterialController extends Controller
     {
         $material = $this->resolveMaterialForAccess($slug);
 
-        $path = $material->resource_path;
+        $paths = $material->resource_path;
+        // Take first URL from array
+        $path = is_array($paths) && !empty($paths) ? $paths[0] : null;
 
         if (! $path) {
             return redirect()->away($this->materialsLink());
@@ -174,7 +180,9 @@ class MaterialController extends Controller
     {
         $material = $this->resolveMaterialForAccess($slug);
 
-        $path = $material->resource_path;
+        $paths = $material->resource_path;
+        // Take first URL from array
+        $path = is_array($paths) && !empty($paths) ? $paths[0] : null;
 
         if (! $path) {
             return redirect()->away($this->materialsLink());
@@ -221,13 +229,19 @@ class MaterialController extends Controller
 
         return Material::query()
             ->where('slug', $slug)
-            ->where('package_id', $package->id)
+            ->whereHas('packages', function($query) use ($package) {
+                $query->where('packages.id', $package->id);
+            })
             ->firstOrFail();
     }
 
     private function resourceEndpoints(Material $material): array
     {
-        $path = $material->resource_path;
+        $paths = $material->resource_path;
+        
+        // resource_path is an array of URLs
+        // Take the first URL if available
+        $path = is_array($paths) && !empty($paths) ? $paths[0] : null;
 
         if (! $path) {
             $fallback = $this->materialsLink();
