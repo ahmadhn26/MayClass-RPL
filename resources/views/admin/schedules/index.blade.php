@@ -783,7 +783,10 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Mata Pelajaran</label>
-                                    <select name="subject_id" id="subject-select" class="form-control" required disabled>
+                                    <!-- Hidden field for subject_id (for validation) -->
+                                    <input type="hidden" name="subject_id" id="subject-id-hidden">
+                                    <!-- Visible select for category (for display) -->
+                                    <select name="category" id="subject-select" class="form-control" required disabled>
                                         <option value="">Pilih Mata Pelajaran</option>
                                     </select>
                                 </div>
@@ -1134,26 +1137,42 @@
                 }
             });
 
-            // ========== PACKAGE \u0026 SUBJECT LOGIC ==========
+            // ========== PACKAGE & SUBJECT LOGIC ==========
             packageSelect.addEventListener('change', function () {
                 const selectedOption = this.options[this.selectedIndex];
                 const subjectsData = selectedOption.getAttribute('data-subjects') || '';
+                const subjectIdHidden = document.getElementById('subject-id-hidden');
 
                 // Populate subjects dropdown
                 subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+                if (subjectIdHidden) subjectIdHidden.value = '';
 
                 if (subjectsData) {
                     const subjects = subjectsData.split('|');
                     subjects.forEach(function (subjectStr) {
                         const [id, name, level] = subjectStr.split(':');
                         const option = document.createElement('option');
-                        option.value = id;
+                        // Send subject NAME as value (stored in 'category' field)
+                        option.value = name;
+                        option.setAttribute('data-id', id);  // Store ID for hidden field
+                        option.setAttribute('data-level', level);
                         option.textContent = name + ' (' + level + ')';
                         subjectSelect.appendChild(option);
                     });
                     subjectSelect.disabled = false;
                 } else {
                     subjectSelect.disabled = true;
+                }
+            });
+
+            // Update hidden subject_id when subject is selected
+            subjectSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const subjectId = selectedOption.getAttribute('data-id');
+                const subjectIdHidden = document.getElementById('subject-id-hidden');
+                
+                if (subjectIdHidden && subjectId) {
+                    subjectIdHidden.value = subjectId;
                 }
             });
         });

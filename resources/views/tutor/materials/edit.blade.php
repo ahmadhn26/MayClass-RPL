@@ -365,10 +365,7 @@
         if ($gdriveLinks->isEmpty())
             $gdriveLinks = collect(['']);
 
-        // Prepare Quiz URLs
-        $quizUrls = collect(old('quiz_urls', $material->quiz_urls ?? []));
-        if ($quizUrls->isEmpty())
-            $quizUrls = collect(['']);
+
     @endphp
 
     <div class="modal-overlay">
@@ -517,26 +514,7 @@
                             @error('gdrive_links.*') <div class="error-text">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class="dynamic-group span-full">
-                            <div class="dynamic-group__header">
-                                <span>Link Quiz</span>
-                                <button type="button" class="dynamic-add" data-add-quiz>+ Tambah Quiz</button>
-                            </div>
-                            <div class="dynamic-group__items" data-quiz-urls>
-                                @foreach ($quizUrls as $link)
-                                    <div class="dynamic-item">
-                                        <div class="dynamic-item__row">
-                                            <input type="url" name="quiz_urls[]" value="{{ $link }}"
-                                                placeholder="https://forms.google.com/..." />
-                                        </div>
-                                        <div class="dynamic-item__actions">
-                                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            @error('quiz_urls.*') <div class="error-text">{{ $message }}</div> @enderror
-                        </div>
+
                     </div>
 
                     <div class="form-actions">
@@ -623,9 +601,8 @@
                 bindRemoval(row);
             });
 
-            // --- Logic Dynamic Inputs (GDrive & Quiz) ---
+            // --- Logic Dynamic Inputs (GDrive) ---
             const gdriveContainer = document.querySelector('[data-gdrive-links]');
-            const quizContainer = document.querySelector('[data-quiz-urls]');
 
             const templateLink = (name, placeholder) => {
                 const wrapper = document.createElement('div');
@@ -649,13 +626,7 @@
                 bindRemoval(row);
             });
 
-            document.querySelector('[data-add-quiz]')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!quizContainer) return;
-                const row = templateLink('quiz_urls', 'https://forms.google.com/...');
-                quizContainer.appendChild(row);
-                bindRemoval(row);
-            });
+
 
             // 🟢 PERBAIKAN: Listener saat Mapel Berubah untuk update Hidden Level
             if (subjectSelect) {
