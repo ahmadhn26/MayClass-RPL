@@ -502,17 +502,20 @@
             font-size: 1rem;
             font-weight: 600;
             color: white;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            background: #3fa67e;
+            /* Solid primary green - NO GRADIENT */
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(63, 166, 126, 0.3);
             margin-top: 8px;
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+            background: #2f8a67;
+            /* Darker shade on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(63, 166, 126, 0.4);
         }
 
         .btn-submit:active {
@@ -668,14 +671,14 @@
                                 </td>
                                 <td>
                                     <div class="action-group">
-                                        <a href="{{ route('admin.subjects.edit', $subject) }}" class="btn-icon"
-                                            title="Edit Mata Pelajaran">
+                                        <button type="button" class="btn-icon" title="Edit Mata Pelajaran"
+                                            onclick="openEditSubjectModal({{ $subject->id }})">
                                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                 </path>
                                             </svg>
-                                        </a>
+                                        </button>
 
                                         <button type="button" class="btn-icon delete btn-delete"
                                             title="Nonaktifkan Mata Pelajaran" data-id="{{ $subject->id }}"
@@ -766,6 +769,52 @@
         </div>
     </div>
 
+    {{-- EDIT SUBJECT MODAL --}}
+    <div id="editSubjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Mata Pelajaran</h2>
+                <button type="button" class="btn-close" onclick="closeEditSubjectModal()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <form id="editSubjectForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nama Mata Pelajaran *</label>
+                        <input type="text" id="edit_name" name="name" class="form-control"
+                            placeholder="Contoh: Matematika, Fisika" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jenjang Pendidikan *</label>
+                        <select id="edit_level" name="level" class="form-control" required>
+                            <option value="">Pilih jenjang</option>
+                            @foreach ($levels as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deskripsi (Opsional)</label>
+                        <textarea id="edit_description" name="description" class="form-control" rows="3"
+                            placeholder="Deskripsi singkat..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditSubjectModal()">Batal</button>
+                    <button type="submit" class="btn-submit">Perbarui Mata Pelajaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             function openModal(modalId) {
@@ -784,6 +833,41 @@
                     event.target.classList.remove('active');
                     document.body.style.overflow = 'auto';
                 }
+            }
+
+            // Edit Subject Modal Functions
+            async function openEditSubjectModal(subjectId) {
+                try {
+                    const response = await fetch(`/admin/subjects/${subjectId}/edit`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    // Set form action
+                    document.getElementById('editSubjectForm').action = `/admin/subjects/${subjectId}`;
+
+                    // Populate fields
+                    document.getElementById('edit_name').value = data.name || '';
+                    document.getElementById('edit_level').value = data.level || '';
+                    document.getElementById('edit_description').value = data.description || '';
+
+                    // Open modal
+                    document.getElementById('editSubjectModal').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+
+                } catch (error) {
+                    console.error('Error loading subject data:', error);
+                    alert('Gagal memuat data mata pelajaran. Silakan coba lagi.');
+                }
+            }
+
+            function closeEditSubjectModal() {
+                document.getElementById('editSubjectModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
             }
 
             // Auto open modal if validation errors exist

@@ -73,8 +73,19 @@ class SubjectController extends BaseAdminController
             ->with('status', __('Mata pelajaran berhasil ditambahkan.'));
     }
 
-    public function edit(Subject $subject): View
+    public function edit(Subject $subject, Request $request): View|\Illuminate\Http\JsonResponse
     {
+        // Return JSON for AJAX requests (modal)
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'id' => $subject->id,
+                'name' => $subject->name,
+                'level' => $subject->level,
+                'description' => $subject->description,
+            ]);
+        }
+
+        // Return view for regular page access (fallback)
         return $this->render('admin.subjects.edit', [
             'subject' => $subject,
             'levels' => $this->levelOptions(),
