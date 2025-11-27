@@ -33,9 +33,14 @@ class ScheduleTemplateController extends BaseAdminController
             return redirect()->route('admin.schedules.index', ['tutor_id' => $data['user_id']])
                 ->with('status', __('Jadwal berhasil ditambahkan.'));
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Flash validation errors to session for display
+            // Pass all validation errors directly to session
             return redirect()->route('admin.schedules.index', ['tutor_id' => $request->input('user_id')])
                 ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            // Catch any other exceptions and display error message
+            return redirect()->route('admin.schedules.index', ['tutor_id' => $request->input('user_id')])
+                ->withErrors(['exception' => 'Error: ' . $e->getMessage()])
                 ->withInput();
         }
     }
