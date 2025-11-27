@@ -6,6 +6,7 @@ use App\Models\Enrollment;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -53,6 +54,7 @@ class StudentController extends BaseAdminController
                         'name' => $student->name,
                         'email' => $student->email,
                         'student_id' => $student->student_id,
+                        'parent_phone' => $student->parent_phone,
                         'package' => $activeEnrollment?->package?->detail_title,
                         'status' => $activeEnrollment?->is_active ? 'Aktif' : 'Tidak aktif',
                         'status_state' => $activeEnrollment?->is_active ? 'active' : 'inactive',

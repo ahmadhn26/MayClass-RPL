@@ -592,13 +592,22 @@
                 </div>
             </div>
 
-            <div class="input-group">
-                <label class="label">Jenis Kelamin</label>
-                <select class="input-field" name="gender">
-                    <option value="" disabled selected>Pilih opsi...</option>
-                    <option value="male" @selected(old('gender') == 'male')>Laki-laki</option>
-                    <option value="female" @selected(old('gender') == 'female')>Perempuan</option>
-                </select>
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="label">Nomor WhatsApp Orang Tua/Wali *</label>
+                    <input class="input-field" type="tel" name="parent_phone"
+                        value="{{ old('parent_phone', $profileData['parent_phone'] ?? '') }}" 
+                        placeholder="Contoh: 08123456789" required>
+                    @error('parent_phone') <span class="error-msg">{{ $message }}</span> @enderror
+                </div>
+                <div class="input-group">
+                    <label class="label">Jenis Kelamin</label>
+                    <select class="input-field" name="gender">
+                        <option value="" disabled selected>Pilih opsi...</option>
+                        <option value="male" @selected(old('gender') == 'male')>Laki-laki</option>
+                        <option value="female" @selected(old('gender') == 'female')>Perempuan</option>
+                    </select>
+                </div>
             </div>
 
             {{-- Trigger Checkbox --}}

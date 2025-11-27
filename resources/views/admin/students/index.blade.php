@@ -259,6 +259,39 @@
             background: #fee2e2;
         }
 
+        /* WhatsApp Counseling Button */
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #25D366;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            background: #128C7E;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
+            color: white;
+        }
+
+        .btn-whatsapp svg {
+            flex-shrink: 0;
+        }
+
+        .btn-whatsapp span {
+            white-space: nowrap;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -458,6 +491,22 @@
             .search-box {
                 width: 100%;
             }
+
+            /* Show only WhatsApp icon on mobile */
+            .btn-whatsapp {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-whatsapp span {
+                display: none;
+            }
+
+            .btn-whatsapp {
+                padding: 8px;
+            }
         }
     </style>
 @endpush
@@ -495,6 +544,7 @@
                             <th>Paket Aktif</th>
                             <th>Status Akun</th>
                             <th>Masa Berlaku</th>
+                            <th style="text-align: center;">Konseling</th>
                             <th style="text-align: right;">Aksi</th>
                         </tr>
                     </thead>
@@ -541,6 +591,29 @@
                                         {{ $student['ends_at'] ?? '-' }}
                                     </div>
                                 </td>
+                                <td style="text-align: center;">
+                                    @if($student['parent_phone'])
+                                        @php
+                                            $cleaned = preg_replace('/[^0-9]/', '', $student['parent_phone']);
+                                            $whatsappNumber = str_starts_with($cleaned, '08')
+                                                ? '62' . substr($cleaned, 1)
+                                                : $cleaned;
+                                            $message = urlencode('Halo, saya Admin MayClass. Ingin berdiskusi mengenai ' . $student['name']);
+                                        @endphp
+                                        <a href="https://wa.me/{{ $whatsappNumber }}?text={{ $message }}" class="btn-whatsapp"
+                                            target="_blank" rel="noopener" title="Chat dengan Orang Tua">
+                                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                            </svg>
+                                            <span>Konseling</span>
+                                        </a>
+                                    @else
+                                        <span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">
+                                            Belum ada nomor
+                                        </span>
+                                    @endif
+                                </td>
                                 <td style="text-align: right;">
                                     <button type="button" class="btn-detail" onclick="openDetailModal({{ $student['id'] }})">
                                         Detail
@@ -561,7 +634,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <div class="empty-state">
                                         <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
                                             stroke="currentColor" viewBox="0 0 24 24">
@@ -710,7 +783,7 @@
                         text: "{{ session('error') }}",
                     });
                 @endif
-            });
+                                                    });
 
             // ========== MODAL FUNCTIONS ==========
             function openDetailModal(studentId) {
@@ -725,19 +798,19 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    populateModal(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: 'Gagal memuat data siswa. Silakan coba lagi.'
+                    .then(response => response.json())
+                    .then(data => {
+                        populateModal(data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Gagal memuat data siswa. Silakan coba lagi.'
+                        });
+                        closeDetailModal();
                     });
-                    closeDetailModal();
-                });
             }
 
             function closeDetailModal() {
@@ -760,13 +833,13 @@
                 const packageSummary = document.getElementById('modal_package_summary');
                 if (data.summary) {
                     packageSummary.innerHTML = `
-                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
-                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
-                            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
-                            <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
-                            <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
-                        </div>
-                    `;
+                                                                <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
+                                                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
+                                                                    <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
+                                                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
+                                                                    <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
+                                                                </div>
+                                                            `;
                 } else {
                     packageSummary.innerHTML = '<p style="color: var(--text-muted);">Tidak ada paket aktif</p>';
                 }
@@ -781,17 +854,17 @@
                 const timelineContainer = document.getElementById('modal_timeline');
                 if (data.timeline && data.timeline.length > 0) {
                     timelineContainer.innerHTML = data.timeline.map(entry => `
-                        <div class="timeline-item">
-                            <div class="timeline-item-header">${entry.package}</div>
-                            <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
-                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
-                                Periode: ${entry.period}
-                            </div>
-                            <div class="timeline-meta">
-                                Invoice #${entry.invoice || '-'} · Total ${entry.total}
-                            </div>
-                        </div>
-                    `).join('');
+                                                                <div class="timeline-item">
+                                                                    <div class="timeline-item-header">${entry.package}</div>
+                                                                    <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
+                                                                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
+                                                                        Periode: ${entry.period}
+                                                                    </div>
+                                                                    <div class="timeline-meta">
+                                                                        Invoice #${entry.invoice || '-'} · Total ${entry.total}
+                                                                    </div>
+                                                                </div>
+                                                            `).join('');
                 } else {
                     timelineContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Belum ada riwayat paket untuk siswa ini.</p>';
                 }
@@ -802,7 +875,7 @@
             }
 
             // Close modal on outside click
-            window.onclick = function(event) {
+            window.onclick = function (event) {
                 const modal = document.getElementById('studentDetailModal');
                 if (event.target === modal) {
                     closeDetailModal();

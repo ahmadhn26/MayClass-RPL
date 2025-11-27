@@ -94,6 +94,7 @@ class AuthController extends Controller
             'username' => ['required', 'string', 'alpha_dash', 'min:4', 'max:50', Rule::unique(User::class, 'username')],
             'email' => ['required', 'email', 'max:255', Rule::unique(User::class)],
             'phone' => ['nullable', 'string', 'max:30'],
+            'parent_phone' => ['required', 'string', 'max:30', 'regex:/^08[0-9]{8,13}$/'],
             'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
         ]);
 
@@ -139,6 +140,7 @@ class AuthController extends Controller
             'username' => ['required', 'string', 'alpha_dash', 'min:4', 'max:50', Rule::unique(User::class, 'username')],
             'email' => ['required', 'email', 'max:255', Rule::unique(User::class)],
             'phone' => ['nullable', 'string', 'max:30'],
+            'parent_phone' => ['required', 'string', 'max:30', 'regex:/^08[0-9]{8,13}$/'],
             'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
         ]);
 
@@ -198,6 +200,7 @@ class AuthController extends Controller
             'password' => Hash::make($passwordData['password']),
             'role' => 'visitor',
             'phone' => $profile['phone'] ?? null,
+            'parent_phone' => $profile['parent_phone'] ?? null,
             'gender' => $profile['gender'] ?? null,
         ]);
 

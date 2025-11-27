@@ -284,15 +284,15 @@
             .auth-container {
                 padding: 24px 20px;
             }
-            
+
             .header-text {
                 margin-bottom: 20px;
             }
-            
+
             .header-text h2 {
                 font-size: 1.5rem;
             }
-            
+
             .btn-primary {
                 padding: 12px;
             }
@@ -351,6 +351,10 @@
                 <div class="summary-item">
                     <span class="summary-label">No. Tlp / WA</span>
                     <span class="summary-value">{{ $profile['phone'] ?? '-' }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">WA Orang Tua</span>
+                    <span class="summary-value">{{ $profile['parent_phone'] ?? '-' }}</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Jenis Kelamin</span>

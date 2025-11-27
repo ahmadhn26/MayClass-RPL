@@ -28,6 +28,7 @@ class User extends Authenticatable
         'is_active',
         'student_id',
         'phone',
+        'parent_phone',
         'gender',
         'parent_name',
         'address',
