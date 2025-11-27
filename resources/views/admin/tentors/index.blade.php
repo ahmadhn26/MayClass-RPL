@@ -830,9 +830,10 @@
                                 </td>
                                 <td>
                                     <div class="action-group">
-                                        <a href="{{ route('admin.tentors.edit', $tentor['id']) }}" class="btn-action btn-edit">
+                                        <button type="button" class="btn-action btn-edit"
+                                            onclick="openEditModal({{ $tentor['id'] }})">
                                             Edit
-                                        </a>
+                                        </button>
                                         <button type="button" class="btn-delete" data-id="{{ $tentor['id'] }}"
                                             data-name="{{ $tentor['name'] }}"
                                             data-action="{{ route('admin.tentors.destroy', $tentor['id']) }}"
@@ -982,6 +983,137 @@
         </div>
     </div>
 
+    {{-- EDIT TENTOR MODAL --}}
+    <div id="editTentorModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Tentor</h2>
+                <button type="button" class="btn-close" onclick="closeModal('editTentorModal')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <form id="editTentorForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="_tentor_id" id="edit_tentor_id">
+                <div class="modal-body">
+                    {{-- Avatar Upload --}}
+                    <div class="form-group full-width" style="margin-bottom: 24px;">
+                        <label>Foto Profil</label>
+                        <div class="avatar-upload">
+                            <img src="{{ asset('images/avatar-placeholder.svg') }}" alt="Preview" class="avatar-preview"
+                                id="editAvatarPreview">
+                            <div>
+                                <label for="editAvatarInput" class="btn-upload">Pilih Foto</label>
+                                <input type="file" id="editAvatarInput" name="avatar" accept="image/*" hidden
+                                    onchange="previewEditImage(this)">
+                                <p class="helper-text" style="margin-top: 8px;">Format JPG/PNG, maks 5MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        {{-- Personal Info --}}
+                        <div class="form-group">
+                            <label>Nama Lengkap *</label>
+                            <input type="text" name="name" id="edit_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" id="edit_email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Username *</label>
+                            <input type="text" name="username" id="edit_username" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>No. Telepon</label>
+                            <input type="text" name="phone" id="edit_phone" class="form-control">
+                        </div>
+
+                        {{-- Professional Info --}}
+                        <div class="form-group">
+                            <label>Headline Singkat</label>
+                            <input type="text" name="headline" id="edit_headline" class="form-control"
+                                placeholder="Contoh: Tentor Matematika dan Sains">
+                        </div>
+                        <div class="form-group">
+                            <label>Jenjang/Mata Pelajaran *</label>
+                            <input type="text" name="specializations" id="edit_specializations" class="form-control"
+                                required placeholder="Contoh: Matematika SMA, Fisika SMP">
+                        </div>
+                        <div class="form-group">
+                            <label>Pengalaman (Tahun)</label>
+                            <input type="number" name="experience_years" id="edit_experience_years" class="form-control"
+                                min="0" max="60">
+                        </div>
+                        <div class="form-group">
+                            <label>Pendidikan Terakhir</label>
+                            <input type="text" name="education" id="edit_education" class="form-control"
+                                placeholder="Contoh: S1 Pendidikan Matematika">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Deskripsi Singkat</label>
+                            <textarea name="bio" id="edit_bio" class="form-control" rows="3"
+                                placeholder="Ceritakan metode mengajar, pengalaman lomba..."></textarea>
+                        </div>
+
+                        {{-- Security --}}
+                        <div class="form-group">
+                            <label>Password (opsional)</label>
+                            <input type="password" name="password" id="edit_password" class="form-control">
+                            <p class="helper-text">Kosongkan jika tidak ingin mengubah password.</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" id="edit_password_confirmation"
+                                class="form-control">
+                        </div>
+
+                        {{-- Subjects --}}
+                        <div class="form-group full-width">
+                            <label>Mata Pelajaran yang Diampu *</label>
+                            <div class="subject-selection" id="editSubjectsContainer">
+                                @foreach(['SD', 'SMP', 'SMA'] as $level)
+                                    @if($subjectsByLevel[$level]->isNotEmpty())
+                                        <div class="subject-group">
+                                            <h4>{{ $level }}</h4>
+                                            <div class="subject-checkboxes">
+                                                @foreach($subjectsByLevel[$level] as $subject)
+                                                    <label class="checkbox-label">
+                                                        <input type="checkbox" name="subjects[]" value="{{ $subject->id }}"
+                                                            class="edit-subject-checkbox">
+                                                        {{ $subject->name }}
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="checkbox-label" style="width: fit-content;">
+                                <input type="hidden" name="is_active" value="0">
+                                <input type="checkbox" name="is_active" id="edit_is_active" value="1">
+                                Aktifkan Akun Tentor
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editTentorModal')">Batal</button>
+                    <button type="submit" class="btn-submit" id="editSubmitBtn">✓ Perbarui Tentor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             function openModal(modalId) {
@@ -1004,6 +1136,115 @@
                 }
             }
 
+            function previewEditImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('editAvatarPreview').src = e.target.result;
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            // Open Edit Modal and fetch tutor data
+            function openEditModal(tentorId) {
+                // Open modal
+                openModal('editTentorModal');
+
+                // Fetch tutor data
+                fetch(`/admin/tentors/${tentorId}/edit`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate form fields
+                        document.getElementById('edit_tentor_id').value = data.id;
+                        document.getElementById('edit_name').value = data.name || '';
+                        document.getElementById('edit_email').value = data.email || '';
+                        document.getElementById('edit_username').value = data.username || '';
+                        document.getElementById('edit_phone').value = data.phone || '';
+                        document.getElementById('edit_headline').value = data.headline || '';
+                        document.getElementById('edit_specializations').value = data.specializations || '';
+                        document.getElementById('edit_experience_years').value = data.experience_years || 0;
+                        document.getElementById('edit_education').value = data.education || '';
+                        document.getElementById('edit_bio').value = data.bio || '';
+                        document.getElementById('edit_is_active').checked = data.is_active || false;
+
+                        // Set avatar preview
+                        if (data.avatar) {
+                            document.getElementById('editAvatarPreview').src = data.avatar;
+                        }
+
+                        // Clear password fields
+                        document.getElementById('edit_password').value = '';
+                        document.getElementById('edit_password_confirmation').value = '';
+
+                        // Check subjects
+                        document.querySelectorAll('.edit-subject-checkbox').forEach(checkbox => {
+                            checkbox.checked = data.subjects.includes(parseInt(checkbox.value));
+                        });
+
+                        // Set form action
+                        document.getElementById('editTentorForm').action = `/admin/tentors/${data.id}`;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching tutor data:', error);
+                        alert('Gagal memuat data tentor. Silakan coba lagi.');
+                        closeModal('editTentorModal');
+                    });
+            }
+
+            // Handle Edit Form Submission with AJAX
+            document.addEventListener('DOMContentLoaded', function () {
+                const editForm = document.getElementById('editTentorForm');
+
+                if (editForm) {
+                    editForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
+
+                        const submitBtn = document.getElementById('editSubmitBtn');
+                        const originalBtnText = submitBtn.innerHTML;
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = 'Menyimpan...';
+
+                        const formData = new FormData(editForm);
+                        const tentorId = document.getElementById('edit_tentor_id').value;
+
+                        fetch(`/admin/tentors/${tentorId}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json',
+                            },
+                            body: formData
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Close modal
+                                    closeModal('editTentorModal');
+
+                                    // Reload page to reflect changes
+                                    window.location.reload();
+                                } else {
+                                    alert(data.message || 'Terjadi kesalahan saat menyimpan data.');
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerHTML = originalBtnText;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Terjadi kesalahan. Silakan coba lagi.');
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalBtnText;
+                            });
+                    });
+                }
+            });
+
             // Close modal on outside click
             window.onclick = function (event) {
                 if (event.target.classList.contains('modal-overlay')) {
@@ -1019,3 +1260,4 @@
         </script>
     @endpush
 @endsection
+```

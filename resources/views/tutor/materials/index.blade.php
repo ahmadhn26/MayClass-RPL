@@ -147,7 +147,7 @@
         }
 
         /* CSS Thumbnail dihapus karena elemennya sudah tidak dipakai, 
-                                       tapi layout card-content akan otomatis menyesuaikan */
+                                           tapi layout card-content akan otomatis menyesuaikan */
 
         .card-content {
             flex: 1;
@@ -617,6 +617,96 @@
             padding: 0 4px;
         }
 
+        /* --- DYNAMIC GROUP STYLES --- */
+        .dynamic-group {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            background: #f8fafc;
+            margin-bottom: 20px;
+        }
+
+        .dynamic-group__header {
+            display: flex;
+            \n align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .dynamic-group__header span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .dynamic-group__items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dynamic-item {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid var(--border-color);
+        }
+
+        .dynamic-item__row {
+            display: grid;
+            gap: 12px;
+        }
+
+        .dynamic-item__actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .dynamic-item__remove {
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .dynamic-item__remove:hover {
+            background: #fee2e2;
+        }
+
+        .dynamic-add {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            background: rgba(63, 166, 126, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dynamic-add:hover {
+            background: rgba(63, 166, 126, 0.2);
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .span-full {
+            grid-column: 1 / -1;
+        }
+
         /* --- GOOGLE DRIVE INPUT --- */
         .gdrive-input-wrapper {
             position: relative;
@@ -860,26 +950,6 @@
                 @error('gdrive_links.*') <div class="error-text">{{ $message }}</div> @enderror
             </div>
 
-            {{-- Dynamic Quiz Links --}}
-            <div class="dynamic-group span-full">
-                <div class="dynamic-group__header">
-                    <span>Link Quiz</span>
-                    <button type="button" class="dynamic-add" data-add-quiz>+ Tambah Quiz</button>
-                </div>
-                <div class="dynamic-group__items" data-quiz-urls>
-                    <div class="dynamic-item">
-                        <div class="dynamic-item__row">
-                            <input type="url" name="quiz_urls[]" placeholder="https://forms.google.com/..." />
-                        </div>
-                        <div class="dynamic-item__actions">
-                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                        </div>
-                    </div>
-                </div>
-                @error('quiz_urls.*') <div class="error-text">{{ $message }}</div> @enderror
-            </div>
-
-
             <div class="form-group">
                 <label class="form-label">Ringkasan Materi</label>
                 <textarea name="summary" rows="3" class="form-control" placeholder="Deskripsi singkat materi..."
@@ -1108,5 +1178,78 @@
         list.appendChild(div);
         chapterIndex++;
     }
+
+    // ========== DYNAMIC GDRIVE LINKS ==========
+    const gdriveContainer = document.querySelector('[data-gdrive-links]');
+    const addGDriveBtn = document.querySelector('[data-add-gdrive]');
+
+    const createGDriveRow = () => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'dynamic-item';
+        wrapper.innerHTML = `
+            \u003cdiv class=\"dynamic-item__row\"\u003e
+                \u003cinput type=\"url\" name=\"gdrive_links[]\" class=\"form-control\" placeholder=\"https://drive.google.com/...\" required /\u003e
+            \u003c/div\u003e
+            \u003cdiv class=\"dynamic-item__actions\"\u003e
+                \u003cbutton type=\"button\" class=\"dynamic-item__remove\" data-remove-row\u003eHapus\u003c/button\u003e
+            \u003c/div\u003e
+        `;
+        return wrapper;
+    };
+
+    if (addGDriveBtn) {
+        addGDriveBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const row = createGDriveRow();
+            gdriveContainer.appendChild(row);
+            bindRemoveButton(row);
+        });
+    }
+
+    // ========== DYNAMIC QUIZ LINKS ==========
+    const quizContainer = document.querySelector('[data-quiz-urls]');
+    const addQuizBtn = document.querySelector('[data-add-quiz]');
+
+    const createQuizRow = () => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'dynamic-item';
+        wrapper.innerHTML = `
+            \u003cdiv class=\"dynamic-item__row\"\u003e
+                \u003cinput type=\"url\" name=\"quiz_urls[]\" class=\"form-control\" placeholder=\"https://forms.google.com/...\" /\u003e
+            \u003c/div\u003e
+            \u003cdiv class=\"dynamic-item__actions\"\u003e
+                \u003cbutton type=\"button\" class=\"dynamic-item__remove\" data-remove-row\u003eHapus\u003c/button\u003e
+            \u003c/div\u003e
+        `;
+        return wrapper;
+    };
+
+    if (addQuizBtn) {
+        addQuizBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const row = createQuizRow();
+            quizContainer.appendChild(row);
+            bindRemoveButton(row);
+        });
+    }
+
+    // Bind Remove Button
+    const bindRemoveButton = (row) => {
+        const removeBtn = row.querySelector('[data-remove-row]');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                const parent = this.closest('.dynamic-item').parentElement;
+                if (parent.children.length > 1) {
+                    row.remove();
+                }
+            });
+        }
+    };
+
+    // Initialize removal buttons for existing rows
+    document.querySelectorAll('[data-remove-row]').forEach(btn => {
+        bindRemoveButton(btn.closest('.dynamic-item'));
+    });
+
 </script>
 @endsection

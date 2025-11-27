@@ -117,10 +117,29 @@ class TentorController extends BaseAdminController
             ->with('status', __('Tentor baru berhasil ditambahkan.'));
     }
 
-    public function edit(User $tentor): View
+    public function edit(Request $request, User $tentor)
     {
         $this->ensureTutor($tentor);
         $tentor->loadMissing(['tutorProfile', 'subjects']);
+
+        // Return JSON for AJAX requests
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'id' => $tentor->id,
+                'name' => $tentor->name,
+                'email' => $tentor->email,
+                'username' => $tentor->username,
+                'phone' => $tentor->phone,
+                'headline' => optional($tentor->tutorProfile)->headline,
+                'specializations' => optional($tentor->tutorProfile)->specializations,
+                'experience_years' => optional($tentor->tutorProfile)->experience_years ?? 0,
+                'education' => optional($tentor->tutorProfile)->education,
+                'bio' => optional($tentor->tutorProfile)->bio,
+                'is_active' => (bool) $tentor->is_active,
+                'avatar' => ProfileAvatar::forUser($tentor),
+                'subjects' => $tentor->subjects->pluck('id')->toArray(),
+            ]);
+        }
 
         return $this->render('admin.tentors.edit', [
             'tentor' => $tentor,
@@ -130,7 +149,7 @@ class TentorController extends BaseAdminController
         ]);
     }
 
-    public function update(Request $request, User $tentor): RedirectResponse
+    public function update(Request $request, User $tentor)
     {
         $this->ensureTutor($tentor);
         $tentor->loadMissing('tutorProfile');
@@ -166,6 +185,20 @@ class TentorController extends BaseAdminController
         // Sync subjects
         if ($request->has('subjects')) {
             $tentor->subjects()->sync($request->subjects);
+        }
+
+        // Return JSON for AJAX requests
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Profil tentor berhasil diperbarui.',
+                'tentor' => [
+                    'id' => $tentor->id,
+                    'name' => $tentor->name,
+                    'email' => $tentor->email,
+                    'username' => $tentor->username,
+                ],
+            ]);
         }
 
         return redirect()
