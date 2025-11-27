@@ -19,9 +19,8 @@ class DatabaseSeeder extends Seeder
         // Other data will be managed manually via Admin panel
 
         $this->call([
-            DemoAdminSeeder::class,
-            SubjectSeeder::class,  
-            PackageSeeder::class,
+            DemoAdminSeeder::class,  
+            SubjectSeeder::class,
         ]);
         // LandingContentSeeder::class,
         // PackageSeeder::class,
