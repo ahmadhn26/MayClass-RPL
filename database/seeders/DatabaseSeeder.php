@@ -14,17 +14,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Most seeders are disabled - database will start mostly empty
+        // Only DemoAdminSeeder is active to create default admin account
+        // Other data will be managed manually via Admin panel
+
         $this->call([
-            LandingContentSeeder::class,
-            PackageSeeder::class,
-            SubjectSeeder::class,
-            MaterialSeeder::class,
-            QuizSeeder::class,
-            DemoAdminSeeder::class,
-            ScheduleSeeder::class,
-            DemoStudentSeeder::class,
-            StudentSeeder::class,
-            DemoOrderSeeder::class,
+            DemoAdminSeeder::class,  // Active: Creates default admin user for login
         ]);
+        // LandingContentSeeder::class,
+        // PackageSeeder::class,
+        // SubjectSeeder::class,
+        // MaterialSeeder::class,
+        // QuizSeeder::class,
+        // ScheduleSeeder::class,
+        // DemoStudentSeeder::class,
+        // StudentSeeder::class,
+        // DemoOrderSeeder::class,
     }
 }
