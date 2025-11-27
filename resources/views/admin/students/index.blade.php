@@ -265,6 +265,189 @@
             color: var(--text-muted);
         }
 
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .btn-close-modal {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .btn-close-modal:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .detail-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-card.full-width {
+            grid-column: span 2;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .timeline-section {
+            margin-top: 32px;
+        }
+
+        .timeline-section h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 16px 0;
+        }
+
+        .timeline-item {
+            padding: 16px 20px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+
+        .timeline-item-header {
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .timeline-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-card.full-width {
+                grid-column: span 1;
+            }
+
+            .modal-content {
+                width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .modal-header {
+                border-radius: 0;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .page-header {
@@ -359,13 +542,13 @@
                                     </div>
                                 </td>
                                 <td style="text-align: right;">
-                                    <a class="btn-detail" href="{{ route('admin.students.show', $student['id']) }}">
+                                    <button type="button" class="btn-detail" onclick="openDetailModal({{ $student['id'] }})">
                                         Detail
                                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 5l7 7-7 7"></path>
                                         </svg>
-                                    </a>
+                                    </button>
                                     <button type="button" class="btn-delete" data-id="{{ $student['id'] }}"
                                         data-name="{{ $student['name'] }}" data-active="{{ $student['status_state'] }}">
                                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,6 +576,69 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- STUDENT DETAIL MODAL --}}
+    <div id="studentDetailModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detail Siswa</h2>
+                <button type="button" class="btn-close-modal" onclick="closeDetailModal()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                {{-- Student Info Grid --}}
+                <div class="detail-grid">
+                    <div class="detail-card full-width"
+                        style="background: linear-gradient(135deg, rgba(31, 209, 161, 0.08), rgba(84, 101, 255, 0.08));">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                            <div class="student-avatar" id="modal_avatar"
+                                style="width: 64px; height: 64px; font-size: 1.5rem;"></div>
+                            <div>
+                                <h3 id="modal_name" style="margin: 0 0 4px 0; font-size: 1.25rem;"></h3>
+                                <p id="modal_email" style="margin: 0; color: var(--text-muted); font-size: 0.95rem;"></p>
+                                <p id="modal_student_id"
+                                    style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.85rem;"></p>
+                            </div>
+                        </div>
+                        <div id="modal_package_summary"></div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-label">Nomor Telepon</div>
+                        <div class="detail-value" id="modal_phone">-</div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-label">Orang Tua/Wali</div>
+                        <div class="detail-value" id="modal_parent_name">-</div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-label">Jenis Kelamin</div>
+                        <div class="detail-value" id="modal_gender">-</div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-label">Alamat</div>
+                        <div class="detail-value" id="modal_address">-</div>
+                    </div>
+                </div>
+
+                {{-- Timeline Section --}}
+                <div class="timeline-section">
+                    <h3>Riwayat Paket & Pembayaran</h3>
+                    <div id="modal_timeline">
+                        <p style="color: var(--text-muted); text-align: center; padding: 20px;">Memuat data...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -464,7 +710,104 @@
                         text: "{{ session('error') }}",
                     });
                 @endif
-                                    });
+            });
+
+            // ========== MODAL FUNCTIONS ==========
+            function openDetailModal(studentId) {
+                const modal = document.getElementById('studentDetailModal');
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                // Fetch student data
+                fetch(`/admin/students/${studentId}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    populateModal(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Gagal memuat data siswa. Silakan coba lagi.'
+                    });
+                    closeDetailModal();
+                });
+            }
+
+            function closeDetailModal() {
+                const modal = document.getElementById('studentDetailModal');
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            function populateModal(data) {
+                // Avatar
+                const avatar = document.getElementById('modal_avatar');
+                avatar.textContent = data.name ? data.name.charAt(0).toUpperCase() : '?';
+
+                // Basic Info
+                document.getElementById('modal_name').textContent = data.name || '-';
+                document.getElementById('modal_email').textContent = data.email || '-';
+                document.getElementById('modal_student_id').textContent = 'ID Siswa: ' + (data.student_id || 'Belum ditetapkan');
+
+                // Package Summary
+                const packageSummary = document.getElementById('modal_package_summary');
+                if (data.summary) {
+                    packageSummary.innerHTML = `
+                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
+                            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
+                            <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
+                        </div>
+                    `;
+                } else {
+                    packageSummary.innerHTML = '<p style="color: var(--text-muted);">Tidak ada paket aktif</p>';
+                }
+
+                // Contact Info
+                document.getElementById('modal_phone').textContent = data.phone || 'Tidak tersedia';
+                document.getElementById('modal_parent_name').textContent = data.parent_name || 'Tidak tersedia';
+                document.getElementById('modal_gender').textContent = data.gender ? capitalizeFirst(data.gender) : 'Tidak tersedia';
+                document.getElementById('modal_address').textContent = data.address || 'Tidak tersedia';
+
+                // Timeline
+                const timelineContainer = document.getElementById('modal_timeline');
+                if (data.timeline && data.timeline.length > 0) {
+                    timelineContainer.innerHTML = data.timeline.map(entry => `
+                        <div class="timeline-item">
+                            <div class="timeline-item-header">${entry.package}</div>
+                            <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
+                                Periode: ${entry.period}
+                            </div>
+                            <div class="timeline-meta">
+                                Invoice #${entry.invoice || '-'} · Total ${entry.total}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    timelineContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Belum ada riwayat paket untuk siswa ini.</p>';
+                }
+            }
+
+            function capitalizeFirst(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+            }
+
+            // Close modal on outside click
+            window.onclick = function(event) {
+                const modal = document.getElementById('studentDetailModal');
+                if (event.target === modal) {
+                    closeDetailModal();
+                }
+            }
         </script>
     @endpush
 @endsection

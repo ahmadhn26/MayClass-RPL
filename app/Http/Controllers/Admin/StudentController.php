@@ -66,9 +66,12 @@ class StudentController extends BaseAdminController
         ]);
     }
 
-    public function show(User $student): View|RedirectResponse
+    public function show(Request $request, User $student)
     {
         if ($student->role !== 'student') {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Pengguna tersebut bukan siswa.'], 400);
+            }
             return redirect()->route('admin.students.index')->with('status', __('Pengguna tersebut bukan siswa.'));
         }
 
@@ -96,6 +99,7 @@ class StudentController extends BaseAdminController
                         'total' => $enrollment->order ? 'Rp ' . number_format($enrollment->order->total, 0, ',', '.') : '-',
                     ];
                 })
+                ->values()
             : collect();
 
         $activeEnrollment = $hasEnrollments
@@ -111,6 +115,22 @@ class StudentController extends BaseAdminController
                 ? CarbonImmutable::parse($activeEnrollment->ends_at)->locale('id')->translatedFormat('d F Y')
                 : '-',
         ];
+
+        // Return JSON for AJAX requests
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'id' => $student->id,
+                'name' => $student->name,
+                'email' => $student->email,
+                'student_id' => $student->student_id,
+                'phone' => $student->phone,
+                'address' => $student->address,
+                'parent_name' => $student->parent_name,
+                'gender' => $student->gender,
+                'summary' => $summary,
+                'timeline' => $timeline->toArray(),
+            ]);
+        }
 
         return $this->render('admin.students.show', [
             'student' => $student,
