@@ -354,6 +354,8 @@
                                 @foreach($tutors as $tutor)
                                     <label class="checkbox-label">
                                         <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" 
+                                            data-subjects="{{ json_encode($tutor->subjects->pluck('id')) }}"
+                                            onchange="handleTutorSelection(this)"
                                             {{ in_array($tutor->id, old('tutors', [])) ? 'checked' : '' }}>
                                         {{ $tutor->name }}
                                     </label>
@@ -390,6 +392,21 @@
             } else {
                 // Keep at least one input, just clear it
                 button.parentElement.querySelector('input').value = '';
+            }
+        }
+
+        function handleTutorSelection(checkbox) {
+            if (checkbox.checked) {
+                const subjects = JSON.parse(checkbox.getAttribute('data-subjects'));
+                const form = checkbox.closest('form');
+                if (!form) return;
+                
+                subjects.forEach(subjectId => {
+                    const subjectCheckbox = form.querySelector(`input[name="subjects[]"][value="${subjectId}"]`);
+                    if (subjectCheckbox) {
+                        subjectCheckbox.checked = true;
+                    }
+                });
             }
         }
     </script>

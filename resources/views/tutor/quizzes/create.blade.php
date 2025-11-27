@@ -247,8 +247,8 @@
 
                         <label class="span-full">
                             <span>Link Quiz</span>
-                            <input type="url" name="link_url" value="{{ old('link_url') }}" placeholder="https://" required />
-                            @error('link_url') <div class="error-text">{{ $message }}</div> @enderror
+                            <input type="url" name="link_urls[]" value="{{ old('link_urls.0') }}" placeholder="https://forms.google.com/..." required />
+                            @error('link_urls.0') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
                     </div>
 
@@ -277,13 +277,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // AJAX Subject Dropdown
     if (packageSelect && subjectSelect) {
         const loadSubjects = (packageId, selectedId = null) => {
+            console.log('[CREATE DEBUG] loadSubjects called with packageId:', packageId);
             subjectSelect.innerHTML = '<option value="">Memuat...</option>';
             subjectSelect.disabled = true;
 
             if (packageId) {
-                fetch(/tutor/packages/${packageId}/subjects)
-                    .then(response => response.json())
+                // Use Laravel route helper for correct URL
+                const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
+                console.log('[CREATE DEBUG] Fetching from URL:', url);
+                
+                fetch(url)
+                    .then(response => {
+                        console.log('[CREATE DEBUG] Response:', response.status, response.statusText);
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('[CREATE DEBUG] Data received:', data);
                         subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
                         data.forEach(subject => {
                             const option = document.createElement('option');
@@ -295,12 +304,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             subjectSelect.appendChild(option);
                         });
                         subjectSelect.disabled = false;
+                        console.log('[CREATE DEBUG] Dropdown populated with', data.length, 'subjects');
                     })
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.error('[CREATE ERROR]', error);
                         subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
                     });
             } else {
+                console.log('[CREATE DEBUG] No packageId, showing placeholder');
                 subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
                 subjectSelect.disabled = true;
             }

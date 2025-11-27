@@ -26,7 +26,7 @@ class PackageController extends BaseAdminController
             'packages' => $packages,
             'stages' => $this->stageOptions(),
             'subjectsByLevel' => $this->getSubjectsByLevel(),
-            'tutors' => User::where('role', 'tutor')->where('is_active', true)->orderBy('name')->get(),
+            'tutors' => User::where('role', 'tutor')->where('is_active', true)->with('subjects')->orderBy('name')->get(),
         ]);
     }
 

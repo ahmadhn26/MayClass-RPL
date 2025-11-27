@@ -953,12 +953,11 @@
                 <a href="{{ route('tutor.materials.edit', $material) }}" class="action-btn btn-secondary">
                     Edit
                 </a>
-                @if ($material->resource_path)
-                @php($isExternal = str_starts_with($material->resource_path, 'http'))
-                <a href="{{ $isExternal ? $material->resource_path : route('tutor.materials.preview', $material->slug) }}"
-                    class="action-btn btn-outline" target="_blank" rel="noopener">
-                    Preview
-                </a>
+                @if (!empty($material->resource_path) && is_array($material->resource_path) && count($material->resource_path) > 0)
+                    <a href="{{ str_starts_with($material->resource_path[0], 'http') ? $material->resource_path[0] : route('tutor.materials.preview', $material->slug) }}"
+                        class="action-btn btn-outline" target="_blank" rel="noopener">
+                        Preview
+                    </a>
                 @endif
             </div>
         </div>
@@ -1101,14 +1100,8 @@
     @endif
 
     // ========== AUTO-FILL LEVEL FROM PACKAGE ==========
-    const packageSelect = document.getElementById('packageSelect');
+    // Logic moved to handlePackageSelection
     const hiddenLevel = document.getElementById('hiddenLevel');
-
-    packageSelect.addEventListener('change', function () {
-        const selectedOption = this.options[this.selectedIndex];
-        const level = selectedOption.getAttribute('data-level') || '';
-        hiddenLevel.value = level;
-    });
 
     // ========== MODERN FILE UPLOAD HANDLER ==========
     const fileUploadArea = document.getElementById('fileUploadArea');
@@ -1217,7 +1210,7 @@
     // Handle Package Multi-Selection
     function handlePackageSelection() {
         const checkboxes = document.querySelectorAll('.package-checkbox:checked');
-        const levelInput = document.getElementById('levelInput');
+        const levelInput = document.getElementById('hiddenLevel');
 
         if (checkboxes.length > 0) {
             // Get first selected package to fetch subjects

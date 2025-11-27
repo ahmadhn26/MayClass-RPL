@@ -1117,7 +1117,9 @@
                                 <div class="subject-checkboxes">
                                     @foreach($tutors as $tutor)
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}">
+                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}"
+                                                data-subjects="{{ json_encode($tutor->subjects->pluck('id')) }}"
+                                                onchange="handleTutorSelection(this)">
                                             {{ $tutor->name }}
                                         </label>
                                     @endforeach
@@ -1293,20 +1295,20 @@
                 const subjectSelection = document.getElementById('edit-subject-selection');
                 subjectSelection.innerHTML = '';
                 @foreach(['SD', 'SMP', 'SMA'] as $level)
-                    @if(isset($subjectsByLevel['{{ $level }}']) && $subjectsByLevel['{{ $level }}']->isNotEmpty())
+                    @if(isset($subjectsByLevel[$level]) && $subjectsByLevel[$level]->isNotEmpty())
                         const {{ $level }}_div = document.createElement('div');
-                                                                                                {{ $level }}_div.className = 'subject-group';
-                                                                                                {{ $level }}_div.innerHTML = '<h4>{{ $level }}</h4><div class="subject-checkboxes" id="edit-subjects-{{ $level }}"></div>';
+                        {{ $level }}_div.className = 'subject-group';
+                        {{ $level }}_div.innerHTML = '<h4>{{ $level }}</h4><div class="subject-checkboxes" id="edit-subjects-{{ $level }}"></div>';
                         subjectSelection.appendChild({{ $level }}_div);
 
                         @foreach($subjectsByLevel[$level] as $subject)
                             const sub_{{ $subject->id }} = document.createElement('label');
                             sub_{{ $subject->id }}.className = 'checkbox-label';
-                            const isChecked = data.subject_ids.includes({{ $subject->id }});
+                            let isChecked_{{ $subject->id }} = data.subject_ids.includes({{ $subject->id }});
                             sub_{{ $subject->id }}.innerHTML = `
-                                                                                                                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" ${isChecked ? 'checked' : ''}>
-                                                                                                                                {{ $subject->name }}
-                                                                                                                            `;
+                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" ${isChecked_{{ $subject->id }} ? 'checked' : ''}>
+                                {{ $subject->name }}
+                            `;
                             document.getElementById('edit-subjects-{{ $level }}').appendChild(sub_{{ $subject->id }});
                         @endforeach
                     @endif
@@ -1321,11 +1323,14 @@
                     @foreach($tutors as $tutor)
                         const tutor_{{ $tutor->id }} = document.createElement('label');
                         tutor_{{ $tutor->id }}.className = 'checkbox-label';
-                        const tutorChecked = data.tutor_ids.includes({{ $tutor->id }});
+                        let tutorChecked_{{ $tutor->id }} = data.tutor_ids.includes({{ $tutor->id }});
                         tutor_{{ $tutor->id }}.innerHTML = `
-                                                                                                    <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" ${tutorChecked ? 'checked' : ''}>
-                                                                                                    {{ $tutor->name }}
-                                                                                                `;
+                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" 
+                                                data-subjects="{{ json_encode($tutor->subjects->pluck('id')) }}"
+                                                onchange="handleTutorSelection(this)"
+                                                ${tutorChecked_{{ $tutor->id }} ? 'checked' : ''}>
+                                            {{ $tutor->name }}
+                                        `;
                         tutorDiv.appendChild(tutor_{{ $tutor->id }});
                     @endforeach
                     tutorSelection.appendChild(tutorDiv);
@@ -1380,6 +1385,23 @@
         @if($errors->any())
             openModal('addPackageModal');
         @endif
+
+        function handleTutorSelection(checkbox) {
+            if (checkbox.checked) {
+                const subjects = JSON.parse(checkbox.getAttribute('data-subjects'));
+                const form = checkbox.closest('form');
+                if (!form) return;
+                
+                subjects.forEach(subjectId => {
+                    const subjectCheckbox = form.querySelector(`input[name="subjects[]"][value="${subjectId}"]`);
+                    if (subjectCheckbox) {
+                        subjectCheckbox.checked = true;
+                        // Trigger change event if needed
+                        subjectCheckbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
+        }
     </script>
 @endpush
 @endsection

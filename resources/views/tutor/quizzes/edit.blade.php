@@ -373,13 +373,22 @@
             // AJAX Subject Dropdown (Logic Tidak Disentuh)
             if (packageSelect && subjectSelect) {
                 const loadSubjects = (packageId, selectedId = null) => {
+                    console.log('[EDIT DEBUG] loadSubjects called with packageId:', packageId, 'selectedId:', selectedId);
                     subjectSelect.innerHTML = '<option value="">Memuat...</option>';
                     subjectSelect.disabled = true;
 
                     if (packageId) {
-                        fetch(/tutor/packages / ${ packageId } / subjects)
-                            .then(response => response.json())
+                        // Use Laravel route helper for correct URL
+                        const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
+                        console.log('[EDIT DEBUG] Fetching from URL:', url);
+                        
+                        fetch(url)
+                            .then(response => {
+                                console.log('[EDIT DEBUG] Response:', response.status, response.statusText);
+                                return response.json();
+                            })
                             .then(data => {
+                                console.log('[EDIT DEBUG] Data received:', data);
                                 subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
                                 data.forEach(subject => {
                                     const option = document.createElement('option');
@@ -392,12 +401,14 @@
                                     subjectSelect.appendChild(option);
                                 });
                                 subjectSelect.disabled = false;
+                                console.log('[EDIT DEBUG] Dropdown populated with', data.length, 'subjects');
                             })
                             .catch(error => {
-                                console.error('Error:', error);
+                                console.error('[EDIT ERROR]', error);
                                 subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
                             });
                     } else {
+                        console.log('[EDIT DEBUG] No packageId, showing placeholder');
                         subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
                         subjectSelect.disabled = true;
                     }

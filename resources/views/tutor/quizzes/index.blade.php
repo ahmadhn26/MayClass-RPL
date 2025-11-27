@@ -568,11 +568,10 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Pilih Paket Belajar</label>
-                        <select name="package_id" id="packageSelect" class="form-control" required
-                            onchange="fetchSubjects(this.value)">
+                        <select name="package_id" id="packageSelect" class="form-control" required>
                             <option value="">Pilih paket yang tersedia</option>
                             @foreach($packages ?? [] as $package)
-                                <option value="{{ $package->id }}">{{ $package->name }} ({{ $package->level }})</option>
+                                <option value="{{ $package->id }}">{{ $package->detail_title ?? $package->name }} ({{ $package->level }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -649,36 +648,72 @@
             openModal();
         @endif
 
-        // AJAX Fetch Subjects
-        function fetchSubjects(packageId) {
+        // --- AJAX Fetch Subjects (Global Scope) ---
+        window.fetchSubjects = function(packageId) {
+            console.log('[DEBUG] fetchSubjects called with packageId:', packageId);
             const subjectSelect = document.getElementById('subjectSelect');
 
             if (!packageId) {
+                console.log('[DEBUG] No packageId provided, resetting dropdown');
                 subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
                 subjectSelect.disabled = true;
                 return;
             }
 
+            console.log('[DEBUG] Setting loading state');
             subjectSelect.innerHTML = '<option>Loading...</option>';
             subjectSelect.disabled = true;
 
-            fetch(`/tutor/packages/${packageId}/subjects`)
-                .then(response => response.json())
+            // Use Laravel route helper for correct URL
+            const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
+            console.log('[DEBUG] Fetching from URL:', url);
+
+            fetch(url)
+                .then(response => {
+                    console.log('[DEBUG] Response received:', response.status, response.statusText);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('[DEBUG] Data received:', data);
                     subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
-                    data.forEach(subject => {
-                        subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
-                    });
-                    subjectSelect.disabled = false;
+                    if (Array.isArray(data) && data.length > 0) {
+                        console.log('[DEBUG] Adding', data.length, 'subjects to dropdown');
+                        data.forEach(subject => {
+                            subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
+                        });
+                        subjectSelect.disabled = false;
+                        console.log('[DEBUG] Dropdown enabled with subjects');
+                    } else {
+                        console.log('[DEBUG] No subjects found in response');
+                        subjectSelect.innerHTML = '<option value="">Tidak ada mapel tersedia</option>';
+                    }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
+                    console.error('[ERROR] Fetch failed:', error);
+                    subjectSelect.innerHTML = '<option value="">Gagal memuat data</option>';
                 });
-        }
+        };
 
         // --- Dynamic Inputs Logic ---
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('[INIT] DOM Content Loaded');
+            
+            // Attach event listener to packageSelect
+            const packageSelect = document.getElementById('packageSelect');
+            if (packageSelect) {
+                console.log('[INIT] packageSelect found, attaching change listener');
+                packageSelect.addEventListener('change', function(e) {
+                    console.log('[EVENT] Package changed to:', this.value);
+                    fetchSubjects(this.value);
+                });
+            } else {
+                console.error('[INIT] packageSelect NOT FOUND!');
+            }
+            
+            // Logic for dynamic inputs only
             const linkContainer = document.querySelector('[data-link-urls]');
             const addLinkBtn = document.querySelector('[data-add-link]');
 
