@@ -19,14 +19,14 @@ class ScheduleController extends BaseTutorController
         $sessions = Schema::hasTable('schedule_sessions')
             ? ScheduleSession::query()
                 ->with(['package:id,detail_title'])
-                ->when($tutor, fn ($query) => $query->where('user_id', $tutor->id))
+                ->when($tutor, fn($query) => $query->where('user_id', $tutor->id))
                 ->orderBy('start_at')
                 ->get()
             : collect();
 
-        $formattedSessions = $sessions->map(fn (ScheduleSession $session) => $this->formatSession($session, $now));
+        $formattedSessions = $sessions->map(fn(ScheduleSession $session) => $this->formatSession($session, $now));
 
-        [$upcoming, $history] = $formattedSessions->partition(fn ($session) => $session['is_upcoming']);
+        [$upcoming, $history] = $formattedSessions->partition(fn($session) => $session['is_upcoming']);
 
         [$todaySessions, $futureSessions] = $upcoming->partition(function ($session) use ($now) {
             return $session['start_at'] && $session['start_at']->isSameDay($now);
@@ -55,7 +55,7 @@ class ScheduleController extends BaseTutorController
         $isCancelled = $status === 'cancelled';
         $isCompleted = $status === 'completed';
 
-        $isUpcoming = ! $isCancelled && ! $isCompleted && $end && $end->greaterThanOrEqualTo($now);
+        $isUpcoming = !$isCancelled && !$isCompleted && $end && $end->greaterThanOrEqualTo($now);
 
         $statusLabel = match ($status) {
             'completed' => 'Selesai',
@@ -81,6 +81,7 @@ class ScheduleController extends BaseTutorController
                 ?? optional($session->package)->title
                 ?? 'Paket MayClass',
             'location' => $session->location ?? 'Lokasi belum ditetapkan',
+            'zoom_link' => $session->zoom_link ?? null,
             'participant_summary' => $participantSummary,
             'status_label' => $statusLabel,
             'status_variant' => $statusVariant,
@@ -94,7 +95,7 @@ class ScheduleController extends BaseTutorController
 
     private function parseDate($value): ?CarbonImmutable
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 

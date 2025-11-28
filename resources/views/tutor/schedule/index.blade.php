@@ -433,7 +433,8 @@
             }
 
             .hero-card {
-                padding: 24px; /* Reduced padding */
+                padding: 24px;
+                /* Reduced padding */
             }
 
             .hero-content h1 {
@@ -443,13 +444,16 @@
             /* Metrics Row Mobile Optimization */
             .metrics-row {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
+                grid-template-columns: repeat(3, 1fr);
+                /* Force 3 columns */
                 gap: 8px;
             }
 
             .metric-pill {
-                min-width: 0; /* Allow shrinking */
-                padding: 12px 8px; /* Compact padding */
+                min-width: 0;
+                /* Allow shrinking */
+                padding: 12px 8px;
+                /* Compact padding */
                 align-items: center;
                 text-align: center;
             }
@@ -462,6 +466,32 @@
             .metric-pill strong {
                 font-size: 1.25rem;
             }
+        }
+
+        /* Zoom Button Styling */
+        .zoom-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #2d8cff;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .zoom-btn:hover {
+            background: #1a73e8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(45, 140, 255, 0.3);
+        }
+
+        .zoom-btn svg {
+            flex-shrink: 0;
         }
     </style>
 @endpush
@@ -575,6 +605,22 @@
                                                 {{ $session['participant_summary'] }}
                                             </div>
                                         </div>
+
+                                        @if(str_contains($session['location'], 'Online') && !empty($session['zoom_link']))
+                                            <div style="margin-top: 12px;">
+                                                <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path
+                                                            d="M15.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5m-11-4v-8a2 2 0 0 1 2-2H11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z">
+                                                        </path>
+                                                        <polyline points="15 10 20 7 20 17 15 14"></polyline>
+                                                    </svg>
+                                                    Join Zoom
+                                                </a>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -660,6 +706,22 @@
                                                 {{ $session['participant_summary'] }}
                                             </div>
                                         </div>
+
+                                        @if(str_contains($session['location'], 'Online') && !empty($session['zoom_link']))
+                                            <div style="margin-top: 12px;">
+                                                <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path
+                                                            d="M15.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5m-11-4v-8a2 2 0 0 1 2-2H11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z">
+                                                        </path>
+                                                        <polyline points="15 10 20 7 20 17 15 14"></polyline>
+                                                    </svg>
+                                                    Join Zoom
+                                                </a>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
