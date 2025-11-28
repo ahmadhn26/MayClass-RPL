@@ -320,9 +320,7 @@
                                         <a href="{{ route('student.materials.show', $material['slug']) }}" class="btn-sm btn-primary-sm">
                                             Buka Materi
                                         </a>
-                                        <a href="{{ $material['view_url'] }}" target="_blank" rel="noopener" class="btn-sm btn-outline-sm">
-                                            Lihat Sumber
-                                        </a>
+
                                     </div>
                                 </div>
                             @endforeach

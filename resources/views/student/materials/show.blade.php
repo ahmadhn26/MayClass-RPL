@@ -4,138 +4,255 @@
 
 @push('styles')
     <style>
-        .student-material-detail__layout {
+        .material-page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .material-breadcrumb {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+
+        .material-breadcrumb a {
+            color: #0f766e;
+            text-decoration: none;
+        }
+
+        .material-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .material-header {
             display: grid;
-            gap: clamp(28px, 5vw, 48px);
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: 1fr auto;
+            gap: 40px;
             align-items: start;
+            margin-bottom: 48px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .student-material-detail__header {
-            display: grid;
-            gap: 18px;
+        .header-content {
+            min-width: 0;
         }
 
-        .student-material-detail__actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .student-material-detail__objectives,
-        .student-material-detail__chapters {
-            display: grid;
-            gap: 12px;
-        }
-
-        .student-material-detail__objective {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            border-radius: var(--student-radius-md);
-            padding: 14px 18px;
-            background: rgba(47, 152, 140, 0.08);
-            border: 1px solid rgba(47, 152, 140, 0.12);
-        }
-
-        .student-material-detail__objective span {
+        .material-meta {
             display: inline-flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .meta-badge {
+            padding: 4px 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .material-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 16px 0;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .material-desc {
+            font-size: 1.125rem;
+            color: #64748b;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .header-action {
+            flex-shrink: 0;
+        }
+
+        .btn-view {
+            display: inline-block;
+            padding: 14px 28px;
+            background: #0f766e;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-view:hover {
+            background: #115e59;
+            transform: translateY(-1px);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+        }
+
+        .content-section {
+            min-width: 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 24px 0;
+            letter-spacing: -0.01em;
+        }
+
+        .objectives {
+            display: grid;
+            gap: 16px;
+        }
+
+        .objective {
+            display: flex;
+            gap: 12px;
+        }
+
+        .objective-num {
+            min-width: 24px;
+            height: 24px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 12px;
-            background: var(--student-primary);
-            color: #ffffff;
+            background: #0f766e;
+            color: white;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8125rem;
+            flex-shrink: 0;
+        }
+
+        .objective-text {
+            color: #47556;
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.9375rem;
+        }
+
+        .chapters {
+            display: grid;
+            gap: 20px;
+        }
+
+        .chapter {
+            padding-left: 16px;
+            border-left: 2px solid #e2e8f0;
+            transition: border-color 0.2s;
+        }
+
+        .chapter:hover {
+            border-left-color: #0f766e;
+        }
+
+        .chapter-title {
+            font-size: 1rem;
             font-weight: 600;
-            font-size: 0.85rem;
+            color: #0f172a;
+            margin: 0 0 6px 0;
         }
 
-        .student-material-detail__chapter {
-            border-radius: var(--student-radius-md);
-            padding: 16px 20px;
-            background: rgba(95, 106, 248, 0.08);
-            border: 1px solid rgba(95, 106, 248, 0.12);
+        .chapter-desc {
+            color: #64748b;
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.9375rem;
         }
 
-        .student-material-detail__chapter h3 {
-            margin: 0 0 6px;
-            font-size: 1.05rem;
-        }
+        @media (max-width: 768px) {
+            .material-header {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
 
-        .student-material-detail__thumbnail {
-            width: 100%;
-            border-radius: var(--student-radius-lg);
-            object-fit: cover;
-            min-height: 220px;
-        }
+            .header-action {
+                order: -1;
+            }
 
-        @media (max-width: 640px) {
-            .student-material-detail__actions {
-                flex-direction: column;
-                align-items: stretch;
+            .btn-view {
+                width: 100%;
+                text-align: center;
+            }
+
+            .material-title {
+                font-size: 1.75rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
             }
         }
     </style>
 @endpush
 
 @section('content')
-    <section class="student-section">
-        <div class="student-material-detail__layout">
-            <div class="student-material-detail__header">
-                <div class="student-breadcrumbs">
-                    <a href="{{ route('student.materials') }}">Materi</a>
-                    <span>/</span>
-                    <span>{{ $material['title'] }}</span>
-                </div>
-                <div class="student-chip">{{ $material['subject'] }} • Level {{ $material['level'] }}</div>
-                <h1 style="margin: 0; font-size: clamp(2rem, 4vw, 2.8rem);">{{ $material['title'] }}</h1>
-                <p style="margin: 0; color: var(--student-text-muted); font-size: 1rem;">{{ $material['summary'] }}</p>
-                <div class="student-material-detail__actions">
-                    <a class="student-button student-button--primary" href="{{ $material['view_url'] }}" target="_blank" rel="noopener">Lihat materi</a>
-                    <a class="student-button student-button--outline" href="{{ $material['download_url'] }}" target="_blank" rel="noopener" download>
-                        Download materi ({{ $material['download_label'] }})
-                    </a>
-                    <a class="student-button student-button--ghost" href="{{ $materialsLink }}" target="_blank" rel="noopener">Kelola di Google Drive</a>
-                </div>
-            </div>
-            <img class="student-material-detail__thumbnail" src="{{ $material['thumbnail'] }}" alt="Ilustrasi materi {{ $material['title'] }}">
+    <div class="material-page">
+        <div class="material-breadcrumb">
+            <a href="{{ route('student.materials') }}">Materi</a>
+            <span> / </span>
+            <span>{{ $material['title'] }}</span>
         </div>
-    </section>
 
-    <section class="student-section">
-        <div class="student-section__header">
-            <h2 class="student-section__title">Apa yang akan kamu pelajari</h2>
+        <div class="material-header">
+            <div class="header-content">
+                <div class="material-meta">
+                    <span class="meta-badge">{{ $material['subject'] }}</span>
+                    <span class="meta-badge">{{ $material['level'] }}</span>
+                </div>
+
+                <h1 class="material-title">{{ $material['title'] }}</h1>
+                <p class="material-desc">{{ $material['summary'] }}</p>
+            </div>
+
+            <div class="header-action">
+                <a class="btn-view" href="{{ $material['view_url'] }}" target="_blank" rel="noopener">
+                    Buka Materi
+                </a>
+            </div>
         </div>
-        @if (! empty($material['objectives']))
-            <div class="student-material-detail__objectives">
-                @foreach ($material['objectives'] as $index => $objective)
-                    <div class="student-material-detail__objective">
-                        <span>{{ $index + 1 }}</span>
-                        <p style="margin: 0;">{{ $objective }}</p>
+
+        <div class="content-grid">
+            @if (!empty($material['objectives']))
+                <div class="content-section">
+                    <h2 class="section-title">Tujuan Pembelajaran</h2>
+                    <div class="objectives">
+                        @foreach ($material['objectives'] as $index => $objective)
+                            <div class="objective">
+                                <div class="objective-num">{{ $index + 1 }}</div>
+                                <p class="objective-text">{{ $objective }}</p>
+                            </div>
+                        @endforeach
                     </div>
-                @endforeach
-            </div>
-        @else
-            <p style="color: var(--student-text-muted);">Tujuan pembelajaran akan segera ditambahkan.</p>
-        @endif
-    </section>
+                </div>
+            @endif
 
-    <section class="student-section">
-        <div class="student-section__header">
-            <h2 class="student-section__title">Rangkuman bab</h2>
+            @if (!empty($material['chapters']))
+                <div class="content-section">
+                    <h2 class="section-title">Rangkuman Bab</h2>
+                    <div class="chapters">
+                        @foreach ($material['chapters'] as $chapter)
+                            <div class="chapter">
+                                <h3 class="chapter-title">{{ $chapter['title'] }}</h3>
+                                <p class="chapter-desc">{{ $chapter['description'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
-        @if (! empty($material['chapters']))
-            <div class="student-material-detail__chapters">
-                @foreach ($material['chapters'] as $chapter)
-                    <article class="student-material-detail__chapter">
-                        <h3>{{ $chapter['title'] }}</h3>
-                        <p style="margin: 0; color: var(--student-text-muted);">{{ $chapter['description'] }}</p>
-                    </article>
-                @endforeach
-            </div>
-        @else
-            <p style="color: var(--student-text-muted);">Rangkuman bab akan hadir setelah materi diperbarui.</p>
-        @endif
-    </section>
+    </div>
 @endsection

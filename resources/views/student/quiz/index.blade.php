@@ -15,17 +15,18 @@
             --border: #e2e8f0;
             --radius-lg: 16px;
             --radius-md: 12px;
-            --shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
             /* Accent specific for Quiz (Orange/Purple hint) */
-            --accent-quiz: #f59e0b; 
+            --accent-quiz: #f59e0b;
         }
 
         /* --- Layout Container Full Width --- */
         .quiz-container {
             width: 100%;
-            padding: 0 40px; /* Jarak aman kiri kanan */
+            padding: 0 40px;
+            /* Jarak aman kiri kanan */
             display: flex;
             flex-direction: column;
             gap: 40px;
@@ -44,25 +45,31 @@
             flex-direction: column;
             justify-content: center;
         }
-        
+
         .hero-banner::before {
             content: '';
             position: absolute;
-            top: -50%; right: -10%;
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
             border-radius: 50%;
         }
 
-        .hero-content { position: relative; z-index: 2; max-width: 800px; }
-        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
         .hero-title {
             font-size: 2rem;
             font-weight: 700;
             margin: 0 0 12px;
             line-height: 1.2;
         }
-        
+
         .hero-desc {
             font-size: 1.05rem;
             opacity: 0.95;
@@ -77,8 +84,8 @@
         }
 
         .btn-hero {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: white;
             padding: 10px 24px;
             border-radius: 8px;
@@ -88,7 +95,11 @@
             transition: all 0.2s;
             backdrop-filter: blur(4px);
         }
-        .btn-hero:hover { background: white; color: var(--primary); }
+
+        .btn-hero:hover {
+            background: white;
+            color: var(--primary);
+        }
 
         /* --- Section Title --- */
         .section-title {
@@ -96,8 +107,19 @@
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border);
         }
-        .section-title h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin: 0 0 4px; }
-        .section-title p { color: var(--text-muted); margin: 0; font-size: 0.95rem; }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 4px;
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95rem;
+        }
 
         /* --- Collections Grid --- */
         .collections-grid {
@@ -135,7 +157,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .collection-badge {
             background: white;
             padding: 4px 12px;
@@ -152,7 +174,7 @@
             font-weight: 700;
             margin: 0;
         }
-        
+
         /* Body Kartu (List) */
         .collection-body {
             padding: 0;
@@ -169,8 +191,14 @@
             border-bottom: 1px solid var(--border);
             transition: background 0.2s;
         }
-        .quiz-item:last-child { border-bottom: none; }
-        .quiz-item:hover { background: #fcfcfc; }
+
+        .quiz-item:last-child {
+            border-bottom: none;
+        }
+
+        .quiz-item:hover {
+            background: #fcfcfc;
+        }
 
         .quiz-top {
             display: flex;
@@ -178,14 +206,14 @@
             align-items: flex-start;
             gap: 12px;
         }
-        
+
         .quiz-info h4 {
             margin: 0 0 4px;
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-main);
         }
-        
+
         .quiz-info p {
             margin: 0;
             font-size: 0.9rem;
@@ -218,19 +246,26 @@
             transition: all 0.2s;
             display: inline-block;
         }
-        
+
         .btn-primary-sm {
             background: var(--primary);
             color: white;
         }
-        .btn-primary-sm:hover { background: var(--primary-hover); }
-        
+
+        .btn-primary-sm:hover {
+            background: var(--primary-hover);
+        }
+
         .btn-outline-sm {
             border: 1px solid var(--border);
             color: var(--text-main);
             background: white;
         }
-        .btn-outline-sm:hover { border-color: var(--primary); color: var(--primary); }
+
+        .btn-outline-sm:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
         /* Empty State */
         .empty-state {
@@ -243,10 +278,21 @@
         }
 
         @media (max-width: 768px) {
-            .quiz-container { padding: 0 20px; }
-            .hero-banner { padding: 24px; }
-            .hero-title { font-size: 1.5rem; }
-            .collections-grid { grid-template-columns: 1fr; }
+            .quiz-container {
+                padding: 0 20px;
+            }
+
+            .hero-banner {
+                padding: 24px;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 @endpush
@@ -262,10 +308,12 @@
             <div class="hero-content">
                 <h1 class="hero-title">Mulai Latihan</h1>
                 <p class="hero-desc">
-                    @if (! empty($activePackage))
-                        Tantangan khusus untuk paket <strong>{{ $activePackage->detail_title ?? $activePackage->title }}</strong>.
+                    @if (!empty($activePackage))
+                        Tantangan khusus untuk paket
+                        <strong>{{ $activePackage->detail_title ?? $activePackage->title }}</strong>.
                     @endif
-                    Terdapat {{ number_format($stats['total']) }} kuis aktif dengan {{ number_format($stats['total_questions']) }} soal dan
+                    Terdapat {{ number_format($stats['total']) }} kuis aktif dengan
+                    {{ number_format($stats['total_questions']) }} soal dan
                     dukungan {{ number_format(count($stats['levels'])) }} jenjang belajar.
                 </p>
                 <div class="hero-actions">
@@ -282,7 +330,8 @@
         {{-- 2. Section Header --}}
         <div class="section-title">
             <h2>Koleksi Quiz & Bank Soal</h2>
-            <p>Latihan terarah dan menyenangkan. Kuasai materi pelajaran serta TWK, TIU, dan TKP dengan metode yang mudah dipahami.</p>
+            <p>Latihan terarah dan menyenangkan. Kuasai materi pelajaran serta TWK, TIU, dan TKP dengan metode yang mudah
+                dipahami.</p>
         </div>
 
         {{-- 3. Quiz Collections Grid --}}
@@ -305,7 +354,7 @@
                                             <p>{{ Str::limit($quiz['summary'], 100) }}</p>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="quiz-meta">
                                         <span>⏱ {{ $quiz['duration'] }}</span>
                                         <span>📝 {{ $quiz['questions'] }} Soal</span>
@@ -314,9 +363,6 @@
                                     <div class="quiz-actions">
                                         <a href="{{ route('student.quiz.show', $quiz['slug']) }}" class="btn-sm btn-primary-sm">
                                             Detail Kuis
-                                        </a>
-                                        <a href="{{ $quiz['link'] }}" target="_blank" rel="noopener" class="btn-sm btn-outline-sm">
-                                            Mulai Latihan
                                         </a>
                                     </div>
                                 </div>
