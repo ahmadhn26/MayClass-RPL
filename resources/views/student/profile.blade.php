@@ -589,6 +589,16 @@
                             value="{{ old('parent_name', $profile['parentName']) }}" />
                     </div>
                     <div class="form-group">
+                        <label for="parent-phone">No. WhatsApp Orang Tua / Wali <span
+                                style="color: var(--danger);">*</span></label>
+                        <input id="parent-phone" name="parent_phone" type="text" placeholder="Contoh: 081234567890"
+                            value="{{ old('parent_phone', $profile['parentPhone']) }}" required />
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
+                            Nomor ini akan digunakan untuk konseling dan komunikasi dengan orang tua
+                        </p>
+                        @error('parent_phone') <p class="input-error-msg">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="form-group">
                         <label for="student-code">ID Siswa</label>
                         <input id="student-code" type="text" value="{{ $profile['studentId'] }}" readonly />
                     </div>

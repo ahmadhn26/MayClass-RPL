@@ -38,6 +38,7 @@ class ProfileController extends Controller
                 'gender' => $user->gender,
                 'genderLabel' => $this->translateGender($user->gender),
                 'parentName' => $user->parent_name,
+                'parentPhone' => $user->parent_phone,
                 'address' => $user->address,
             ],
             'genderOptions' => $this->genderOptions(),
@@ -56,6 +57,7 @@ class ProfileController extends Controller
             'phone' => ['nullable', 'string', 'max:255'],
             'gender' => ['nullable', Rule::in(array_keys($this->genderOptions()))],
             'parent_name' => ['nullable', 'string', 'max:255'],
+            'parent_phone' => ['required', 'string', 'max:30', 'regex:/^08[0-9]{8,13}$/'],
             'address' => ['nullable', 'string'],
             'avatar' => ['nullable', 'image', 'max:5000'],
         ]);
@@ -80,6 +82,7 @@ class ProfileController extends Controller
             'phone' => $data['phone'] ?? null,
             'gender' => $data['gender'] ?? null,
             'parent_name' => $data['parent_name'] ?? null,
+            'parent_phone' => $data['parent_phone'],
             'address' => $data['address'] ?? null,
             'avatar_path' => $avatarPath,
         ])->save();
