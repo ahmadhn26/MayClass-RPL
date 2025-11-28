@@ -54,6 +54,7 @@ class StudentController extends BaseAdminController
                         'name' => $student->name,
                         'email' => $student->email,
                         'student_id' => $student->student_id,
+                        'avatar_path' => $student->avatar_path,
                         'parent_phone' => $student->parent_phone,
                         'package' => $activeEnrollment?->package?->detail_title,
                         'status' => $activeEnrollment?->is_active ? 'Aktif' : 'Tidak aktif',

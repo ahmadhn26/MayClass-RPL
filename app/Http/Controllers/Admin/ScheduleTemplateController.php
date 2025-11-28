@@ -91,11 +91,13 @@ class ScheduleTemplateController extends BaseAdminController
             'category' => ['nullable', 'string', 'max:120'],
             'class_level' => ['nullable', 'string', 'max:120'],
             'location' => ['nullable', 'string', 'max:255'],
+            'zoom_link' => ['nullable', 'url', 'max:500'],
             'reference_date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i'],
             'duration_minutes' => ['required', 'integer', 'min:30', 'max:240'],
             'student_count' => ['nullable', 'integer', 'min:1', 'max:200'],
         ]);
+
 
         $reference = CarbonImmutable::parse($payload['reference_date']);
         $dayOfWeek = $reference->dayOfWeek === 0 ? 7 : $reference->dayOfWeek;

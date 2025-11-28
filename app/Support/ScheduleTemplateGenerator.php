@@ -116,6 +116,7 @@ class ScheduleTemplateGenerator
                     'category' => $template->category ?? '-',
                     'class_level' => $template->class_level,
                     'location' => $template->location,
+                    'zoom_link' => $template->zoom_link,
                     'student_count' => $template->student_count,
                     'mentor_name' => $tutor->name,
                     'start_at' => $startAt,
@@ -123,6 +124,7 @@ class ScheduleTemplateGenerator
                     'is_highlight' => false,
                     'status' => 'scheduled',
                 ]);
+
             }
         });
     }

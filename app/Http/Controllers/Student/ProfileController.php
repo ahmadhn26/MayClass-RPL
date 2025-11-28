@@ -27,6 +27,8 @@ class ProfileController extends Controller
 
         if ($user->avatar_path && Storage::disk('public')->exists($user->avatar_path)) {
             $avatarUrl = Storage::disk('public')->url($user->avatar_path);
+            // Add cache busting timestamp
+            $avatarUrl .= '?t=' . time();
         }
 
         return view('student.profile', [
@@ -66,9 +68,12 @@ class ProfileController extends Controller
 
         if ($request->hasFile('avatar')) {
             try {
-                $avatarPath = AvatarUploader::store($request->file('avatar'), [$user->avatar_path]);
+                $newAvatarPath = AvatarUploader::store($request->file('avatar'), [$user->avatar_path]);
+                \Log::info('Avatar uploaded', ['path' => $newAvatarPath]);
+                $avatarPath = $newAvatarPath;
             } catch (\Throwable $exception) {
                 report($exception);
+                \Log::error('Avatar upload failed', ['error' => $exception->getMessage()]);
 
                 return back()
                     ->withInput($request->except('avatar'))
@@ -87,9 +92,15 @@ class ProfileController extends Controller
             'avatar_path' => $avatarPath,
         ])->save();
 
+        // Force refresh user data from database
+        $user->fresh();
+        
+        \Log::info('Profile updated', ['user_id' => $user->id, 'avatar_path' => $user->avatar_path]);
+
         return redirect()
             ->route('student.profile')
-            ->with('status', 'Profil berhasil diperbarui.');
+            ->with('status', 'Profil berhasil diperbarui.')
+            ->with('avatar_updated', true);
     }
 
     public function updatePassword(Request $request): RedirectResponse

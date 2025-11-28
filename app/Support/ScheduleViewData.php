@@ -82,6 +82,24 @@ class ScheduleViewData
                 'mentor' => '-',
             ];
 
+        // Find current/ongoing session
+        $now = CarbonImmutable::now();
+        $currentSession = $validSessions->first(function ($session) use ($now) {
+            $start = self::parseDate($session->start_at ?? null);
+            if (!$start) {
+                return false;
+            }
+            
+            $duration = (int) ($session->duration_minutes ?? 90);
+            $duration = $duration > 0 ? $duration : 90;
+            $end = $start->addMinutes($duration);
+            
+            // Session is current if now is between start and end time
+            return $now->greaterThanOrEqualTo($start) && $now->lessThan($end);
+        });
+
+        $current = $currentSession ? self::formatSession($currentSession) : null;
+
         $upcoming = $validSessions
             ->filter(function ($session) {
                 $start = self::parseDate($session->start_at ?? null);
@@ -99,19 +117,36 @@ class ScheduleViewData
 
         $calendar = self::buildCalendarGrid($normalizedView, $reference, $sessionGroups, $validSessions);
 
-        $rangeSessions = self::buildRangeSessions(
-            $calendar['range_start'],
-            $calendar['range_end'],
-            $sessionGroups
-        );
+        // Build history sessions (past sessions only)
+        $now = CarbonImmutable::now();
+        $historySessions = $validSessions
+            ->filter(function ($session) use ($now) {
+                $start = self::parseDate($session->start_at ?? null);
+                if (!$start) {
+                    return false;
+                }
+                
+                $duration = (int) ($session->duration_minutes ?? 90);
+                $duration = $duration > 0 ? $duration : 90;
+                $end = $start->addMinutes($duration);
+                
+                // Session is past if end time has passed
+                return $end->lessThan($now);
+            })
+            ->sortByDesc('start_at')
+            ->map(fn ($session) => self::formatSession($session))
+            ->values()
+            ->take(10); // Limit to last 10 sessions
 
         return [
             'view' => $normalizedView,
+            'current' => $current,
             'highlight' => $highlight,
             'upcoming' => $upcoming,
             'calendar' => Arr::except($calendar, ['range_start', 'range_end']),
-            'rangeSessions' => $rangeSessions,
+            'rangeSessions' => $historySessions, // Reuse same key to avoid breaking view
         ];
+
     }
 
     public static function fromCollection(Collection $sessions): array
@@ -153,9 +188,12 @@ class ScheduleViewData
             'date' => self::formatFullDate($startAt),
             'time' => $startAt->format('H.i') . ' - ' . $endAt->format('H.i') . ' WIB',
             'mentor' => $session->mentor_name,
+            'location' => $session->location,
+            'zoom_link' => $session->zoom_link,
             'start_time' => $startAt->format('H.i'),
             'start_at_iso' => $startAt->toIso8601String(),
         ];
+
     }
 
     private static function buildCalendarGrid(string $view, CarbonImmutable $referenceDate, Collection $sessionGroups, Collection $sessions): array

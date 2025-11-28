@@ -523,7 +523,12 @@
 
             @if ($errors->any())
                 <div class="alert alert-error">
-                    Terjadi kesalahan. Silakan periksa input Anda.
+                    <strong>Terjadi kesalahan:</strong>
+                    <ul style="margin: 8px 0 0 20px; padding: 0;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -562,15 +567,18 @@
                     <div class="form-group">
                         <label for="name">Nama Lengkap</label>
                         <input id="name" name="name" type="text" value="{{ old('name', $profile['name']) }}" required />
+                        @error('name') <p class="input-error-msg">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input id="email" name="email" type="email" value="{{ old('email', $profile['email']) }}"
                             required />
+                        @error('email') <p class="input-error-msg">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-group">
                         <label for="phone">No. Telepon / WA</label>
                         <input id="phone" name="phone" type="text" value="{{ old('phone', $profile['phone']) }}" />
+                        @error('phone') <p class="input-error-msg">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-group">
                         <label for="gender">Jenis Kelamin</label>

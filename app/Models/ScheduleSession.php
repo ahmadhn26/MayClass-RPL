@@ -18,6 +18,7 @@ class ScheduleSession extends Model
         'category',
         'class_level',
         'location',
+        'zoom_link',
         'student_count',
         'mentor_name',
         'start_at',
@@ -26,6 +27,7 @@ class ScheduleSession extends Model
         'status',
         'cancelled_at',
     ];
+
 
     protected $casts = [
         'start_at' => 'datetime',

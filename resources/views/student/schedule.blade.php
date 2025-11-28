@@ -19,6 +19,28 @@
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
+        /* --- Animations --- */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+            }
+        }
+
+
         /* --- Layout Container --- */
         .schedule-container {
             width: 100%;
@@ -661,22 +683,55 @@
             </div>
         </div>
 
-        {{-- 2. Sesi Terdekat --}}
+
+        {{-- 2. Sesi Sedang Berjalan (Live Session) --}}
+        @if (!empty($schedule['current']))
+            <section>
+                <div class="highlight-card" style="border-left-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <span class="highlight-label" style="color: #ef4444; background: #fee2e2; padding: 6px 12px; border-radius: 99px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px;">
+                            <span style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></span>
+                            SEDANG BERLANGSUNG
+                        </span>
+                    </div>
+                    <h2 class="highlight-title" style="color: #dc2626;">{{ $schedule['current']['title'] }}</h2>
+                    <div class="highlight-meta">
+                        <span>{{ $schedule['current']['date'] }}</span>
+                        <span>{{ $schedule['current']['time'] }}</span>
+                        <span>Mentor: {{ $schedule['current']['mentor'] }}</span>
+                        <span>{{ $schedule['current']['category'] }}</span>
+                    </div>
+                    @if (!empty($schedule['current']['zoom_link']))
+                        <div style="margin-top: 16px;">
+                            <a href="{{ $schedule['current']['zoom_link'] }}" target="_blank" 
+                               class="btn-primary" 
+                               style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); animation: gentle-pulse 2s ease-in-out infinite;">
+                                Join Sekarang
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </section>
+        @endif
+
+        {{-- 3. Sesi Berikutnya --}}
         <section>
             <div class="highlight-card">
                 <span class="highlight-label">Sesi Berikutnya</span>
                 <h2 class="highlight-title">{{ $schedule['highlight']['title'] }}</h2>
                 <div class="highlight-meta">
-                    <span> {{ $schedule['highlight']['date'] }}</span>
-                    <span> {{ $schedule['highlight']['time'] }}</span>
-                    <span> {{ $schedule['highlight']['mentor'] }}</span>
-                    <span> {{ $schedule['highlight']['category'] }}</span>
+                    <span>{{ $schedule['highlight']['date'] }}</span>
+                    <span>{{ $schedule['highlight']['time'] }}</span>
+                    <span>Mentor: {{ $schedule['highlight']['mentor'] }}</span>
+                    <span>{{ $schedule['highlight']['category'] }}</span>
                 </div>
-                <div style="margin-top: 8px;">
-                    <a href="{{ route('student.dashboard') }}" class="btn-primary">
-                        Buka Dashboard
-                    </a>
-                </div>
+                @if (!empty($schedule['highlight']['zoom_link']))
+                    <div style="margin-top: 16px;">
+                        <a href="{{ $schedule['highlight']['zoom_link'] }}" target="_blank" class="btn-primary" style="background: #2d8cff;">
+                            Join Zoom Meeting
+                        </a>
+                    </div>
+                @endif
             </div>
         </section>
 
@@ -695,6 +750,14 @@
                             <div>
                                 <div class="session-cat">{{ $session['category'] }}</div>
                                 <h3 class="session-title">{{ $session['title'] }}</h3>
+                                @if (!empty($session['zoom_link']))
+                                    <a href="{{ $session['zoom_link'] }}" target="_blank" 
+                                       style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 16px; background: #2d8cff; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;"
+                                       onmouseover="this.style.background='#1a73e8'" onmouseout="this.style.background='#2d8cff'">
+                                        Join Online
+                                    </a>
+                                @endif
+
                             </div>
                             <div class="session-time">
                                 {{ $session['date'] }} • {{ $session['time'] }}
@@ -770,36 +833,33 @@
             </div>
         </section>
 
-        {{-- 5. Rincian Range List --}}
+        {{-- 5. Riwayat Pertemuan --}}
         <section>
             <div class="section-header">
                 <div class="section-title">
-                    <h2>Rincian Jadwal</h2>
-                    <p>Detail sesi pada periode ini.</p>
+                    <h2>Riwayat Pertemuan</h2>
+                    <p>Daftar sesi yang sudah selesai.</p>
                 </div>
             </div>
 
-            @if (! empty($rangeSessions))
+            @if (! empty($rangeSessions) && count($rangeSessions) > 0)
                 <div class="range-list">
-                    @foreach ($rangeSessions as $day)
-                        <div class="range-day">
-                            <div class="range-header">{{ $day['label'] }}</div>
-                            <div>
-                                @foreach ($day['sessions'] as $session)
-                                    <div class="range-session">
-                                        <span class="rs-title">{{ $session['title'] }}</span>
-                                        <div class="rs-meta">
-                                            {{ $session['time'] }} • Mentor {{ $session['mentor'] }} • {{ $session['category'] }}
-                                        </div>
+                    @foreach ($rangeSessions as $session)
+                        <div class="range-session" style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 12px; background: var(--surface);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px;">
+                                <div style="flex: 1;">
+                                    <span class="rs-title">{{ $session['title'] }}</span>
+                                    <div class="rs-meta">
+                                        {{ $session['date'] }} • {{ $session['time'] }} • Mentor {{ $session['mentor'] }} • {{ $session['category'] }}
                                     </div>
-                                @endforeach
+                                </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
                 <div class="empty-box">
-                    Tidak ada sesi pada rentang tanggal ini.
+                    Belum ada riwayat pertemuan.
                 </div>
             @endif
         </section>

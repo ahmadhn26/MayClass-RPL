@@ -2,6 +2,10 @@
 
 @section('title', 'Manajemen Siswa - MayClass')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @push('styles')
     <style>
         :root {
@@ -553,10 +557,19 @@
                             <tr>
                                 <td>
                                     <div class="student-profile">
-                                        {{-- Avatar Inisial --}}
-                                        <div class="student-avatar">
-                                            {{ substr($student['name'], 0, 1) }}
-                                        </div>
+                                        {{-- Avatar - Show photo if exists, otherwise show initial --}}
+                                        @if(!empty($student['avatar_path']))
+                                            <div class="student-avatar" style="padding: 0; background: transparent; overflow: hidden;">
+                                                <img src="{{ asset('storage/' . $student['avatar_path']) }}" 
+                                                     alt="{{ $student['name'] }}" 
+                                                     style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                                                     onerror="this.parentElement.innerHTML='{{ substr($student['name'], 0, 1) }}';">
+                                            </div>
+                                        @else
+                                            <div class="student-avatar">
+                                                {{ substr($student['name'], 0, 1) }}
+                                            </div>
+                                        @endif
                                         <div class="student-info">
                                             <span class="student-name">{{ $student['name'] }}</span>
                                             <span class="student-email">{{ $student['email'] }}</span>
