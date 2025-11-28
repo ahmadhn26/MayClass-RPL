@@ -19,17 +19,19 @@ class DatabaseSeeder extends Seeder
         // Other data will be managed manually via Admin panel
 
         $this->call([
-            DemoAdminSeeder::class,  
+            DemoAdminSeeder::class,
             SubjectSeeder::class,
+            FeatureSeeder::class,
+            TestimonialSeeder::class,
+            MentorSeeder::class,
+            FaqSeeder::class,
         ]);
-        // LandingContentSeeder::class,
         // PackageSeeder::class,
-        // SubjectSeeder::class,
+        // LandingContentSeeder::class,
         // MaterialSeeder::class,
         // QuizSeeder::class,
         // ScheduleSeeder::class,
         // DemoStudentSeeder::class,
         // StudentSeeder::class,
-        // DemoOrderSeeder::class,
     }
 }
