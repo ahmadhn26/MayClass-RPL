@@ -33,6 +33,8 @@ class User extends Authenticatable
         'parent_name',
         'address',
         'avatar_path',
+        'bank_name',
+        'account_number',
     ];
 
     /**

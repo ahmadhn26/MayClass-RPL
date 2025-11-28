@@ -86,6 +86,28 @@
 </div>
 
 <div class="tentor-form-card">
+    <h2>Informasi Rekening Bank</h2>
+    <p>Isi informasi rekening untuk pembayaran honor tentor.</p>
+
+    <div class="tentor-form-grid">
+        <div class="tentor-form-group">
+            <label>Nama Bank</label>
+            <input type="text" name="bank_name" value="{{ old('bank_name', optional($tentor)->bank_name) }}"
+                placeholder="Contoh: BCA, Mandiri, BNI">
+            <p class="helper-text">Nama bank tempat rekening honor akan ditransfer.</p>
+            @error('bank_name')<p class="helper-text" style="color:#dc2626;">{{ $message }}</p>@enderror
+        </div>
+        <div class="tentor-form-group">
+            <label>Nomor Rekening</label>
+            <input type="text" name="account_number"
+                value="{{ old('account_number', optional($tentor)->account_number) }}" placeholder="Contoh: 1234567890">
+            <p class="helper-text">Nomor rekening untuk transfer honor.</p>
+            @error('account_number')<p class="helper-text" style="color:#dc2626;">{{ $message }}</p>@enderror
+        </div>
+    </div>
+</div>
+
+<div class="tentor-form-card">
     <h2>Keahlian Mengajar</h2>
     <p>Pilih mata pelajaran yang dikuasai oleh tentor ini (minimal 1).</p>
 

@@ -705,7 +705,7 @@
                 font-size: 1.25rem;
             }
 
-        .stat-label {
+            .stat-label {
                 font-size: 0.7rem;
                 white-space: nowrap;
             }
@@ -726,6 +726,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1011,6 +1012,17 @@
                                 placeholder="Ceritakan pengalaman mengajar..."></textarea>
                         </div>
 
+                        {{-- Bank Information --}}
+                        <div class="form-group">
+                            <label>Nama Bank</label>
+                            <input type="text" name="bank_name" class="form-control"
+                                placeholder="Contoh: BCA, Mandiri, BNI">
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Rekening</label>
+                            <input type="text" name="account_number" class="form-control" placeholder="Contoh: 1234567890">
+                        </div>
+
                         {{-- Security --}}
                         <div class="form-group">
                             <label>Password *</label>
@@ -1136,7 +1148,19 @@
                         <div class="form-group full-width">
                             <label>Deskripsi Singkat</label>
                             <textarea name="bio" id="edit_bio" class="form-control" rows="3"
-                                placeholder="Ceritakan metode mengajar, pengalaman lomba..."></textarea>
+                                placeholder="Ceritakan metode mengaj ar, pengalaman lomba..."></textarea>
+                        </div>
+
+                        {{-- Bank Information --}}
+                        <div class="form-group">
+                            <label>Nama Bank</label>
+                            <input type="text" name="bank_name" id="edit_bank_name" class="form-control"
+                                placeholder="Contoh: BCA, Mandiri, BNI">
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Rekening</label>
+                            <input type="text" name="account_number" id="edit_account_number" class="form-control"
+                                placeholder="Contoh: 1234567890">
                         </div>
 
                         {{-- Security --}}
@@ -1249,6 +1273,10 @@
                         document.getElementById('edit_education').value = data.education || '';
                         document.getElementById('edit_bio').value = data.bio || '';
                         document.getElementById('edit_is_active').checked = data.is_active || false;
+                        
+                        // Bank information
+                        document.getElementById('edit_bank_name').value = data.bank_name || '';
+                        document.getElementById('edit_account_number').value = data.account_number || '';
 
                         // Set avatar preview
                         if (data.avatar) {

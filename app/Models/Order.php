@@ -22,6 +22,7 @@ class Order extends Model
         'cardholder_name',
         'card_number_last_four',
         'payment_proof_path',
+        'cancellation_reason',
         'paid_at',
         'expires_at',
         'cancelled_at',

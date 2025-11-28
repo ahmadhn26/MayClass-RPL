@@ -759,9 +759,11 @@
 
         /* --- CSS TOMBOL SEJAJAR --- */
         .pricing-actions {
-            margin-top: auto; /* Memaksa tombol turun ke bawah */
+            margin-top: auto;
+            /* Memaksa tombol turun ke bawah */
             width: 100%;
-            padding-top: 20px; /* Memberi jarak aman */
+            padding-top: 20px;
+            /* Memberi jarak aman */
         }
 
         .pricing-actions .btn {
@@ -1365,12 +1367,21 @@
 
         // Check for pending order
         $pendingOrder = null;
-        if (Auth::check()) {
+        // Check for active/approved package
+        $hasActivePackage = false;
+
+        if (Auth::check() && Auth::user()->role === 'student') {
+            // Check for pending order
             $pendingOrder = Auth::user()->orders()
                 ->where('status', 'pending')
                 ->with('package')
                 ->latest()
                 ->first();
+
+            // Check for active/approved package
+            $hasActivePackage = Auth::user()->orders()
+                ->where('status', 'paid')
+                ->exists();
         }
     @endphp
 
@@ -1393,24 +1404,38 @@
                     <a href="#faq">FAQ</a>
                     <div class="nav-actions">
                         @auth
-                            @if($pendingOrder && $pendingOrder->package)
-                                <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
-                                    class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                            @if($hasActivePackage)
+                                {{-- Tombol Ayo Belajar untuk siswa dengan paket aktif --}}
+                                <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
+                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                     </svg>
-                                    <span class="notification-dot"></span>
+                                    Ayo Belajar
+                                </a>
+                            @else
+                                @if($pendingOrder && $pendingOrder->package)
+                                    {{-- Notifikasi untuk pending order --}}
+                                    <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                        class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                        </svg>
+                                        <span class="notification-dot"></span>
+                                    </a>
+                                @endif
+
+                                <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                    aria-label="Buka profil">
+                                    <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
+                                    <span class="sr-only">Menuju profil</span>
                                 </a>
                             @endif
 
-                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                aria-label="Buka profil">
-                                <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
-                                <span class="sr-only">Menuju profil</span>
-                            </a>
                             <form method="post" action="{{ route('logout') }}" style="margin: 0;">
                                 @csrf
                                 <button type="submit" class="btn btn-outline"
@@ -1426,23 +1451,36 @@
                 {{-- Desktop nav-actions (visible on ≥769px) --}}
                 <div class="nav-actions nav-actions-desktop">
                     @auth
-                        @if($pendingOrder && $pendingOrder->package)
-                            <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
-                                class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                        @if($hasActivePackage)
+                            {{-- Tombol Ayo Belajar untuk siswa dengan paket aktif (Desktop) --}}
+                            <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
+                                style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
-                                <span class="notification-dot"></span>
+                                Ayo Belajar
+                            </a>
+                        @else
+                            @if($pendingOrder && $pendingOrder->package)
+                                <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                    class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                    </svg>
+                                    <span class="notification-dot"></span>
+                                </a>
+                            @endif
+
+                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                aria-label="Buka profil">
+                                <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
+                                <span class="sr-only">Menuju profil</span>
                             </a>
                         @endif
 
-                        <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                            aria-label="Buka profil">
-                            <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
-                            <span class="sr-only">Menuju profil</span>
-                        </a>
                         <form method="post" action="{{ route('logout') }}" style="margin: 0;">
                             @csrf
                             <button type="submit" class="btn btn-outline"
@@ -1506,6 +1544,52 @@
         </div>
     </section>
 
+    {{-- DOKUMENTASI SECTION - After Articles --}}
+    @if($documentations->isNotEmpty())
+        <section class="section" id="dokumentasi" style="background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);">
+            <div class="container">
+                <div class="section-header" data-reveal>
+                    <h2 class="section-title">📸 Dokumentasi Kegiatan MayClass</h2>
+                    <p class="section-subtitle">
+                        Intip momen seru dan kebersamaan selama belajar bersama MayClass minggu ini!
+                    </p>
+                </div>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 40px;">
+                    @foreach($documentations as $doc)
+                        <div data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
+                            style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
+                            <div style="position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f8fafc;">
+                                <img src="{{ asset('storage/' . $doc->photo_path) }}"
+                                    alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
+                                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                                <div
+                                    style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    📅 {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
+                                </div>
+                            </div>
+                            <div style="padding: 16px;">
+                                <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
+                                    {{ Str::limit($doc->description, 100) }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
+                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
+                        💡 <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
+                        minggu!
+                    </p>
+                </div>
+            </div>
+        </section>
+    @endif
+
     <section class="pricing-section" id="paket">
         <div class="container">
             <div class="section-header" data-reveal>
@@ -1515,105 +1599,105 @@
                     interaktif dan laporan perkembangan rutin.
                 </p>
             </div>
-            
+
             @php
-            // REGROUPING LOGIC (Menggabungkan kelas-kelas ke dalam Jenjang Besar)
-            $rawCatalog = collect($landingPackages ?? []);
-            
-            // Inisialisasi wadah untuk jenjang besar
-            $groupedLevels = [
-                'SD' => [
-                    'label' => 'Jenjang Sekolah Dasar (SD)',
-                    'desc' => 'Membangun pondasi akademik yang kuat dan menyenangkan.',
-                    'items' => collect()
-                ],
-                'SMP' => [
-                    'label' => 'Jenjang SMP',
-                    'desc' => 'Persiapan matang untuk ujian sekolah dan penguatan materi.',
-                    'items' => collect()
-                ],
-                'SMA' => [
-                    'label' => 'Jenjang SMA & Alumni',
-                    'desc' => 'Fokus intensif menembus PTN Impian dan Sekolah Kedinasan.',
-                    'items' => collect()
-                ],
-                'Lainnya' => [
-                    'label' => 'Program Lainnya',
-                    'desc' => 'Program pengembangan skill dan persiapan khusus.',
-                    'items' => collect()
-                ]
-            ];
+                // REGROUPING LOGIC (Menggabungkan kelas-kelas ke dalam Jenjang Besar)
+                $rawCatalog = collect($landingPackages ?? []);
 
-            // Loop data mentah dan masukkan ke wadah yang sesuai
-            foreach($rawCatalog as $group) {
-                $label = strtoupper($group['stage_label'] ?? $group['stage'] ?? '');
-                $packages = collect($group['packages'] ?? []);
+                // Inisialisasi wadah untuk jenjang besar
+                $groupedLevels = [
+                    'SD' => [
+                        'label' => 'Jenjang Sekolah Dasar (SD)',
+                        'desc' => 'Membangun pondasi akademik yang kuat dan menyenangkan.',
+                        'items' => collect()
+                    ],
+                    'SMP' => [
+                        'label' => 'Jenjang SMP',
+                        'desc' => 'Persiapan matang untuk ujian sekolah dan penguatan materi.',
+                        'items' => collect()
+                    ],
+                    'SMA' => [
+                        'label' => 'Jenjang SMA & Alumni',
+                        'desc' => 'Fokus intensif menembus PTN Impian dan Sekolah Kedinasan.',
+                        'items' => collect()
+                    ],
+                    'Lainnya' => [
+                        'label' => 'Program Lainnya',
+                        'desc' => 'Program pengembangan skill dan persiapan khusus.',
+                        'items' => collect()
+                    ]
+                ];
 
-                if (str_contains($label, 'SD') || str_contains($label, 'SEKOLAH DASAR')) {
-                    $groupedLevels['SD']['items'] = $groupedLevels['SD']['items']->merge($packages);
-                } elseif (str_contains($label, 'SMP')) {
-                    $groupedLevels['SMP']['items'] = $groupedLevels['SMP']['items']->merge($packages);
-                } elseif (str_contains($label, 'SMA') || str_contains($label, 'SMK') || str_contains($label, 'ALUMNI')) {
-                    $groupedLevels['SMA']['items'] = $groupedLevels['SMA']['items']->merge($packages);
-                } else {
-                    $groupedLevels['Lainnya']['items'] = $groupedLevels['Lainnya']['items']->merge($packages);
+                // Loop data mentah dan masukkan ke wadah yang sesuai
+                foreach ($rawCatalog as $group) {
+                    $label = strtoupper($group['stage_label'] ?? $group['stage'] ?? '');
+                    $packages = collect($group['packages'] ?? []);
+
+                    if (str_contains($label, 'SD') || str_contains($label, 'SEKOLAH DASAR')) {
+                        $groupedLevels['SD']['items'] = $groupedLevels['SD']['items']->merge($packages);
+                    } elseif (str_contains($label, 'SMP')) {
+                        $groupedLevels['SMP']['items'] = $groupedLevels['SMP']['items']->merge($packages);
+                    } elseif (str_contains($label, 'SMA') || str_contains($label, 'SMK') || str_contains($label, 'ALUMNI')) {
+                        $groupedLevels['SMA']['items'] = $groupedLevels['SMA']['items']->merge($packages);
+                    } else {
+                        $groupedLevels['Lainnya']['items'] = $groupedLevels['Lainnya']['items']->merge($packages);
+                    }
                 }
-            }
             @endphp
 
             @php($hasAnyPackage = false)
 
             @foreach ($groupedLevels as $key => $levelGroup)
-                @if ($levelGroup['items']->isNotEmpty())
-                    @php($hasAnyPackage = true)
-                    <div class="pricing-group">
-                        <div class="pricing-group-header" data-reveal>
-                            <h3>{{ $levelGroup['label'] }}</h3>
-                            <p>{{ $levelGroup['desc'] }}</p>
-                        </div>
+            @if ($levelGroup['items']->isNotEmpty())
+            @php($hasAnyPackage = true)
+            <div class="pricing-group">
+                <div class="pricing-group-header" data-reveal>
+                    <h3>{{ $levelGroup['label'] }}</h3>
+                    <p>{{ $levelGroup['desc'] }}</p>
+                </div>
 
-                        <div class="pricing-grid">
-                            @foreach ($levelGroup['items'] as $package)
-                                @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
-                                <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
-                                    <span class="badge">
-                                        {{ $package['tag'] ?? $key }}
-                                    </span>
-                                    <strong>{{ $package['detail_title'] }}</strong>
-                                    <div class="pricing-price">{{ $package['card_price'] }}</div>
-                                    
-                                    @if (!empty($package['grade_range']))
-                                        <div class="pricing-meta">
-                                            {{-- Jika isinya angka saja (misal "8"), tambahkan kata "Kelas" --}}
-                                            @if(is_numeric($package['grade_range']))
-                                                Kelas {{ $package['grade_range'] }}
-                                            @else
-                                                {{ $package['grade_range'] }}
-                                            @endif
-                                        </div>
-                                    @endif
-                                    
-                                    @if ($package['summary'] ?? false)
-                                        <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
-                                            {{ $package['summary'] }}
-                                        </p>
-                                    @endif
-                                    @if ($features->isNotEmpty())
-                                        <ul class="pricing-features">
-                                            @foreach ($features as $feature)
-                                                <li>{{ $feature }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                    <div class="pricing-actions">
-                                        <a class="btn btn-primary" href="{{ route('packages.show', $package['slug']) }}">Detail
-                                            Paket</a>
-                                    </div>
-                                </article>
-                            @endforeach
+                <div class="pricing-grid">
+                    @foreach ($levelGroup['items'] as $package)
+                    @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
+                    <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
+                        <span class="badge">
+                            {{ $package['tag'] ?? $key }}
+                        </span>
+                        <strong>{{ $package['detail_title'] }}</strong>
+                        <div class="pricing-price">{{ $package['card_price'] }}</div>
+
+                        @if (!empty($package['grade_range']))
+                            <div class="pricing-meta">
+                                {{-- Jika isinya angka saja (misal "8"), tambahkan kata "Kelas" --}}
+                                @if(is_numeric($package['grade_range']))
+                                    Kelas {{ $package['grade_range'] }}
+                                @else
+                                    {{ $package['grade_range'] }}
+                                @endif
+                            </div>
+                        @endif
+
+                        @if ($package['summary'] ?? false)
+                            <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
+                                {{ $package['summary'] }}
+                            </p>
+                        @endif
+                        @if ($features->isNotEmpty())
+                            <ul class="pricing-features">
+                                @foreach ($features as $feature)
+                                    <li>{{ $feature }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                        <div class="pricing-actions">
+                            <a class="btn btn-primary" href="{{ route('packages.show', $package['slug']) }}">Detail
+                                Paket</a>
                         </div>
-                    </div>
-                @endif
+                    </article>
+                    @endforeach
+                </div>
+            </div>
+            @endif
             @endforeach
 
             @if (!$hasAnyPackage)
@@ -1802,53 +1886,56 @@
                 <div>
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
-                            <div class="contact-row">
-                                <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630"
+                        <div class="contact-row">
+                            <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630"
                                 target="_blank" rel="noopener noreferrer" class="contact-link">
-                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
-                                </a>
-                            </div>
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran,
+                                    Jakarta Pusat – 10630</span>
+                            </a>
+                        </div>
 
-                            <div class="contact-row">
-                                <a href="https://wa.me/6283194085776"
-                                target="_blank" rel="noopener noreferrer" class="contact-link">
-                                    <!-- “Logo” WhatsApp sederhana (lingkaran hijau + ikon telp) -->
-                                    <svg class="contact-icon" width="20" height="20" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="11" fill="#22c55e"></circle>
-                                        <path d="M16.5 14.5c-.2.5-1 1-1.5 1.1-.4.1-.9.1-1.5 0-1.3-.3-2.7-1.1-3.7-2.1s-1.8-2.4-2.1-3.7c-.1-.6-.1-1.1 0-1.5.1-.5.6-1.3 1.1-1.5.3-.1.7 0 .9.3l.9 1.4c.2.3.2.7 0 1-.1.1-.2.3-.3.4-.1.2-.2.3-.1.5.2.5.7 1.1 1.2 1.6.5.5 1.1 1 1.6 1.2.2.1.4 0 .5-.1.1-.1.3-.2.4-.3.3-.2.7-.2 1 0l1.4.9c.3.2.4.6.3.9z"
-                                            fill="white"/>
-                                    </svg>
-                                    <span>0831-9408-5776 (WhatsApp)</span>
-                                </a>
-                            </div>
+                        <div class="contact-row">
+                            <a href="https://wa.me/6283194085776" target="_blank" rel="noopener noreferrer"
+                                class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="11" fill="#22c55e"></circle>
+                                    <path
+                                        d="M16.5 14.5c-.2.5-1 1-1.5 1.1-.4.1-.9.1-1.5 0-1.3-.3-2.7-1.1-3.7-2.1s-1.8-2.4-2.1-3.7c-.1-.6-.1-1.1 0-1.5.1-.5.6-1.3 1.1-1.5.3-.1.7 0 .9.3l.9 1.4c.2.3.2.7 0 1-.1.1-.2.3-.3.4-.1.2-.2.3-.1.5.2.5.7 1.1 1.2 1.6.5.5 1.1 1 1.6 1.2.2.1.4 0 .5-.1.1-.1.3-.2.4-.3.3-.2.7-.2 1 0l1.4.9c.3.2.4.6.3.9z"
+                                        fill="white" />
+                                </svg>
+                                <span>0831-9408-5776 (WhatsApp)</span>
+                            </a>
+                        </div>
 
-                            <div class="contact-row">
-                                <a href="mailto:hello@mayclass.id" class="contact-link">
-                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                    <span>hello@mayclass.id</span>
-                                </a>
-                            </div>
+                        <div class="contact-row">
+                            <a href="mailto:hello@mayclass.id" class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>hello@mayclass.id</span>
+                            </a>
+                        </div>
 
-                            <div class="contact-row">
-                                <div class="contact-link">
-                                    <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                    <span>Jam respon: 09.00–21.00 WIB (Setiap hari)</span>
-                                </div>
+                        <div class="contact-row">
+                            <div class="contact-link">
+                                <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>Jam respon: 09.00–21.00 WIB (Setiap hari)</span>
                             </div>
+                        </div>
 
                     </div>
                 </div>

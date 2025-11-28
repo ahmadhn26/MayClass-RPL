@@ -539,6 +539,128 @@
             }
         }
     </style>
+
+    {{-- Documentation Modal --}}
+    <div id="docModal" class="modal-backdrop">
+        <div class="modal-glass">
+            <div class="modal-header">
+                <h2 id="docModalTitle" class="modal-title">Tambah Dokumentasi</h2>
+                <button type="button" onclick="closeDocModal()" class="btn-close">&times;</button>
+            </div>
+            <form id="docForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" id="docMethod" name="_method" value="POST">
+
+                <div class="form-group">
+                    <label class="form-label">Tanggal Kegiatan *</label>
+                    <input type="date" id="docDate" name="activity_date" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Kesan Singkat *</label>
+                    <textarea id="docDescription" name="description" class="form-control" rows="3" required
+                        placeholder="Ceritakan kesan selama kegiatan belajar mengajar..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Foto Kegiatan *</label>
+                    <div class="file-upload-zone" onclick="document.getElementById('docPhoto').click()">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            style="margin: 0 auto 12px; color: var(--text-muted);">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                            </path>
+                        </svg>
+                        <p class="file-upload-text">Klik untuk upload foto<br><small>JPG, PNG (Max 5MB)</small></p>
+                        <input type="file" id="docPhoto" name="photo" accept="image/*" style="display: none;"
+                            onchange="previewDocImage(this)">
+                    </div>
+                    <img id="docPreview"
+                        style="display: none; max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 12px;">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeDocModal()">Batal</button>
+                    <button type="submit" class="btn-submit">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Documentation Modal Functions
+        function openDocModal(mode, data = null) {
+            const modal = document.getElementById('docModal');
+            const form = document.getElementById('docForm');
+            const title = document.getElementById('docModalTitle');
+            const method = document.getElementById('docMethod');
+            const preview = document.getElementById('docPreview');
+            const photoInput = document.getElementById('docPhoto');
+
+            if (mode === 'create') {
+                title.textContent = 'Tambah Dokumentasi';
+                form.action = '{{ route("admin.documentations.store") }}';
+                method.value = 'POST';
+                form.reset();
+                preview.style.display = 'none';
+                photoInput.required = true;
+            } else if (mode === 'edit' && data) {
+                title.textContent = 'Edit Dokumentasi';
+                form.action = `/admin/documentations/${data.id}`;
+                method.value = 'PUT';
+                document.getElementById('docDate').value = data.activity_date;
+                document.getElementById('docDescription').value = data.description;
+                preview.src = `{{ asset('storage/') }}/${data.photo_path}`;
+                preview.style.display = 'block';
+                photoInput.required = false;
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDocModal() {
+            const modal = document.getElementById('docModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function previewDocImage(input) {
+            const preview = document.getElementById('docPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function confirmDeleteDoc(form, date) {
+            Swal.fire({
+                title: 'Hapus Dokumentasi?',
+                text: `Dokumentasi tanggal ${date} akan dihapus permanen.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('docModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeDocModal();
+            }
+        });
+    </script>
 @endpush
 
 @section('content')
@@ -634,6 +756,62 @@
                     <div class="empty-state">Belum ada artikel.</div>
                 @endforelse
             </div>
+        </div>
+
+        {{-- Dokumentasi Section --}}
+        <div class="section-block">
+            <div class="section-header">
+                <h3 class="section-title">Dokumentasi Foto Kegiatan</h3>
+                <button onclick="openDocModal('create')" class="btn-add">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah
+                </button>
+            </div>
+            <div class="content-grid">
+                @php
+                    $weekNumber = now()->weekOfYear;
+                    $year = now()->year;
+                    $recentDocs = \App\Models\Documentation::where('is_active', true)
+                        ->orderBy('order', 'desc')
+                        ->orderBy('created_at', 'desc')
+                        ->limit(12)
+                        ->get();
+                @endphp
+                @forelse($recentDocs as $doc)
+                    <div class="content-card">
+                        <div class="card-img-wrapper">
+                            <img src="{{ asset('storage/' . $doc->photo_path) }}" alt="Dokumentasi" class="card-img">
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title" style="color: var(--primary); font-size: 0.85rem;">
+                                📅 {{ $doc->activity_date->locale('id')->translatedFormat('d F Y') }}
+                            </h4>
+                            <p class="card-desc">{{ Str::limit($doc->description, 80) }}</p>
+                        </div>
+                        <div class="card-actions">
+                            <button onclick='openDocModal("edit", {{ $doc }})' class="btn-icon">Edit</button>
+                            <form action="{{ route('admin.documentations.destroy', $doc->id) }}" method="POST"
+                                style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn-icon text-danger"
+                                    onclick="confirmDeleteDoc(this.form, '{{ $doc->activity_date->format('d M Y') }}')">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="empty-state">Belum ada dokumentasi.</div>
+                @endforelse
+            </div>
+            @if($recentDocs->count() > 0)
+                <div style="text-align: center; margin-top: 12px;">
+                    <small style="color: var(--text-muted);">{{ $recentDocs->count() }} dokumentasi ditampilkan</small>
+                </div>
+            @endif
         </div>
 
         {{-- Features Section --}}
@@ -964,12 +1142,12 @@
                     const zone = document.createElement('div');
                     zone.className = 'file-upload-zone';
                     zone.innerHTML = `
-                                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                        </svg>
-                                        <div class="file-upload-text">Klik atau drag file ke sini</div>
-                                        <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 10MB</div>
-                                    `;
+                                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                    </svg>
+                                                    <div class="file-upload-text">Klik atau drag file ke sini</div>
+                                                    <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 10MB</div>
+                                                `;
 
                     const input = document.createElement('input');
                     input.type = 'file';

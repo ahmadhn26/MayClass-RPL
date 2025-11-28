@@ -57,14 +57,30 @@ Route::get('/', function () {
         ->get()
         ->groupBy('section');
 
+    // Fetch Documentation - 20 latest from this week
+    $documentations = collect();
+    if (Schema::hasTable('documentations')) {
+        $weekNumber = now()->weekOfYear;
+        $year = now()->year;
+
+        $documentations = \App\Models\Documentation::where('is_active', true)
+            ->where('year', $year)
+            ->where('week_number', $weekNumber)
+            ->orderBy('order', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get();
+    }
+
     return view('welcome', [
         'landingPackages' => $catalog,
         'stageDefinitions' => $stageDefinitions,
         'profileLink' => ProfileLinkResolver::forUser($user),
         'profileAvatar' => ProfileAvatar::forUser($user),
         'landingContents' => $landingContents,
+        'documentations' => $documentations,
     ]);
-});
+})->name('home');
 
 Route::get('/gabung', [AuthController::class, 'join'])->name('join');
 
@@ -103,7 +119,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/{slug}', [CheckoutController::class, 'store'])->name('checkout.process');
     Route::get('/checkout/{slug}/success', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::post('/checkout/{slug}/orders/{order}/expire', [CheckoutController::class, 'expire'])->name('checkout.expire');
-    Route::get('/checkout/{slug}/orders/{order}/status', [CheckoutController::class, 'status'])->name('checkout.status');
+    Route::post('/checkout/{order}/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
+    Route::get('/checkout/{slug}/status/{order}', [CheckoutController::class, 'status'])->name('checkout.status');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('student.profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('student.profile.update');
@@ -159,6 +176,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
     Route::get('/students/{student}', [AdminStudentController::class, 'show'])->name('students.show');
+    Route::post('/students/{student}/toggle-status', [AdminStudentController::class, 'toggleStatus'])->name('students.toggle-status');
     Route::post('/students/{student}/reset-password', [AdminStudentController::class, 'resetPassword'])->name('students.reset-password');
     Route::delete('/students/{student}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
 
@@ -193,4 +211,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/schedule/{session}/restore', [AdminScheduleSessionController::class, 'restore'])->name('schedule.sessions.restore');
 
     Route::resource('landing-content', \App\Http\Controllers\Admin\LandingContentController::class)->except(['show', 'create', 'edit']);
+
+    Route::get('/documentations', [\App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('documentations.index');
+    Route::post('/documentations', [\App\Http\Controllers\Admin\DocumentationController::class, 'store'])->name('documentations.store');
+    Route::put('/documentations/{documentation}', [\App\Http\Controllers\Admin\DocumentationController::class, 'update'])->name('documentations.update');
+    Route::delete('/documentations/{documentation}', [\App\Http\Controllers\Admin\DocumentationController::class, 'destroy'])->name('documentations.destroy');
 });

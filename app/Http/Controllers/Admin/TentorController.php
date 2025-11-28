@@ -67,6 +67,8 @@ class TentorController extends BaseAdminController
                 'experience_years' => optional($tentor->tutorProfile)->experience_years ?? 0,
                 'is_active' => (bool) $tentor->is_active,
                 'subjects' => $tentor->subjects,
+                'bank_name' => $tentor->bank_name,
+                'account_number' => $tentor->account_number,
             ]);
 
         $stats = $this->tentorStats();
@@ -103,6 +105,8 @@ class TentorController extends BaseAdminController
             'phone' => $data['phone'] ?? null,
             'is_active' => $data['is_active'],
             'avatar_path' => $avatarPath,
+            'bank_name' => $data['bank_name'] ?? null,
+            'account_number' => $data['account_number'] ?? null,
         ]);
 
         $this->syncTutorProfile($user, $data, $avatarPath);
@@ -138,6 +142,8 @@ class TentorController extends BaseAdminController
                 'is_active' => (bool) $tentor->is_active,
                 'avatar' => ProfileAvatar::forUser($tentor),
                 'subjects' => $tentor->subjects->pluck('id')->toArray(),
+                'bank_name' => $tentor->bank_name,
+                'account_number' => $tentor->account_number,
             ]);
         }
 
@@ -172,6 +178,8 @@ class TentorController extends BaseAdminController
             'phone' => $data['phone'] ?? null,
             'is_active' => $data['is_active'],
             'avatar_path' => $avatarPath,
+            'bank_name' => $data['bank_name'] ?? null,
+            'account_number' => $data['account_number'] ?? null,
         ];
 
         if (!empty($data['password'])) {
@@ -233,6 +241,8 @@ class TentorController extends BaseAdminController
             'avatar' => ['nullable', 'image', 'max:5000'],
             'subjects' => ['required', 'array', 'min:1'],
             'subjects.*' => ['exists:subjects,id'],
+            'bank_name' => ['nullable', 'string', 'max:100'],
+            'account_number' => ['nullable', 'string', 'max:50'],
         ];
 
         $rules['password'] = $isCreate

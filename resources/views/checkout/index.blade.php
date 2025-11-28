@@ -559,10 +559,9 @@
                 enctype="multipart/form-data" novalidate>
                 @csrf
                 <input type="hidden" name="order_id" value="{{ $ordId }}" />
-                <input type="hidden" name="payment_method" value="transfer_bank" />
 
                 <div class="form-group">
-                    <label class="form-label">Nama Pemilik Rekening</label>
+                    <label class="form-label">Nama Pengirim</label>
                     <input type="text" name="cardholder_name" class="form-input"
                         value="{{ old('cardholder_name', auth()->user()->name ?? '') }}"
                         placeholder="Contoh: Budi Santoso" required>
@@ -570,10 +569,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Nomor Rekening Pengirim</label>
-                    <input type="text" name="card_number" class="form-input" value="{{ old('card_number') }}"
-                        placeholder="Contoh: 08123456789" required>
-                    @error('card_number') <div class="input-error-msg">{{ $message }}</div> @enderror
+                    <label class="form-label">Metode Pembayaran / Dana dari</label>
+                    <select name="payment_method" class="form-input" required>
+                        <option value="">-- Pilih Metode Pembayaran --</option>
+                        <option value="transfer_bank" {{ old('payment_method') == 'transfer_bank' ? 'selected' : '' }}>
+                            Transfer Bank</option>
+                        <option value="shopeepay" {{ old('payment_method') == 'shopeepay' ? 'selected' : '' }}>ShopeePay
+                        </option>
+                        <option value="gopay" {{ old('payment_method') == 'gopay' ? 'selected' : '' }}>GoPay</option>
+                        <option value="ovo" {{ old('payment_method') == 'ovo' ? 'selected' : '' }}>OVO</option>
+                        <option value="dana" {{ old('payment_method') == 'dana' ? 'selected' : '' }}>DANA</option>
+                    </select>
+                    @error('payment_method') <div class="input-error-msg">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="form-group">
@@ -643,17 +650,71 @@
 
                 {{-- TOMBOL WA OTOMATIS --}}
                 <a href="{{ $waLink }}" target="_blank" rel="noopener"
-                    style="display: inline-flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none; background: var(--primary-light); padding: 10px 16px; border-radius: 8px; width: 100%; justify-content: center;">
+                    style="display: inline-flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none; background: var(--primary-light); padding: 10px 16px; border-radius: 8px; width: 100%; justify-content: center; margin-bottom: 12px;">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                         <path
                             d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                     </svg>
                     Hubungi Admin
                 </a>
+
+                {{-- TOMBOL BATALKAN PESANAN --}}
+                <button type="button" onclick="openCancelModal()"
+                    style="display: inline-flex; align-items: center; gap: 8px; color: white; font-weight: 600; font-size: 0.9rem; text-decoration: none; background: #ef4444; padding: 10px 16px; border-radius: 8px; width: 100%; justify-content: center; border: none; cursor: pointer; transition: background 0.2s;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                    Batalkan Pesanan
+                </button>
             </div>
         </aside>
 
     </div>
+
+    {{-- CANCEL CONFIRMATION MODAL --}}
+    <div id="cancelModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);"
+            onclick="closeCancelModal()"></div>
+        <div
+            style="position: relative; background: white; width: 90%; max-width: 450px; margin: 100px auto; padding: 24px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <h3 style="margin: 0 0 12px; font-size: 1.25rem; color: var(--text-main);">Batalkan Pesanan?</h3>
+            <p style="margin: 0 0 20px; color: var(--text-muted); font-size: 0.95rem;">
+                Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan.
+            </p>
+
+            <form action="{{ route('checkout.cancel', $ordId) }}" method="POST">
+                @csrf
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Alasan
+                        Pembatalan (Opsional)</label>
+                    <textarea name="cancellation_reason" rows="3"
+                        style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; resize: vertical;"
+                        placeholder="Contoh: Ingin mengganti metode pembayaran"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" onclick="closeCancelModal()"
+                        style="padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); background: white; color: var(--text-main); font-weight: 600; cursor: pointer;">Batal</button>
+                    <button type="submit"
+                        style="padding: 10px 16px; border-radius: 8px; border: none; background: var(--danger); color: white; font-weight: 600; cursor: pointer;">Ya,
+                        Batalkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCancelModal() {
+            document.getElementById('cancelModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        function closeCancelModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    </script>
 
     {{-- Scripts --}}
     <script>

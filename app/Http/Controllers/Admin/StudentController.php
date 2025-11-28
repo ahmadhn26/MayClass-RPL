@@ -60,6 +60,7 @@ class StudentController extends BaseAdminController
                         'status' => $activeEnrollment?->is_active ? 'Aktif' : 'Tidak aktif',
                         'status_state' => $activeEnrollment?->is_active ? 'active' : 'inactive',
                         'ends_at' => $endsAt,
+                        'is_active' => (bool) ($student->is_active ?? true),
                     ];
                 });
         }
@@ -159,6 +160,27 @@ class StudentController extends BaseAdminController
             ->with('status', __('Kata sandi baru berhasil dibuat. Segera bagikan ke siswa melalui kanal resmi.'))
             ->with('generated_password', $newPassword);
     }
+
+    public function toggleStatus(User $student)
+    {
+        if ($student->role !== 'student') {
+            return response()->json(['error' => 'Pengguna tersebut bukan siswa.'], 400);
+        }
+
+        $student->is_active = !$student->is_active;
+        $student->save();
+
+        $message = $student->is_active
+            ? 'Siswa berhasil diaktifkan.'
+            : 'Siswa berhasil dinonaktifkan.';
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'is_active' => $student->is_active
+        ]);
+    }
+
     public function destroy(User $student): RedirectResponse
     {
         if ($student->role !== 'student') {

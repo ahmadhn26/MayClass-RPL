@@ -546,7 +546,8 @@
                             <th>Profil Siswa</th>
                             <th>ID Siswa</th>
                             <th>Paket Aktif</th>
-                            <th>Status Akun</th>
+                            <th>Status Paket</th>
+                            <th>Status Siswa</th>
                             <th>Masa Berlaku</th>
                             <th style="text-align: center;">Konseling</th>
                             <th style="text-align: right;">Aksi</th>
@@ -559,11 +560,12 @@
                                     <div class="student-profile">
                                         {{-- Avatar - Show photo if exists, otherwise show initial --}}
                                         @if(!empty($student['avatar_path']))
-                                            <div class="student-avatar" style="padding: 0; background: transparent; overflow: hidden;">
-                                                <img src="{{ asset('storage/' . $student['avatar_path']) }}" 
-                                                     alt="{{ $student['name'] }}" 
-                                                     style="width: 100%; height: 100%; object-fit: cover; display: block;"
-                                                     onerror="this.parentElement.innerHTML='{{ substr($student['name'], 0, 1) }}';">
+                                            <div class="student-avatar"
+                                                style="padding: 0; background: transparent; overflow: hidden;">
+                                                <img src="{{ asset('storage/' . $student['avatar_path']) }}"
+                                                    alt="{{ $student['name'] }}"
+                                                    style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                                                    onerror="this.parentElement.innerHTML='{{ substr($student['name'], 0, 1) }}';">
                                             </div>
                                         @else
                                             <div class="student-avatar">
@@ -591,6 +593,12 @@
                                 <td>
                                     <span class="status-pill" data-state="{{ $student['status_state'] ?? 'inactive' }}">
                                         {{ $student['status'] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-pill" data-state="{{ $student['is_active'] ? 'active' : 'inactive' }}"
+                                        id="status-badge-{{ $student['id'] }}">
+                                        {{ $student['is_active'] ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
                                 <td>
@@ -635,6 +643,27 @@
                                                 d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </button>
+                                    <button type="button" class="btn-toggle-status" data-id="{{ $student['id'] }}"
+                                        data-name="{{ $student['name'] }}" data-active="{{ $student['is_active'] ? '1' : '0' }}"
+                                        style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; {{ $student['is_active'] ? 'background: #fef3c7; color: #d97706; border-color: #fbbf24;' : 'background: #d1fae5; color: #059669; border-color: #34d399;' }}"
+                                        title="{{ $student['is_active'] ? 'Nonaktifkan' : 'Aktifkan' }} Siswa"
+                                        onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                        @if($student['is_active'])
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
+                                                </path>
+                                            </svg>
+                                            <span>Nonaktifkan</span>
+                                        @else
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span>Aktifkan</span>
+                                        @endif
+                                    </button>
                                     <button type="button" class="btn-delete" data-id="{{ $student['id'] }}"
                                         data-name="{{ $student['name'] }}" data-active="{{ $student['status_state'] }}">
                                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -647,7 +676,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
                                     <div class="empty-state">
                                         <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
                                             stroke="currentColor" viewBox="0 0 24 24">
@@ -796,7 +825,99 @@
                         text: "{{ session('error') }}",
                     });
                 @endif
-                                                    });
+                                                                            // Toggle Student Status Handler
+                                        const toggleButtons = document.querySelectorAll('.btn-toggle-status');
+
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const studentId = this.dataset.id;
+                        const studentName = this.dataset.name;
+                        const isActive = this.dataset.active === '1';
+                        const action = isActive ? 'menonaktifkan' : 'mengaktifkan';
+                        const actionTitle = isActive ? 'Nonaktifkan' : 'Aktifkan';
+
+                        Swal.fire({
+                            title: `${actionTitle} Siswa?`,
+                            html: `Apakah Anda yakin ingin ${action} siswa <strong>"${studentName}"</strong>?<br><br>${isActive ? '⚠️ Siswa yang dinonaktifkan tidak dapat mengakses dashboard dan fitur student.' : '✅ Siswa akan dapat mengakses kembali dashboard dan fitur student.'}`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: isActive ? '#f59e0b' : '#10b981',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: `Ya, ${actionTitle}!`,
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Show loading
+                                Swal.fire({
+                                    title: 'Memproses...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
+
+                                // AJAX call to toggle status
+                                fetch(`/admin/students/${studentId}/toggle-status`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    }
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            // Update button state
+                                            button.dataset.active = data.is_active ? '1' : '0';
+
+                                            // Update button styling
+                                            if (data.is_active) {
+                                                button.style.background = '#fef3c7';
+                                                button.style.color = '#d97706';
+                                                button.style.borderColor = '#fbbf24';
+                                            } else {
+                                                button.style.background = '#d1fae5';
+                                                button.style.color = '#059669';
+                                                button.style.borderColor = '#34d399';
+                                            }
+                                            button.title = data.is_active ? 'Nonaktifkan Siswa' : 'Aktifkan Siswa';
+
+                                            // Update icon and text
+                                            button.innerHTML = data.is_active
+                                                ? '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 715.636 5.636m12.728 12.728L5.636 5.636"></path></svg><span>Nonaktifkan</span>'
+                                                : '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Aktifkan</span>';
+
+                                            // Update badge
+                                            const badge = document.getElementById(`status-badge-${studentId}`);
+                                            if (badge) {
+                                                badge.textContent = data.is_active ? 'Aktif' : 'Nonaktif';
+                                                badge.setAttribute('data-state', data.is_active ? 'active' : 'inactive');
+                                            }
+
+                                            // Show success message
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil!',
+                                                text: data.message,
+                                                timer: 2000,
+                                                showConfirmButton: false
+                                            });
+                                        } else {
+                                            throw new Error(data.error || 'Terjadi kesalahan');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Gagal',
+                                            text: error.message || 'Terjadi kesalahan saat mengubah status siswa.',
+                                        });
+                                    });
+                            }
+                        });
+                    });
+                });
+            });
 
             // ========== MODAL FUNCTIONS ==========
             function openDetailModal(studentId) {
@@ -846,13 +967,13 @@
                 const packageSummary = document.getElementById('modal_package_summary');
                 if (data.summary) {
                     packageSummary.innerHTML = `
-                                                                <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
-                                                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
-                                                                    <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
-                                                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
-                                                                    <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
-                                                                </div>
-                                                            `;
+                                                                                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
+                                                                                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
+                                                                                            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
+                                                                                            <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
+                                                                                            <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
+                                                                                        </div>
+                                                                                    `;
                 } else {
                     packageSummary.innerHTML = '<p style="color: var(--text-muted);">Tidak ada paket aktif</p>';
                 }
@@ -867,17 +988,17 @@
                 const timelineContainer = document.getElementById('modal_timeline');
                 if (data.timeline && data.timeline.length > 0) {
                     timelineContainer.innerHTML = data.timeline.map(entry => `
-                                                                <div class="timeline-item">
-                                                                    <div class="timeline-item-header">${entry.package}</div>
-                                                                    <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
-                                                                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
-                                                                        Periode: ${entry.period}
-                                                                    </div>
-                                                                    <div class="timeline-meta">
-                                                                        Invoice #${entry.invoice || '-'} · Total ${entry.total}
-                                                                    </div>
-                                                                </div>
-                                                            `).join('');
+                                                                                        <div class="timeline-item">
+                                                                                            <div class="timeline-item-header">${entry.package}</div>
+                                                                                            <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
+                                                                                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
+                                                                                                Periode: ${entry.period}
+                                                                                            </div>
+                                                                                            <div class="timeline-meta">
+                                                                                                Invoice #${entry.invoice || '-'} · Total ${entry.total}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    `).join('');
                 } else {
                     timelineContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Belum ada riwayat paket untuk siswa ini.</p>';
                 }

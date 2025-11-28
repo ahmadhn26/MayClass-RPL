@@ -77,9 +77,8 @@ class CheckoutController extends Controller
         $package = Package::withQuotaUsage()->where('slug', $slug)->firstOrFail();
 
         $data = $request->validate([
-            'payment_method' => ['required', Rule::in(['american_express', 'visa', 'transfer_bank'])],
+            'payment_method' => ['required', Rule::in(['transfer_bank', 'shopeepay', 'gopay', 'ovo', 'dana'])],
             'cardholder_name' => ['required', 'string', 'max:255'],
-            'card_number' => ['required', 'string', 'max:25'],
             'payment_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'order_id' => ['required', Rule::exists('orders', 'id')->where(fn($query) => $query->where('user_id', $request->user()->id)->where('status', 'initiated'))],
         ]);
@@ -115,7 +114,6 @@ class CheckoutController extends Controller
             'status' => 'pending',
             'payment_method' => $data['payment_method'],
             'cardholder_name' => $data['cardholder_name'],
-            'card_number_last_four' => substr(preg_replace('/\D/', '', $data['card_number']), -4),
             'payment_proof_path' => $proofPath,
             'expires_at' => null,
             'cancelled_at' => null,
@@ -208,6 +206,30 @@ class CheckoutController extends Controller
         }
 
         return response()->json(['status' => 'expired']);
+    }
+
+    public function cancel(Request $request, Order $order): RedirectResponse
+    {
+        abort_unless($order->user_id === $request->user()->id, 403);
+
+        if (!in_array($order->status, ['initiated', 'pending', 'awaiting_payment', 'awaiting_verification'])) {
+            return redirect()->back()->with('error', 'Pesanan ini tidak dapat dibatalkan.');
+        }
+
+        $request->validate([
+            'cancellation_reason' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $order->forceFill([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+            'cancellation_reason' => $request->input('cancellation_reason'),
+        ])->save();
+
+        // Update session status if exists
+        $this->updateSessionStatus($order, $order->package, 'cancelled');
+
+        return redirect()->route('home')->with('success', 'Pesanan berhasil dibatalkan.');
     }
 
     private function formatPackage(Package $package): array

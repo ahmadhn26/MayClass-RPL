@@ -241,6 +241,9 @@ class FinanceController extends BaseAdminController
                     'status_class' => $badge['class'],
                     'proof' => $order->payment_proof_path ? route('admin.finance.proof', $order->id) : null,
                     'proof_name' => $order->payment_proof_path ? basename($order->payment_proof_path) : null,
+                    'payment_method' => $order->payment_method,
+                    'cardholder_name' => $order->cardholder_name,
+                    'cancellation_reason' => $order->cancellation_reason,
                     'canApprove' => $status === 'pending',
                     'canReject' => $status === 'pending',
                 ];
@@ -252,6 +255,7 @@ class FinanceController extends BaseAdminController
         return match ($status) {
             'paid' => ['label' => __('Verified'), 'class' => 'status-pill status-pill--paid'],
             'rejected', 'failed' => ['label' => __('Rejected'), 'class' => 'status-pill status-pill--rejected'],
+            'cancelled' => ['label' => __('Dibatalkan Siswa'), 'class' => 'status-pill status-pill--rejected'], // Reusing rejected style or create new one
             default => ['label' => __('Pending'), 'class' => 'status-pill status-pill--pending'],
         };
     }
