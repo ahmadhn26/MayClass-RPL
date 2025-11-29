@@ -1028,8 +1028,7 @@
                 <div class="dynamic-group__items" data-gdrive-links>
                     <div class="dynamic-item">
                         <div class="dynamic-item__row">
-                            <input type="url" name="gdrive_links[]" placeholder="https://drive.google.com/..."
-                                required />
+                            <input type="url" name="gdrive_links[]" class="form-control" placeholder="https://drive.google.com/..." required />
                         </div>
                         <div class="dynamic-item__actions">
                             <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
@@ -1076,27 +1075,78 @@
 </div>
 
 <script>
+// ========== GLOBAL FUNCTIONS (must be outside DOMContentLoaded) ==========
+// Dynamic Objectives
+let objectivesInitialized = false;
+window.addObjective = function() {
+    console.log('addObjective function called!');
+    const list = document.getElementById('objectivesList');
+    console.log('objectivesList element:', list);
+    if (!list) {
+        console.error('objectivesList not found!');
+        return;
+    }
+    const li = document.createElement('li');
+    li.className = 'dynamic-item';
+    li.innerHTML = `
+            <input type="text" name="objectives[]" class="form-control" placeholder="Tujuan lainnya...">
+            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">×</button>
+        `;
+    list.appendChild(li);
+    console.log('New objective added');
+}
+
+// Dynamic Chapters
+let chapterIndex = 1;
+window.addChapter = function() {
+    console.log('addChapter function called!');
+    const list = document.getElementById('chaptersList');
+    console.log('chaptersList element:', list);
+    if (!list) {
+        console.error('chaptersList not found!');
+        return;
+    }
+    const div = document.createElement('div');
+    div.className = 'dynamic-item';
+    div.innerHTML = `
+            <input type="text" name="chapters[${chapterIndex}][title]" class="form-control" placeholder="Judul Bab">
+            <input type="text" name="chapters[${chapterIndex}][description]" class="form-control" placeholder="Deskripsi">
+            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">×</button>
+        `;
+    list.appendChild(div);
+    chapterIndex++;
+    console.log('New chapter added, index:', chapterIndex);
+}
+
+// Wrap everything else in DOMContentLoaded to ensure DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    
     // Modal Logic
     const modal = document.getElementById('createModal');
 
-    function openModal() {
+    window.openModal = function() {
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        document.body.style.overflow = 'hidden';
+        // Initialize dynamic buttons when modal opens
+        initializeDynamicButtons();
     }
 
-    function closeModal() {
+    window.closeModal = function() {
         modal.classList.remove('active');
         document.body.style.overflow = 'auto';
     }
 
     // Close modal if clicking outside content
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) window.closeModal();
+        });
+    }
 
     // Auto open modal if validation error exists (Laravel)
     @if($errors->any())
-        openModal();
+        window.openModal();
     @endif
 
     // ========== AUTO-FILL LEVEL FROM PACKAGE ==========
@@ -1265,104 +1315,76 @@
             });
     }
 
-    // Dynamic Objectives
-    function addObjective() {
-        const list = document.getElementById('objectivesList');
-        const li = document.createElement('li');
-        li.className = 'dynamic-item';
-        li.innerHTML = `
-                <input type="text" name="objectives[]" class="form-control" placeholder="Tujuan lainnya...">
-                <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">×</button>
-            `;
-        list.appendChild(li);
-    }
-
-    // Dynamic Chapters
-    let chapterIndex = 1;
-    function addChapter() {
-        const list = document.getElementById('chaptersList');
-        const div = document.createElement('div');
-        div.className = 'dynamic-item';
-        div.innerHTML = `
-                <input type="text" name="chapters[${chapterIndex}][title]" class="form-control" placeholder="Judul Bab">
-                <input type="text" name="chapters[${chapterIndex}][description]" class="form-control" placeholder="Deskripsi">
-                <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">×</button>
-            `;
-        list.appendChild(div);
-        chapterIndex++;
-    }
-
     // ========== DYNAMIC GDRIVE LINKS ==========
-    const gdriveContainer = document.querySelector('[data-gdrive-links]');
-    const addGDriveBtn = document.querySelector('[data-add-gdrive]');
+    function initializeDynamicButtons() {
+        console.log('Initializing dynamic buttons...');
+        
+        const gdriveContainer = document.querySelector('[data-gdrive-links]');
+        const addGDriveBtn = document.querySelector('[data-add-gdrive]');
 
-    const createGDriveRow = () => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'dynamic-item';
-        wrapper.innerHTML = `
-            \u003cdiv class=\"dynamic-item__row\"\u003e
-                \u003cinput type=\"url\" name=\"gdrive_links[]\" class=\"form-control\" placeholder=\"https://drive.google.com/...\" required /\u003e
-            \u003c/div\u003e
-            \u003cdiv class=\"dynamic-item__actions\"\u003e
-                \u003cbutton type=\"button\" class=\"dynamic-item__remove\" data-remove-row\u003eHapus\u003c/button\u003e
-            \u003c/div\u003e
-        `;
-        return wrapper;
-    };
+        const createGDriveRow = () => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'dynamic-item';
+            wrapper.innerHTML = `
+                <div class="dynamic-item__row">
+                    <input type="url" name="gdrive_links[]" class="form-control" placeholder="https://drive.google.com/..." required />
+                </div>
+                <div class="dynamic-item__actions">
+                    <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                </div>
+            `;
+            return wrapper;
+        };
 
-    if (addGDriveBtn) {
-        addGDriveBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const row = createGDriveRow();
-            gdriveContainer.appendChild(row);
-            bindRemoveButton(row);
-        });
-    }
-
-    // ========== DYNAMIC QUIZ LINKS ==========
-    const quizContainer = document.querySelector('[data-quiz-urls]');
-    const addQuizBtn = document.querySelector('[data-add-quiz]');
-
-    const createQuizRow = () => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'dynamic-item';
-        wrapper.innerHTML = `
-            \u003cdiv class=\"dynamic-item__row\"\u003e
-                \u003cinput type=\"url\" name=\"quiz_urls[]\" class=\"form-control\" placeholder=\"https://forms.google.com/...\" /\u003e
-            \u003c/div\u003e
-            \u003cdiv class=\"dynamic-item__actions\"\u003e
-                \u003cbutton type=\"button\" class=\"dynamic-item__remove\" data-remove-row\u003eHapus\u003c/button\u003e
-            \u003c/div\u003e
-        `;
-        return wrapper;
-    };
-
-    if (addQuizBtn) {
-        addQuizBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const row = createQuizRow();
-            quizContainer.appendChild(row);
-            bindRemoveButton(row);
-        });
-    }
-
-    // Bind Remove Button
-    const bindRemoveButton = (row) => {
-        const removeBtn = row.querySelector('[data-remove-row]');
-        if (removeBtn) {
-            removeBtn.addEventListener('click', function () {
-                const parent = this.closest('.dynamic-item').parentElement;
-                if (parent.children.length > 1) {
-                    row.remove();
-                }
+        if (addGDriveBtn) {
+            console.log('Add GDrive button found, attaching event listener');
+            // Remove existing listener if any
+            const newBtn = addGDriveBtn.cloneNode(true);
+            addGDriveBtn.parentNode.replaceChild(newBtn, addGDriveBtn);
+            
+            newBtn.addEventListener('click', (e) => {
+                console.log('Add GDrive button clicked!');
+                e.preventDefault();
+                const row = createGDriveRow();
+                gdriveContainer.appendChild(row);
+                bindRemoveButton(row);
+                console.log('New GDrive row added');
             });
+        } else {
+            console.error('Add GDrive button NOT found!');
         }
-    };
 
-    // Initialize removal buttons for existing rows
-    document.querySelectorAll('[data-remove-row]').forEach(btn => {
-        bindRemoveButton(btn.closest('.dynamic-item'));
-    });
+        // Bind Remove Button
+        const bindRemoveButton = (row) => {
+            const removeBtn = row.querySelector('[data-remove-row]');
+            if (removeBtn) {
+                console.log('Binding remove button to row');
+                removeBtn.addEventListener('click', function () {
+                    console.log('Remove button clicked!');
+                    const parent = this.closest('.dynamic-item').parentElement;
+                    // Prevent removing if it's the last item
+                    if (parent.children.length > 1) {
+                        row.remove();
+                        console.log('Row removed');
+                    } else {
+                        alert('Minimal harus ada satu link!');
+                    }
+                });
+            } else {
+                console.error('Remove button NOT found in row!');
+            }
+        };
+
+        // Initialize removal buttons for all existing rows
+        console.log('Initializing existing remove buttons...');
+        const existingItems = document.querySelectorAll('[data-gdrive-links] .dynamic-item, [data-quiz-urls] .dynamic-item');
+        console.log('Found ' + existingItems.length + ' existing dynamic items');
+        existingItems.forEach(item => {
+            bindRemoveButton(item);
+        });
+    }
+
+}); // End of DOMContentLoaded
 
 </script>
 @endsection
