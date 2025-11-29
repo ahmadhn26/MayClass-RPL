@@ -33,32 +33,37 @@ class PackageController extends BaseAdminController
 
 
     public function store(Request $request): RedirectResponse
-    {
-        $data = $this->validatePayload($request);
+{
+    $data = $this->validatePayload($request);
+    $data['slug'] = $this->generateUniqueSlug($data['detail_title']);
 
-        // Set default empty string for image_url if not provided
-        $data['image_url'] = $data['image_url'] ?? '';
+    $package = Package::create($data);
 
-        $package = Package::create($data);
-
-        // Sync subjects
-        if ($request->has('subjects')) {
-            $package->subjects()->sync($request->subjects);
-        }
-
-        // Sync tutors
-        if ($request->has('tutors')) {
-            $package->tutors()->sync($request->tutors);
-        }
-
-        // Create card features
-        if ($request->has('card_features')) {
-            $this->syncCardFeatures($package, $request->card_features);
-        }
-
-        return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil dibuat.'));
+    // Sync subjects WITH LEVEL VALIDATION
+    if ($request->has('subjects')) {
+        $packageLevel = $data['level'];
+        
+        // Filter: only subjects matching package level
+        $validSubjectIds = Subject::whereIn('id', $request->subjects)
+            ->where('level', $packageLevel)
+            ->pluck('id')
+            ->toArray();
+        
+        $package->subjects()->sync($validSubjectIds);
     }
 
+    // Sync tutors
+    if ($request->has('tutors')) {
+        $package->tutors()->sync($request->tutors);
+    }
+
+    // Sync card features
+    if ($request->has('card_features')) {
+        $this->syncCardFeatures($package, $request->card_features);
+    }
+
+    return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil ditambahkan.'));
+}
     public function edit(Package $package, Request $request): View|\Illuminate\Http\JsonResponse
     {
         $package->load(['subjects', 'cardFeatures', 'tutors']);
@@ -91,30 +96,57 @@ class PackageController extends BaseAdminController
     }
 
     public function update(Request $request, Package $package): RedirectResponse
-    {
-        $data = $this->validatePayload($request, $package->id);
+{
+    $data = $this->validatePayload($request, $package->id);
 
-        $package->update($data);
+    $package->update($data);
 
-        // Sync subjects
-        if ($request->has('subjects')) {
-            $package->subjects()->sync($request->subjects);
+    // Sync subjects WITH LEVEL VALIDATION
+    if ($request->has('subjects')) {
+        $packageLevel = $data['level'];
+        
+        // Filter: only subjects matching package level
+        $validSubjectIds = Subject::whereIn('id', $request->subjects)
+            ->where('level', $packageLevel)
+            ->pluck('id')
+            ->toArray();
+        
+        // Sync only valid subjects
+        $package->subjects()->sync($validSubjectIds);
+        
+        // Log if any subjects were rejected
+        $rejectedCount = count($request->subjects) - count($validSubjectIds);
+        if ($rejectedCount > 0) {
+            logger()->warning(
+                "Package update: rejected {$rejectedCount} subjects due to level mismatch",
+                [
+                    'package_id' => $package->id,
+                    'package_level' => $packageLevel,
+                    'requested_subjects' => $request->subjects,
+                    'valid_subjects' => $validSubjectIds
+                ]
+            );
         }
-
-        // Sync tutors
-        if ($request->has('tutors')) {
-            $package->tutors()->sync($request->tutors);
-        }
-
-        // Sync card features - delete old and create new
-        $package->cardFeatures()->delete();
-        if ($request->has('card_features')) {
-            $this->syncCardFeatures($package, $request->card_features);
-        }
-
-        return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil diperbarui.'));
+    } else {
+        // If no subjects in request, clear all
+        $package->subjects()->sync([]);
     }
 
+    // Sync tutors (no level restriction for tutors)
+    if ($request->has('tutors')) {
+        $package->tutors()->sync($request->tutors);
+    } else {
+        $package->tutors()->sync([]);
+    }
+
+    // Sync card features - delete old and create new
+    $package->cardFeatures()->delete();
+    if ($request->has('card_features')) {
+        $this->syncCardFeatures($package, $request->card_features);
+    }
+
+    return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil diperbarui.'));
+}
     public function destroy(Package $package): RedirectResponse
     {
         $package->delete();

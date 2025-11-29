@@ -1096,7 +1096,7 @@
                                         <div class="subject-checkboxes">
                                             @foreach($subjectsByLevel[$level] as $subject)
                                                 <label class="checkbox-label">
-                                                    <input type="checkbox" name="subjects[]" value="{{ $subject->id }}">
+                                                    <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" data-level="{{ $level }}">
                                                     {{ $subject->name }}
                                                 </label>
                                             @endforeach
@@ -1118,7 +1118,7 @@
                                     @foreach($tutors as $tutor)
                                         <label class="checkbox-label">
                                             <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}"
-                                                data-subjects="{{ json_encode($tutor->subjects->pluck('id')) }}"
+                                                data-subjects="{{ json_encode($tutor->subjects->map(fn($s) => ['id' => $s->id, 'level' => $s->level])) }}"
                                                 onchange="handleTutorSelection(this)">
                                             {{ $tutor->name }}
                                         </label>
@@ -1306,7 +1306,7 @@
                             sub_{{ $subject->id }}.className = 'checkbox-label';
                             let isChecked_{{ $subject->id }} = data.subject_ids.includes({{ $subject->id }});
                             sub_{{ $subject->id }}.innerHTML = `
-                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" ${isChecked_{{ $subject->id }} ? 'checked' : ''}>
+                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" data-level="{{ $level }}" ${isChecked_{{ $subject->id }} ? 'checked' : ''}>
                                 {{ $subject->name }}
                             `;
                             document.getElementById('edit-subjects-{{ $level }}').appendChild(sub_{{ $subject->id }});
@@ -1326,7 +1326,7 @@
                         let tutorChecked_{{ $tutor->id }} = data.tutor_ids.includes({{ $tutor->id }});
                         tutor_{{ $tutor->id }}.innerHTML = `
                                             <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" 
-                                                data-subjects="{{ json_encode($tutor->subjects->pluck('id')) }}"
+                                                data-subjects="{{ json_encode($tutor->subjects->map(fn($s) => ['id' => $s->id, 'level' => $s->level])) }}"
                                                 onchange="handleTutorSelection(this)"
                                                 ${tutorChecked_{{ $tutor->id }} ? 'checked' : ''}>
                                             {{ $tutor->name }}
@@ -1388,15 +1388,29 @@
 
         function handleTutorSelection(checkbox) {
             if (checkbox.checked) {
-                const subjects = JSON.parse(checkbox.getAttribute('data-subjects'));
+                const tutorSubjects = JSON.parse(checkbox.getAttribute('data-subjects'));
                 const form = checkbox.closest('form');
                 if (!form) return;
                 
-                subjects.forEach(subjectId => {
-                    const subjectCheckbox = form.querySelector(`input[name="subjects[]"][value="${subjectId}"]`);
+                // Get selected package level
+                const levelSelect = form.querySelector('select[name="level"]');
+                const packageLevel = levelSelect ? levelSelect.value : null;
+                
+                // If level not selected, alert and uncheck
+                if (!packageLevel) {
+                    alert('Silakan pilih Jenjang Pendidikan terlebih dahulu sebelum memilih tutor!');
+                    checkbox.checked = false;
+                    return;
+                }
+                
+                // Filter: only subjects matching package level
+                const relevantSubjects = tutorSubjects.filter(s => s.level === packageLevel);
+                
+                // Auto-check only relevant subjects
+                relevantSubjects.forEach(subject => {
+                    const subjectCheckbox = form.querySelector(`input[name="subjects[]"][value="${subject.id}"]`);
                     if (subjectCheckbox) {
                         subjectCheckbox.checked = true;
-                        // Trigger change event if needed
                         subjectCheckbox.dispatchEvent(new Event('change'));
                     }
                 });
