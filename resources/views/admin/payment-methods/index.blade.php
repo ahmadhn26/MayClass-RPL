@@ -252,6 +252,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -262,6 +263,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -466,6 +468,59 @@
         .bank-field.show {
             display: flex;
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-width: 95%;
+                margin: 0 auto;
+            }
+
+            .modal-header {
+                padding: 20px 24px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.25rem;
+            }
+
+            .modal-body {
+                padding: 24px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .radio-option {
+                width: 100%;
+            }
+
+            .modal-footer {
+                padding: 20px 24px;
+                flex-direction: column-reverse;
+            }
+
+            .btn-cancel,
+            .btn-submit {
+                width: 100%;
+            }
+
+            .btn-submit {
+                margin-top: 0;
+            }
+        }
     </style>
 @endpush
 
@@ -589,11 +644,13 @@
                             <label>Tipe Metode <span style="color: #ef4444;">*</span></label>
                             <div class="radio-group">
                                 <label class="radio-option">
-                                    <input type="radio" name="type" value="bank" id="type-bank-add" onchange="toggleBankField('add')">
+                                    <input type="radio" name="type" value="bank" id="type-bank-add"
+                                        onchange="toggleBankField('add')">
                                     <span>Bank Transfer</span>
                                 </label>
                                 <label class="radio-option">
-                                    <input type="radio" name="type" value="ewallet" id="type-ewallet-add" checked onchange="toggleBankField('add')">
+                                    <input type="radio" name="type" value="ewallet" id="type-ewallet-add" checked
+                                        onchange="toggleBankField('add')">
                                     <span>E-Wallet</span>
                                 </label>
                             </div>
@@ -607,14 +664,14 @@
 
                         <div class="form-group">
                             <label>Nomor Rekening/HP <span style="color: #ef4444;">*</span></label>
-                            <input type="text" name="account_number" class="form-control" value="{{ old('account_number') }}"
-                                placeholder="Contoh: 081234567890" required>
+                            <input type="text" name="account_number" class="form-control"
+                                value="{{ old('account_number') }}" placeholder="Contoh: 081234567890" required>
                         </div>
 
                         <div class="form-group">
                             <label>Atas Nama <span style="color: #ef4444;">*</span></label>
-                            <input type="text" name="account_holder" class="form-control" value="{{ old('account_holder') }}"
-                                placeholder="Contoh: Maylina" required>
+                            <input type="text" name="account_holder" class="form-control"
+                                value="{{ old('account_holder') }}" placeholder="Contoh: Maylina" required>
                         </div>
 
                         <div class="form-group full-width">
@@ -625,8 +682,8 @@
 
                         <div class="form-group">
                             <label>Urutan Tampilan</label>
-                            <input type="number" name="display_order" class="form-control" value="{{ old('display_order', 999) }}"
-                                min="0">
+                            <input type="number" name="display_order" class="form-control"
+                                value="{{ old('display_order', 999) }}" min="0">
                             <p class="helper-text">Semakin kecil angka, semakin atas urutannya</p>
                         </div>
 
@@ -654,7 +711,8 @@
                 <h2>Edit Metode Pembayaran</h2>
                 <button type="button" class="btn-close" onclick="closeModal('editModal')">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -677,11 +735,13 @@
                             <label>Tipe Metode <span style="color: #ef4444;">*</span></label>
                             <div class="radio-group">
                                 <label class="radio-option">
-                                    <input type="radio" name="type" value="bank" id="type-bank-edit" onchange="toggleBankField('edit')">
+                                    <input type="radio" name="type" value="bank" id="type-bank-edit"
+                                        onchange="toggleBankField('edit')">
                                     <span>Bank Transfer</span>
                                 </label>
                                 <label class="radio-option">
-                                    <input type="radio" name="type" value="ewallet" id="type-ewallet-edit" onchange="toggleBankField('edit')">
+                                    <input type="radio" name="type" value="ewallet" id="type-ewallet-edit"
+                                        onchange="toggleBankField('edit')">
                                     <span>E-Wallet</span>
                                 </label>
                             </div>
@@ -740,7 +800,7 @@
         function toggleBankField(mode) {
             const bankField = document.getElementById('bank-name-field-' + mode);
             const typeBank = document.getElementById('type-bank-' + mode);
-            
+
             if (typeBank.checked) {
                 bankField.classList.add('show');
             } else {
@@ -751,7 +811,7 @@
         function openEditModal(id, slug, name, type, bankName, accountNumber, accountHolder, isActive, displayOrder) {
             const form = document.getElementById('editForm');
             form.action = `/admin/payment-methods/${id}`;
-            
+
             document.getElementById('edit_slug').value = slug;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_account_number').value = accountNumber;
@@ -759,19 +819,19 @@
             document.getElementById('edit_bank_name').value = bankName || '';
             document.getElementById('edit_display_order').value = displayOrder;
             document.getElementById('edit_is_active').checked = isActive;
-            
+
             if (type === 'bank') {
                 document.getElementById('type-bank-edit').checked = true;
             } else {
                 document.getElementById('type-ewallet-edit').checked = true;
             }
-            
+
             toggleBankField('edit');
             openModal('editModal');
         }
 
         // Close modal on ESC key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 const activeModals = document.querySelectorAll('.modal-overlay.active');
                 activeModals.forEach(modal => {

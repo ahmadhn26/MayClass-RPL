@@ -14,11 +14,11 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            
+
             /* Dimensions & Spacing */
-            --sidebar-width: 380px; 
+            --sidebar-width: 380px;
             --radius: 16px;
-            
+
             /* Effects */
             --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -27,7 +27,7 @@
         /* Layout Full Width */
         .dashboard-container {
             width: 100%;
-            padding: 0 32px; 
+            padding: 0 32px;
             display: grid;
             gap: 32px;
         }
@@ -45,25 +45,27 @@
             background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
             color: white;
             border-radius: var(--radius);
-            padding: 40px; 
+            padding: 40px;
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow-md);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            
+
             /* PERBAIKAN: Menambahkan jarak ke bawah agar tidak dempet dengan stats */
-            margin-bottom: 32px; 
+            margin-bottom: 32px;
         }
 
         /* Pattern Dekorasi Halus */
         .hero-card::before {
             content: '';
             position: absolute;
-            top: -50%; right: -10%;
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
             border-radius: 50%;
         }
 
@@ -185,7 +187,10 @@
             padding: 6px 12px;
             border-radius: 6px;
         }
-        .link-more:hover { background: var(--primary-light); }
+
+        .link-more:hover {
+            background: var(--primary-light);
+        }
 
         /* Grid Kartu Materi & Kuis (Responsive Filling) */
         .cards-grid {
@@ -242,7 +247,7 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            flex: 1; 
+            flex: 1;
         }
 
         .card-meta {
@@ -262,7 +267,7 @@
             display: flex;
             flex-direction: column;
             gap: 24px;
-            position: sticky; 
+            position: sticky;
             top: 20px;
         }
 
@@ -295,23 +300,37 @@
             padding: 16px;
             border: 1px solid rgba(15, 118, 110, 0.1);
         }
-        .pkg-name { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px; }
-        .pkg-meta { font-size: 0.85rem; color: var(--primary); font-weight: 500; }
+
+        .pkg-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .pkg-meta {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
 
         /* Schedule Timeline Look */
         .schedule-list {
             position: relative;
-            padding-left: 16px; 
+            padding-left: 16px;
             display: flex;
             flex-direction: column;
             gap: 24px;
         }
-        
+
         /* Garis Vertikal Timeline */
         .schedule-list::before {
             content: '';
             position: absolute;
-            top: 8px; bottom: 0; left: 0;
+            top: 8px;
+            bottom: 0;
+            left: 0;
             width: 2px;
             background: var(--border);
         }
@@ -325,7 +344,7 @@
         .schedule-item::before {
             content: '';
             position: absolute;
-            left: -21px; 
+            left: -21px;
             top: 4px;
             width: 12px;
             height: 12px;
@@ -401,11 +420,28 @@
             border-radius: 12px;
             border: 1px solid var(--border);
         }
+
         .step-num {
-            font-size: 2rem; font-weight: 800; color: var(--primary); opacity: 0.2; margin-bottom: 8px; line-height: 1;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            opacity: 0.2;
+            margin-bottom: 8px;
+            line-height: 1;
         }
-        .step-title { font-weight: 700; color: var(--text-main); display: block; margin-bottom: 4px; }
-        .step-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+        .step-title {
+            font-weight: 700;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
 
         /* Responsive Breakpoints */
         @media (max-width: 1024px) {
@@ -416,14 +452,147 @@
             }
             .sidebar-content { position: static; }
             .steps-grid { grid-template-columns: 1fr; }
+
+            /* Horizontal scroll for cards on mobile/tablet */
+            .cards-grid {
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                gap: 20px;
+                padding: 8px 0px 24px;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(15, 118, 110, 0.3) rgba(0, 0, 0, 0.05);
+            }
+
+            .cards-grid::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .cards-grid::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+            }
+
+            .cards-grid::-webkit-scrollbar-thumb {
+                background: rgba(15, 118, 110, 0.4);
+                border-radius: 10px;
+            }
+
+            .content-card {
+                flex: 0 0 85%;
+                scroll-snap-align: start;
+                max-width: 85%;
+            }
         }
 
-        @media (max-width: 640px) {
-            .hero-card { padding: 24px; }
-            .hero-title { font-size: 1.5rem; }
-            .hero-actions { flex-direction: column; }
-            .btn-hero { width: 100%; justify-content: center; }
-            .stats-grid { grid-template-columns: 1fr; }
+        /* Tablet specific adjustments */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .content-card {
+                flex: 0 0 48%;
+                max-width: 48%;
+            }
+        }
+
+        /* Mobile specific optimizations */
+        @media (max-width: 768px) {
+            .dashboard-container { padding: 0 16px; }
+
+            .hero-card { 
+                padding: 24px; 
+                margin-bottom: 24px;
+            }
+
+            .hero-title { 
+                font-size: 1.5rem; 
+            }
+
+            .hero-desc {
+                font-size: 0.95rem;
+            }
+
+            .hero-actions { 
+                flex-direction: column; 
+                gap: 12px;
+            }
+
+            .btn-hero { 
+                width: 100%; 
+                justify-content: center;
+                min-height: 44px;
+                padding: 14px 24px;
+            }
+
+            .stats-grid { 
+                grid-template-columns: 1fr; 
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            .section-header {
+                margin-top: 28px;
+                margin-bottom: 16px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .card-desc {
+                font-size: 0.85rem;
+            }
+
+            .sidebar-card {
+                padding: 20px;
+            }
+
+            .inactive-card {
+                padding: 32px 24px;
+            }
+
+            .inactive-card h1 {
+                font-size: 1.75rem !important;
+            }
+
+            .inactive-card p {
+                font-size: 0.95rem !important;
+            }
+
+            .step-num {
+                font-size: 1.5rem !important;
+            }
+
+            .step-title {
+                font-size: 0.95rem;
+            }
+
+            .step-desc {
+                font-size: 0.8rem !important;
+            }
+        }
+
+        /* Desktop - revert to grid (>1024px) */
+        @media (min-width: 1025px) {
+            .cards-grid {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
         }
     </style>
 @endpush
@@ -435,184 +604,191 @@
 
 @section('content')
 
-    @if ($hasActivePackage)
-        <div class="dashboard-container">
-            
-            <div class="dashboard-layout">
-                {{-- LEFT COLUMN: Main Content (Elastis) --}}
-                <main>
-                    {{-- 1. Hero Welcome --}}
-                    <div class="hero-card">
-                        <div class="hero-content">
-                            <span class="hero-eyebrow">Dashboard Siswa</span>
-                            <h1 class="hero-title">Hai, {{ $user?->name ?? 'Siswa' }}!</h1>
-                            <p class="hero-desc">
-                                Paket belajarmu aktif. Siap untuk meningkatkan prestasi hari ini? 
-                                Akses materi, kerjakan kuis, atau cek jadwalmu sekarang.
-                            </p>
-                            <div class="hero-actions">
-                                <a href="{{ $materialsLink }}" target="_blank" class="btn-hero">
-                                     Buka Materi
-                                </a>
-                                <a href="{{ $quizLink }}" target="_blank" class="btn-hero">
-                                     Mulai Kuis
-                                </a>
-                                <a href="{{ route('student.schedule') }}" class="btn-hero">
-                                     Lihat Jadwal
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+@if ($hasActivePackage)
+<div class="dashboard-container">
 
-                    {{-- 2. Quick Stats --}}
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-value">{{ number_format($metrics['materials_total']) }}</span>
-                            <span class="stat-label">Materi Tersedia</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-value">{{ number_format($metrics['quizzes_total']) }}</span>
-                            <span class="stat-label">Kuis Latihan</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-value">{{ number_format($metrics['upcoming_total']) }}</span>
-                            <span class="stat-label">Sesi Terjadwal</span>
-                        </div>
-                    </div>
-
-                    {{-- 3. Materials Section --}}
-                    <div class="section-header">
-                        <h2 class="section-title">Materi Terbaru</h2>
-                        <a href="{{ route('student.materials') }}" class="link-more">Lihat Semua &rarr;</a>
-                    </div>
-
-                    @if ($recentMaterials->isNotEmpty())
-                        <div class="cards-grid">
-                            @foreach ($recentMaterials as $material)
-                                <a href="{{ route('student.materials.show', $material['slug']) }}" class="content-card">
-                                    <span class="card-tag">{{ $material['subject'] }}</span>
-                                    <h3 class="card-title">{{ $material['title'] }}</h3>
-                                    <p class="card-desc">{{ $material['summary'] }}</p>
-                                    <div class="card-meta">
-                                        <span>Level {{ $material['level'] }}</span>
-                                        <span>&bull;</span>
-                                        <span>{{ $material['chapter_count'] }} Bab</span>
-                                    </div>
-                                </a>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="empty-state">Belum ada materi baru yang diterbitkan.</div>
-                    @endif
-
-                    {{-- 4. Quizzes Section --}}
-                    <div class="section-header">
-                        <h2 class="section-title">Kuis Latihan</h2>
-                        <a href="{{ $quizLink }}" target="_blank" class="link-more">Buka Platform &rarr;</a>
-                    </div>
-
-                    @if ($recentQuizzes->isNotEmpty())
-                        <div class="cards-grid">
-                            @foreach ($recentQuizzes as $quiz)
-                                <a href="{{ route('student.quiz.show', $quiz['slug']) }}" class="content-card">
-                                    <span class="card-tag" style="background:#fff7ed; color:#c2410c;">{{ $quiz['questions'] }} Soal</span>
-                                    <h3 class="card-title">{{ $quiz['title'] }}</h3>
-                                    <p class="card-desc">{{ $quiz['summary'] }}</p>
-                                    <div class="card-meta">
-                                        <span>{{ $quiz['duration'] }}</span>
-                                        @if(!empty($quiz['levels']))
-                                            <span>&bull;</span>
-                                            <span>{{ implode(', ', $quiz['levels']) }}</span>
-                                        @endif
-                                    </div>
-                                </a>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="empty-state">Kuis belum tersedia saat ini.</div>
-                    @endif
-
-                </main>
-
-                {{-- RIGHT COLUMN: Sidebar (Fixed Width) --}}
-                <aside class="sidebar-content">
-                    
-                    {{-- Active Package --}}
-                    <div class="sidebar-card">
-                        <div class="sidebar-header">
-                            <h3 class="sidebar-title">PAKET AKTIF</h3>
-                        </div>
-                        <div class="pkg-info">
-                            <span class="pkg-name">{{ $activePackage['title'] }}</span>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span class="pkg-meta">{{ $activePackage['period'] }}</span>
-                                <span style="font-size: 0.75rem; background: #0f766e; color: white; padding: 2px 8px; border-radius: 4px;">{{ $activePackage['status'] }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Schedule Timeline --}}
-                    <div class="sidebar-card">
-                        <div class="sidebar-header">
-                            <h3 class="sidebar-title">JADWAL TERDEKAT</h3>
-                            <a href="{{ route('student.schedule') }}" class="link-more" style="font-size: 0.8rem;">Semua</a>
-                        </div>
-
-                        @php($upcomingSessions = collect($schedule['upcoming'] ?? [])->take(4))
-
-                        @if ($upcomingSessions->isNotEmpty())
-                            <div class="schedule-list">
-                                @foreach ($upcomingSessions as $session)
-                                    <div class="schedule-item">
-                                        <span class="schedule-date">{{ $session['date'] }}</span>
-                                        <h4 class="schedule-title">{{ $session['title'] }}</h4>
-                                        <p class="schedule-detail">{{ $session['subject'] ?? $session['category'] }}</p>
-                                        <p class="schedule-detail" style="margin-top: 2px;">🕒 {{ $session['time'] }} &bull; {{ $session['mentor'] }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div style="text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 0.9rem;">
-                                Belum ada jadwal sesi mendatang.
-                            </div>
-                        @endif
-                    </div>
-                </aside>
-            </div>
-        </div>
-
-    @else
-        {{-- USER BELUM PUNYA PAKET --}}
-        <div class="inactive-wrapper">
-            <div class="inactive-card">
-                <h1 style="margin: 0 0 12px; font-size: 2.2rem; font-weight: 700; color: var(--text-main);">Halo, {{ $user?->name ?? 'Siswa' }}!</h1>
-                <p style="color: var(--text-muted); margin-bottom: 32px; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.6; font-size: 1.05rem;">
-                    Akunmu sudah aktif, tetapi kamu belum memiliki paket belajar. Yuk, pilih paket favoritmu untuk membuka akses ke materi, kuis, dan jadwal eksklusif MayClass.
-                </p>
-                
-                <a href="{{ route('packages.index') }}" style="display: inline-block; background: var(--primary); color: white; padding: 14px 36px; border-radius: 99px; font-weight: 600; text-decoration: none; box-shadow: 0 10px 20px -5px rgba(15, 118, 110, 0.4); transition: transform 0.2s;">
-                    Lihat Pilihan Paket
-                </a>
-
-                <div class="steps-grid">
-                    <div class="step-box">
-                        <div class="step-num">01</div>
-                        <span class="step-title">Pilih Paket</span>
-                        <span class="step-desc">Bandingkan fitur dan harga di katalog kami.</span>
-                    </div>
-                    <div class="step-box">
-                        <div class="step-num">02</div>
-                        <span class="step-title">Bayar</span>
-                        <span class="step-desc">Transfer dan unggah bukti pembayaran.</span>
-                    </div>
-                    <div class="step-box">
-                        <div class="step-num">03</div>
-                        <span class="step-title">Belajar</span>
-                        <span class="step-desc">Admin verifikasi, akses langsung terbuka.</span>
+    <div class="dashboard-layout">
+        {{-- LEFT COLUMN: Main Content (Elastis) --}}
+        <main>
+            {{-- 1. Hero Welcome --}}
+            <div class="hero-card">
+                <div class="hero-content">
+                    <span class="hero-eyebrow">Dashboard Siswa</span>
+                    <h1 class="hero-title">Hai, {{ $user?->name ?? 'Siswa' }}!</h1>
+                    <p class="hero-desc">
+                        Paket belajarmu aktif. Siap untuk meningkatkan prestasi hari ini?
+                        Akses materi, kerjakan kuis, atau cek jadwalmu sekarang.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{{ $materialsLink }}" target="_blank" class="btn-hero">
+                            Buka Materi
+                        </a>
+                        <a href="{{ $quizLink }}" target="_blank" class="btn-hero">
+                            Mulai Kuis
+                        </a>
+                        <a href="{{ route('student.schedule') }}" class="btn-hero">
+                            Lihat Jadwal
+                        </a>
                     </div>
                 </div>
             </div>
+
+            {{-- 2. Quick Stats --}}
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value">{{ number_format($metrics['materials_total']) }}</span>
+                    <span class="stat-label">Materi Tersedia</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">{{ number_format($metrics['quizzes_total']) }}</span>
+                    <span class="stat-label">Kuis Latihan</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">{{ number_format($metrics['upcoming_total']) }}</span>
+                    <span class="stat-label">Sesi Terjadwal</span>
+                </div>
+            </div>
+
+            {{-- 3. Materials Section --}}
+            <div class="section-header">
+                <h2 class="section-title">Materi Terbaru</h2>
+                <a href="{{ route('student.materials') }}" class="link-more">Lihat Semua &rarr;</a>
+            </div>
+
+            @if ($recentMaterials->isNotEmpty())
+                <div class="cards-grid">
+                    @foreach ($recentMaterials as $material)
+                        <a href="{{ route('student.materials.show', $material['slug']) }}" class="content-card">
+                            <span class="card-tag">{{ $material['subject'] }}</span>
+                            <h3 class="card-title">{{ $material['title'] }}</h3>
+                            <p class="card-desc">{{ $material['summary'] }}</p>
+                            <div class="card-meta">
+                                <span>Level {{ $material['level'] }}</span>
+                                <span>&bull;</span>
+                                <span>{{ $material['chapter_count'] }} Bab</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="empty-state">Belum ada materi baru yang diterbitkan.</div>
+            @endif
+
+            {{-- 4. Quizzes Section --}}
+            <div class="section-header">
+                <h2 class="section-title">Kuis Latihan</h2>
+                <a href="{{ $quizLink }}" target="_blank" class="link-more">Buka Platform &rarr;</a>
+            </div>
+
+            @if ($recentQuizzes->isNotEmpty())
+                <div class="cards-grid">
+                    @foreach ($recentQuizzes as $quiz)
+                        <a href="{{ route('student.quiz.show', $quiz['slug']) }}" class="content-card">
+                            <span class="card-tag" style="background:#fff7ed; color:#c2410c;">{{ $quiz['questions'] }}
+                                Soal</span>
+                            <h3 class="card-title">{{ $quiz['title'] }}</h3>
+                            <p class="card-desc">{{ $quiz['summary'] }}</p>
+                            <div class="card-meta">
+                                <span>{{ $quiz['duration'] }}</span>
+                                @if(!empty($quiz['levels']))
+                                    <span>&bull;</span>
+                                    <span>{{ implode(', ', $quiz['levels']) }}</span>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="empty-state">Kuis belum tersedia saat ini.</div>
+            @endif
+
+        </main>
+
+        {{-- RIGHT COLUMN: Sidebar (Fixed Width) --}}
+        <aside class="sidebar-content">
+
+            {{-- Active Package --}}
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">PAKET AKTIF</h3>
+                </div>
+                <div class="pkg-info">
+                    <span class="pkg-name">{{ $activePackage['title'] }}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="pkg-meta">{{ $activePackage['period'] }}</span>
+                        <span
+                            style="font-size: 0.75rem; background: #0f766e; color: white; padding: 2px 8px; border-radius: 4px;">{{ $activePackage['status'] }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Schedule Timeline --}}
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">JADWAL TERDEKAT</h3>
+                    <a href="{{ route('student.schedule') }}" class="link-more" style="font-size: 0.8rem;">Semua</a>
+                </div>
+
+                @php($upcomingSessions = collect($schedule['upcoming'] ?? [])->take(4))
+
+                                    @if ($upcomingSessions->isNotEmpty())
+                                        <div class="schedule-list">
+                                            @foreach ($upcomingSessions as $session)
+                                                <div class="schedule-item">
+                                                    <span class="schedule-date">{{ $session['date'] }}</span>
+                                                    <h4 class="schedule-title">{{ $session['title'] }}</h4>
+                                                    <p class="schedule-detail">{{ $session['subject'] ?? $session['category'] }}</p>
+                                                    <p class="schedule-detail" style="margin-top: 2px;">🕒 {{ $session['time'] }} &bull;
+                                                        {{ $session['mentor'] }}</p>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div style="text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 0.9rem;">
+                                            Belum ada jadwal sesi mendatang.
+                                        </div>
+                                    @endif
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                @else
+{{-- USER BELUM PUNYA PAKET --}}
+<div class="inactive-wrapper">
+    <div class="inactive-card">
+        <h1 style="margin: 0 0 12px; font-size: 2.2rem; font-weight: 700; color: var(--text-main);">Halo,
+            {{ $user?->name ?? 'Siswa' }}!</h1>
+        <p
+            style="color: var(--text-muted); margin-bottom: 32px; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.6; font-size: 1.05rem;">
+            Akunmu sudah aktif, tetapi kamu belum memiliki paket belajar. Yuk, pilih paket favoritmu untuk membuka akses
+            ke materi, kuis, dan jadwal eksklusif MayClass.
+        </p>
+
+        <a href="{{ route('packages.index') }}"
+            style="display: inline-block; background: var(--primary); color: white; padding: 14px 36px; border-radius: 99px; font-weight: 600; text-decoration: none; box-shadow: 0 10px 20px -5px rgba(15, 118, 110, 0.4); transition: transform 0.2s;">
+            Lihat Pilihan Paket
+        </a>
+
+        <div class="steps-grid">
+            <div class="step-box">
+                <div class="step-num">01</div>
+                <span class="step-title">Pilih Paket</span>
+                <span class="step-desc">Bandingkan fitur dan harga di katalog kami.</span>
+            </div>
+            <div class="step-box">
+                <div class="step-num">02</div>
+                <span class="step-title">Bayar</span>
+                <span class="step-desc">Transfer dan unggah bukti pembayaran.</span>
+            </div>
+            <div class="step-box">
+                <div class="step-num">03</div>
+                <span class="step-title">Belajar</span>
+                <span class="step-desc">Admin verifikasi, akses langsung terbuka.</span>
+            </div>
         </div>
-    @endif
+    </div>
+</div>
+@endif
 
 @endsection

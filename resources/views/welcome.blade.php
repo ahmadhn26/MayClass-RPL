@@ -183,6 +183,7 @@
             .nav-links .nav-actions {
                 display: flex;
             }
+
         }
 
         @media (max-width: 1024px) {
@@ -1327,33 +1328,274 @@
             }
         }
 
-        /* General Media Queries */
-        @media (max-width: 1080px) {
+        /* ============ HORIZONTAL SCROLL CONTAINERS (Mobile) ============ */
+        @media (max-width: 1024px) {
 
+            /* Base horizontal scroll container */
             .articles-grid,
-            .highlight-grid,
-            .faq-grid,
             .testimonials-grid,
-            .mentor-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .mentor-grid,
+            .pricing-grid,
+            .highlight-grid {
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                gap: 16px;
+                padding: 8px 0px 24px;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(63, 166, 126, 0.3) rgba(0, 0, 0, 0.05);
+            }
+
+            .articles-grid::-webkit-scrollbar,
+            .testimonials-grid::-webkit-scrollbar,
+            .mentor-grid::-webkit-scrollbar,
+            .pricing-grid::-webkit-scrollbar,
+            .highlight-grid::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .articles-grid::-webkit-scrollbar-track,
+            .testimonials-grid::-webkit-scrollbar-track,
+            .mentor-grid::-webkit-scrollbar-track,
+            .pricing-grid::-webkit-scrollbar-track,
+            .highlight-grid::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+            }
+
+            .articles-grid::-webkit-scrollbar-thumb,
+            .testimonials-grid::-webkit-scrollbar-thumb,
+            .mentor-grid::-webkit-scrollbar-thumb,
+            .pricing-grid::-webkit-scrollbar-thumb,
+            .highlight-grid::-webkit-scrollbar-thumb {
+                background: rgba(63, 166, 126, 0.4);
+                border-radius: 10px;
+            }
+
+            .articles-grid::-webkit-scrollbar-thumb:hover,
+            .testimonials-grid::-webkit-scrollbar-thumb:hover,
+            .mentor-grid::-webkit-scrollbar-thumb:hover,
+            .pricing-grid::-webkit-scrollbar-thumb:hover,
+            .highlight-grid::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-main);
+            }
+
+            /* Individual items */
+            .article-card,
+            .testimonial-card,
+            .mentor-profile,
+            .pricing-card,
+            .highlight-card {
+                flex: 0 0 85%;
+                scroll-snap-align: start;
+                max-width: 85%;
+            }
+
+            /* Documentation grid */
+            div[style*="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))"] {
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                gap: 16px !important;
+                padding: 8px 0px 24px !important;
+                scrollbar-width: thin;
+            }
+
+            div[style*="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))"]>div {
+                flex: 0 0 85% !important;
+                scroll-snap-align: start;
+                max-width: 85%;
             }
         }
 
         @media (max-width: 768px) {
+
+            /* Reduce hero typography */
+            .hero h1 {
+                font-size: clamp(1.75rem, 5.5vw, 2.4rem) !important;
+                margin: 10px 0 !important;
+                line-height: 1.2 !important;
+            }
+
+            .hero p {
+                font-size: 0.95rem !important;
+                margin: 0 0 20px !important;
+            }
+
+            .badge {
+                padding: 8px 14px !important;
+                font-size: 0.85rem !important;
+            }
+
+            /* Section headers */
+            .section-header h2 {
+                font-size: clamp(1.5rem, 4vw, 2rem) !important;
+            }
+
+            .section-header p {
+                font-size: 0.9rem !important;
+            }
+
+            /* Reduce section padding */
+            .section {
+                padding: 48px 0 !important;
+            }
+
             .pricing-section {
-                padding: 48px 0;
+                padding: 40px 0 !important;
+            }
+
+            .highlight-section {
+                padding: 48px 32px !important;
+            }
+
+            /* Optimize cards for mobile */
+            .article-card {
+                grid-template-rows: 160px 1fr !important;
+            }
+
+            .article-content {
+                padding: 16px !important;
+            }
+
+            .article-content h3 {
+                font-size: 1rem !important;
+            }
+
+            .article-content p {
+                font-size: 0.85rem !important;
+            }
+
+            .testimonial-card {
+                padding: 20px !important;
+                min-height: auto !important;
+            }
+
+            .testimonial-quote {
+                font-size: 0.95rem !important;
+            }
+
+            .mentor-profile {
+                padding: 18px !important;
+            }
+
+            .mentor-info strong {
+                font-size: 1rem !important;
+            }
+
+            .mentor-saying {
+                font-size: 0.9rem !important;
             }
 
             .pricing-card {
-                padding: 18px 16px 16px;
+                padding: 18px 16px 16px !important;
             }
 
-            .articles-grid,
-            .highlight-grid,
-            .faq-grid,
+            .pricing-card strong {
+                font-size: 1.05rem !important;
+            }
+
+            .pricing-price {
+                font-size: 1.4rem !important;
+            }
+
+            .pricing-features {
+                font-size: 0.85rem !important;
+            }
+
+            .highlight-card {
+                padding: 18px !important;
+            }
+
+            .highlight-card strong {
+                font-size: 1.05rem !important;
+            }
+
+            /* Buttons - touch friendly */
+            .btn {
+                padding: 14px 24px !important;
+                font-size: 0.9rem !important;
+                min-height: 44px;
+            }
+
+            .hero-actions {
+                margin-bottom: 20px !important;
+                gap: 10px !important;
+                flex-direction: column;
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .hero-actions .btn {
+                width: 100%;
+            }
+
+            /* Pricing group header */
+            .pricing-group-header h3 {
+                font-size: 1.3rem !important;
+                padding: 6px 24px !important;
+            }
+
+            .pricing-group-header p {
+                font-size: 0.9rem !important;
+            }
+
+            /* Highlight section text */
+            .highlight-section h2 {
+                font-size: clamp(1.6rem, 4vw, 2.4rem) !important;
+            }
+
+            /* FAQ */
+            .faq-grid {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+            }
+
+            .faq-grid summary {
+                font-size: 0.9rem !important;
+            }
+
+            .faq-grid p {
+                font-size: 0.85rem !important;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 641px) and (max-width: 1024px) {
+
+            .article-card,
+            .testimonial-card,
+            .mentor-profile,
+            .pricing-card,
+            .highlight-card {
+                flex: 0 0 48% !important;
+                max-width: 48%;
+            }
+
+            div[style*="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))"]>div {
+                flex: 0 0 48% !important;
+                max-width: 48%;
+            }
+        }
+
+        /* Desktop - revert to grid (>1024px) */
+        @media (min-width: 1025px) {
+            .articles-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
             .testimonials-grid,
             .mentor-grid {
-                grid-template-columns: 1fr;
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            }
+
+            .highlight-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
     </style>
