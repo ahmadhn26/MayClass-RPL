@@ -26,10 +26,19 @@ class ProfileController extends Controller
         $avatarUrl = null;
 
         if ($user->avatar_path && Storage::disk('public')->exists($user->avatar_path)) {
-            $avatarUrl = Storage::disk('public')->url($user->avatar_path);
+            // Use current request URL instead of APP_URL to avoid localhost vs 127.0.0.1 mismatch
+            $avatarUrl = url('storage/' . $user->avatar_path);
             // Add cache busting timestamp
             $avatarUrl .= '?t=' . time();
         }
+
+        // Debug logging
+        \Log::info('Profile show', [
+            'user_id' => $user->id,
+            'avatar_path' => $user->avatar_path,
+            'avatarUrl' => $avatarUrl,
+            'file_exists' => $user->avatar_path ? Storage::disk('public')->exists($user->avatar_path) : false
+        ]);
 
         return view('student.profile', [
             'profile' => [

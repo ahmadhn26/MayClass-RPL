@@ -477,16 +477,17 @@
         <aside class="profile-sidebar">
             <div class="avatar-wrapper">
                 <div data-avatar-preview style="width: 100%; height: 100%;">
-                    <img src="{{ $avatarUrl ?? '' }}" alt="Foto profil" class="avatar-img" data-avatar-image
-                        data-original="{{ $avatarUrl ?? '' }}" @if (!$avatarUrl) style="display: none;" @endif />
-                    <div class="avatar-placeholder" data-avatar-placeholder @if($avatarUrl) style="display: none;"
-                    @endif>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                        </svg>
-                    </div>
+                    @if($avatarUrl)
+                        <img src="{{ $avatarUrl }}" alt="Foto profil" class="avatar-img" data-avatar-image data-original="{{ $avatarUrl }}" />
+                    @else
+                        <div class="avatar-placeholder" data-avatar-placeholder>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -543,17 +544,20 @@
                 <div class="upload-area">
                     <div
                         style="width: 72px; height: 72px; border-radius: 50%; overflow: hidden; border: 2px solid #e2e8f0;">
-                        <img src="{{ $avatarUrl ?? '' }}" alt="Preview" data-avatar-image
-                            style="width: 100%; height: 100%; object-fit: cover; @if(!$avatarUrl) display: none; @endif" />
-                        <div data-avatar-placeholder
-                            style="width: 100%; height: 100%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; @if($avatarUrl) display: none; @endif">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
+                        @if($avatarUrl)
+                            <img src="{{ $avatarUrl }}" alt="Preview" data-avatar-image
+                                style="width: 100%; height: 100%; object-fit: cover;" />
+                        @else
+                            <div data-avatar-placeholder
+                                style="width: 100%; height: 100%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        @endif
                     </div>
                     <div>
                         <label for="avatar" class="upload-btn">Ubah Foto</label>
