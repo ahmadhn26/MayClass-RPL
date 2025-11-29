@@ -548,7 +548,6 @@
                             <th>ID Siswa</th>
                             <th>Paket Aktif</th>
                             <th>Status Paket</th>
-                            <th>Status Siswa</th>
                             <th>Masa Berlaku</th>
                             <th style="text-align: center;">Konseling</th>
                             <th style="text-align: right;">Aksi</th>
@@ -597,12 +596,6 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="status-pill" data-state="{{ $student['is_active'] ? 'active' : 'inactive' }}"
-                                        id="status-badge-{{ $student['id'] }}">
-                                        {{ $student['is_active'] ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </td>
-                                <td>
                                     <div
                                         style="display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.85rem;">
                                         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -638,13 +631,13 @@
                                 </td>
                                 <td style="text-align: right;">
                                     <button type="button" class="btn-toggle-status" data-id="{{ $student['id'] }}"
-                                        data-name="{{ $student['name'] }}" data-active="{{ $student['is_active'] ? '1' : '0' }}"
-                                        style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; {{ $student['is_active'] ? 'background: #fef3c7; color: #d97706; border-color: #fbbf24;' : 'background: #d1fae5; color: #059669; border-color: #34d399;' }}"
-                                        title="{{ $student['is_active'] ? 'Nonaktifkan' : 'Aktifkan' }} Siswa"
+                                        data-name="{{ $student['name'] }}" data-active="{{ $student['status_state'] === 'active' ? '1' : '0' }}"
+                                        style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; {{ $student['status_state'] === 'active' ? 'background: #fef3c7; color: #d97706; border-color: #fbbf24;' : 'background: #d1fae5; color: #059669; border-color: #34d399;' }}"
+                                        title="{{ $student['status_state'] === 'active' ? 'Nonaktifkan' : 'Aktifkan' }} Paket"
                                         onclick="event.stopPropagation();"
                                         onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
                                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                        @if($student['is_active'])
+                                        @if($student['status_state'] === 'active')
                                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
@@ -832,7 +825,7 @@
                         text: "{{ session('error') }}",
                     });
                 @endif
-                                                                            // Toggle Student Status Handler
+                                                                            // Toggle Package Status Handler
                                         const toggleButtons = document.querySelectorAll('.btn-toggle-status');
 
                 toggleButtons.forEach(button => {
@@ -844,8 +837,8 @@
                         const actionTitle = isActive ? 'Nonaktifkan' : 'Aktifkan';
 
                         Swal.fire({
-                            title: `${actionTitle} Siswa?`,
-                            html: `Apakah Anda yakin ingin ${action} siswa <strong>"${studentName}"</strong>?<br><br>${isActive ? '⚠️ Siswa yang dinonaktifkan tidak dapat mengakses dashboard dan fitur student.' : '✅ Siswa akan dapat mengakses kembali dashboard dan fitur student.'}`,
+                            title: `${actionTitle} Paket?`,
+                            html: `Apakah Anda yakin ingin ${action} paket siswa <strong>"${studentName}"</strong>?<br><br>${isActive ? '⚠️ Siswa tidak dapat mengakses materi, kuis, dan jadwal jika paket dinonaktifkan.' : '✅ Siswa akan dapat mengakses kembali materi, kuis, dan jadwal.'}`,
                             icon: 'question',
                             showCancelButton: true,
                             confirmButtonColor: isActive ? '#f59e0b' : '#10b981',
@@ -887,19 +880,12 @@
                                                 button.style.color = '#059669';
                                                 button.style.borderColor = '#34d399';
                                             }
-                                            button.title = data.is_active ? 'Nonaktifkan Siswa' : 'Aktifkan Siswa';
+                                            button.title = data.is_active ? 'Nonaktifkan Paket' : 'Aktifkan Paket';
 
                                             // Update icon and text
                                             button.innerHTML = data.is_active
                                                 ? '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 715.636 5.636m12.728 12.728L5.636 5.636"></path></svg><span>Nonaktifkan</span>'
                                                 : '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Aktifkan</span>';
-
-                                            // Update badge
-                                            const badge = document.getElementById(`status-badge-${studentId}`);
-                                            if (badge) {
-                                                badge.textContent = data.is_active ? 'Aktif' : 'Nonaktif';
-                                                badge.setAttribute('data-state', data.is_active ? 'active' : 'inactive');
-                                            }
 
                                             // Show success message
                                             Swal.fire({

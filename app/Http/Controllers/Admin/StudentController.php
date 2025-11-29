@@ -60,7 +60,6 @@ class StudentController extends BaseAdminController
                         'status' => $activeEnrollment?->is_active ? 'Aktif' : 'Tidak aktif',
                         'status_state' => $activeEnrollment?->is_active ? 'active' : 'inactive',
                         'ends_at' => $endsAt,
-                        'is_active' => (bool) ($student->is_active ?? true),
                     ];
                 });
         }
@@ -167,17 +166,29 @@ class StudentController extends BaseAdminController
             return response()->json(['error' => 'Pengguna tersebut bukan siswa.'], 400);
         }
 
-        $student->is_active = !$student->is_active;
-        $student->save();
+        // Get the most recent enrollment (active or inactive)
+        $enrollment = $student->enrollments()
+            ->orderByDesc('ends_at')
+            ->first();
 
-        $message = $student->is_active
-            ? 'Siswa berhasil diaktifkan.'
-            : 'Siswa berhasil dinonaktifkan.';
+        if (!$enrollment) {
+            return response()->json([
+                'error' => 'Siswa tidak memiliki paket untuk dikelola.'
+            ], 400);
+        }
+
+        // Toggle enrollment status
+        $enrollment->is_active = !$enrollment->is_active;
+        $enrollment->save();
+
+        $message = $enrollment->is_active
+            ? 'Paket siswa berhasil diaktifkan. Siswa dapat mengakses kembali materi, kuis, dan jadwal.'
+            : 'Paket siswa berhasil dinonaktifkan. Siswa tidak dapat mengakses materi, kuis, dan jadwal.';
 
         return response()->json([
             'success' => true,
             'message' => $message,
-            'is_active' => $student->is_active
+            'is_active' => $enrollment->is_active
         ]);
     }
 
