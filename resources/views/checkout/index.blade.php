@@ -532,28 +532,7 @@
                 <strong data-countdown-display>{{ $countdownLabel }}</strong>
             </div>
 
-            <div class="bank-details">
-                <div class="bank-row">
-                    <span class="bank-label">Bank Tujuan</span>
-                    <span class="bank-value">BCA</span>
-                </div>
-                <div class="bank-row">
-                    <span class="bank-label">Nomor Rekening</span>
-                    <span class="bank-value">
-                        <span id="acc-num">1234 5678 90</span>
-                        <button type="button" class="btn-copy" data-target="#acc-num" title="Salin">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                    </span>
-                </div>
-                <div class="bank-row">
-                    <span class="bank-label">Atas Nama</span>
-                    <span class="bank-value">Maylina</span>
-                </div>
-            </div>
+
 
             <form method="post" action="{{ $pkgSlug ? route('checkout.process', $pkgSlug) : '#' }}"
                 enctype="multipart/form-data" novalidate>
@@ -570,17 +549,44 @@
 
                 <div class="form-group">
                     <label class="form-label">Metode Pembayaran / Dana dari</label>
-                    <select name="payment_method" class="form-input" required>
+                    <select name="payment_method" id="payment-method-select" class="form-input" required>
                         <option value="">-- Pilih Metode Pembayaran --</option>
-                        <option value="transfer_bank" {{ old('payment_method') == 'transfer_bank' ? 'selected' : '' }}>
-                            Transfer Bank</option>
-                        <option value="shopeepay" {{ old('payment_method') == 'shopeepay' ? 'selected' : '' }}>ShopeePay
-                        </option>
-                        <option value="gopay" {{ old('payment_method') == 'gopay' ? 'selected' : '' }}>GoPay</option>
-                        <option value="ovo" {{ old('payment_method') == 'ovo' ? 'selected' : '' }}>OVO</option>
-                        <option value="dana" {{ old('payment_method') == 'dana' ? 'selected' : '' }}>DANA</option>
+                        @foreach($paymentMethods as $method)
+                            <option value="{{ $method->slug }}" 
+                                    data-type="{{ $method->type }}"
+                                    data-bank="{{ $method->bank_name }}"
+                                    data-number="{{ $method->account_number }}"
+                                    data-holder="{{ $method->account_holder }}"
+                                    {{ old('payment_method') == $method->slug ? 'selected' : '' }}>
+                                {{ $method->name }}
+                            </option>
+                        @endforeach
                     </select>
                     @error('payment_method') <div class="input-error-msg">{{ $message }}</div> @enderror
+                    
+                    {{-- DYNAMIC PAYMENT INFO DISPLAY --}}
+                    <div id="payment-info-display" class="bank-details" style="display: none; margin-top: 16px;">
+                        <div class="bank-row">
+                            <span class="bank-label" id="payment-label-1">Bank Tujuan</span>
+                            <span class="bank-value" id="payment-value-1">-</span>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-label">Nomor <span id="payment-type-label">Rekening</span></span>
+                            <span class="bank-value">
+                                <span id="payment-number">-</span>
+                                <button type="button" class="btn-copy" data-target="#payment-number" title="Salin">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-label">Atas Nama</span>
+                            <span class="bank-value" id="payment-holder">-</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -778,7 +784,44 @@
                 });
             }
 
-            // --- 3. Timer Logic ---
+            // --- 3. Dynamic Payment Info Display ---
+            const paymentSelect = document.getElementById('payment-method-select');
+            const paymentInfo = document.getElementById('payment-info-display');
+            
+            if (paymentSelect && paymentInfo) {
+                paymentSelect.addEventListener('change', function() {
+                    const option = this.options[this.selectedIndex];
+                    
+                    if (!option.value) {
+                        paymentInfo.style.display = 'none';
+                        return;
+                    }
+                    
+                    const type = option.dataset.type;
+                    const bank = option.dataset.bank;
+                    const number = option.dataset.number;
+                    const holder = option.dataset.holder;
+                    
+                    // Show info box
+                    paymentInfo.style.display = 'block';
+                    
+                    // Update labels and values based on type
+                    if (type === 'bank') {
+                        document.getElementById('payment-label-1').textContent = 'Bank Tujuan';
+                        document.getElementById('payment-value-1').textContent = bank || '-';
+                        document.getElementById('payment-type-label').textContent = 'Rekening';
+                    } else {
+                        document.getElementById('payment-label-1').textContent = 'E-Wallet';
+                        document.getElementById('payment-value-1').textContent = option.text;
+                        document.getElementById('payment-type-label').textContent = 'HP/Akun';
+                    }
+                    
+                    document.getElementById('payment-number').textContent = number || '-';
+                    document.getElementById('payment-holder').textContent = holder || '-';
+                });
+            }
+
+            // --- 4. Timer Logic ---
             const timerBox = document.querySelector('[data-countdown]');
             if (timerBox) {
                 let remaining = parseInt(timerBox.dataset.remaining, 10);

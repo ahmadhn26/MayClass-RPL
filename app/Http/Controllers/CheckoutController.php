@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\PackageFullException;
 use App\Models\Order;
 use App\Models\Package;
+use App\Models\PaymentMethod;
 use App\Models\CheckoutSession;
 use App\Support\PackagePresenter;
 use App\Support\ProfileAvatar;
@@ -58,6 +59,9 @@ class CheckoutController extends Controller
         $expiresAt = $order->expires_at ?? now()->addMinutes(30);
         $remainingSeconds = max(0, now()->diffInSeconds($expiresAt, false));
 
+        // Load active payment methods from database
+        $paymentMethods = PaymentMethod::active()->get();
+
         return view('checkout.index', [
             'package' => $packageDetail,
             'order' => $order,
@@ -65,6 +69,7 @@ class CheckoutController extends Controller
             'financeWhatsappLink' => $this->buildFinanceWhatsappLink($packageDetail),
             'profileLink' => ProfileLinkResolver::forUser($user),
             'profileAvatar' => ProfileAvatar::forUser($user),
+            'paymentMethods' => $paymentMethods,
         ]);
     }
 
@@ -76,8 +81,11 @@ class CheckoutController extends Controller
 
         $package = Package::withQuotaUsage()->where('slug', $slug)->firstOrFail();
 
+        // Get active payment method slugs from database
+        $activeSlugs = PaymentMethod::active()->pluck('slug')->toArray();
+
         $data = $request->validate([
-            'payment_method' => ['required', Rule::in(['transfer_bank', 'shopeepay', 'gopay', 'ovo', 'dana'])],
+            'payment_method' => ['required', Rule::in($activeSlugs)],
             'cardholder_name' => ['required', 'string', 'max:255'],
             'payment_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'order_id' => ['required', Rule::exists('orders', 'id')->where(fn($query) => $query->where('user_id', $request->user()->id)->where('status', 'initiated'))],

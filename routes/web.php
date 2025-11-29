@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
+use App\Http\Controllers\Admin\LandingContentController as AdminLandingContentController;
 use App\Http\Controllers\Admin\PackageController as AdminPackageController;
+use App\Http\Controllers\Admin\PaymentMethodController as AdminPaymentMethodController;
 use App\Http\Controllers\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\Admin\ScheduleSessionController as AdminScheduleSessionController;
 use App\Http\Controllers\Admin\ScheduleTemplateController as AdminScheduleTemplateController;
@@ -216,4 +218,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/documentations', [\App\Http\Controllers\Admin\DocumentationController::class, 'store'])->name('documentations.store');
     Route::put('/documentations/{documentation}', [\App\Http\Controllers\Admin\DocumentationController::class, 'update'])->name('documentations.update');
     Route::delete('/documentations/{documentation}', [\App\Http\Controllers\Admin\DocumentationController::class, 'destroy'])->name('documentations.destroy');
+
+    // Payment Methods
+    Route::get('/payment-methods', [AdminPaymentMethodController::class, 'index'])->name('payment-methods.index');
+    Route::post('/payment-methods', [AdminPaymentMethodController::class, 'store'])->name('payment-methods.store');
+    Route::put('/payment-methods/{paymentMethod}', [AdminPaymentMethodController::class, 'update'])->name('payment-methods.update');
+    Route::delete('/payment-methods/{paymentMethod}', [AdminPaymentMethodController::class, 'destroy'])->name('payment-methods.destroy');
 });
