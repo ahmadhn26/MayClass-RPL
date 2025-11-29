@@ -124,6 +124,7 @@ class StudentController extends BaseAdminController
             return response()->json([
                 'id' => $student->id,
                 'name' => $student->name,
+                'username' => $student->username, // Added username field
                 'email' => $student->email,
                 'student_id' => $student->student_id,
                 'phone' => $student->phone,

@@ -716,6 +716,11 @@
                     </div>
 
                     <div class="detail-card">
+                        <div class="detail-label">Username</div>
+                        <div class="detail-value" id="modal_username">-</div>
+                    </div>
+
+                    <div class="detail-card">
                         <div class="detail-label">Nomor Telepon</div>
                         <div class="detail-value" id="modal_phone">-</div>
                     </div>
@@ -972,6 +977,7 @@
                 }
 
                 // Contact Info
+                document.getElementById('modal_username').textContent = data.username || 'Tidak tersedia';
                 document.getElementById('modal_phone').textContent = data.phone || 'Tidak tersedia';
                 document.getElementById('modal_parent_name').textContent = data.parent_name || 'Tidak tersedia';
                 document.getElementById('modal_gender').textContent = data.gender ? capitalizeFirst(data.gender) : 'Tidak tersedia';
