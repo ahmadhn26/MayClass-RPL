@@ -188,7 +188,7 @@
             /* Penting untuk border-radius header */
             border-spacing: 0;
             font-size: 0.92rem;
-            min-width: 1000px;
+            min-width: 900px;
         }
 
         .tentor-table th {
@@ -838,9 +838,8 @@
                         <tr>
                             <th>Profil Tentor</th>
                             <th>Kontak</th>
-                            <th>Keahlian Mengajar</th>
-                            <th>Spesialisasi & Pendidikan</th>
-                            <th>Pengalaman</th>
+                            <th>Spesialisasi</th>
+                            <th>Rekening Bank</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -864,26 +863,14 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if($tentor['subjects']->isNotEmpty())
-                                        <div class="subject-pills">
-                                            @foreach($tentor['subjects']->take(3) as $subject)
-                                                <span class="subject-pill">{{ $subject->name }}</span>
-                                            @endforeach
-                                            @if($tentor['subjects']->count() > 3)
-                                                <span class="subject-pill-more">+{{ $tentor['subjects']->count() - 3 }} lainnya</span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="text-muted">Belum ada</span>
-                                    @endif
+                                    <span class="spec-badge">{{ $tentor['specializations'] ?? 'Umum' }}</span>
                                 </td>
                                 <td>
-                                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                                        <span class="spec-badge">{{ $tentor['specializations'] ?? 'Umum' }}</span>
-                                        <small style="color: var(--text-muted);">{{ $tentor['education'] ?? '-' }}</small>
+                                    <div class="contact-info">
+                                        <span>{{ $tentor['bank_name'] ?: '-' }}</span>
+                                        <small>{{ $tentor['account_number'] ?: '-' }}</small>
                                     </div>
                                 </td>
-                                <td>{{ $tentor['experience_years'] }} Tahun</td>
                                 <td>
                                     <span class="status-pill {{ $tentor['is_active'] ? 'status-active' : 'status-inactive' }}">
                                         {{ $tentor['is_active'] ? 'Aktif' : 'Nonaktif' }}
@@ -910,7 +897,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7">
+                                <td colspan="6">
                                     <div class="empty-state">
                                         <p>Belum ada data tentor yang sesuai dengan pencarian.</p>
                                     </div>
