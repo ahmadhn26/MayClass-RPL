@@ -548,13 +548,6 @@
         @if (session('subscription_success'))
             <div class="student-alert student-alert--success">
                 <span>{{ session('subscription_success') }}</span>
-                @if ($hasActivePackage)
-                    <div class="student-alert__actions">
-                        <a class="student-button student-button--primary" href="{{ route('student.materials') }}">
-                            Buka Materi
-                        </a>
-                    </div>
-                @endif
             </div>
         @endif
 

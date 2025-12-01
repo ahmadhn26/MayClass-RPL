@@ -316,14 +316,6 @@
                     {{ number_format($stats['total_questions']) }} soal dan
                     dukungan {{ number_format(count($stats['levels'])) }} jenjang belajar.
                 </p>
-                <div class="hero-actions">
-                    <a href="{{ $quizLink }}" target="_blank" rel="noopener" class="btn-hero">
-                        Mulai Latihan
-                    </a>
-                    <a href="{{ route('student.dashboard') }}" class="btn-hero">
-                        Kembali ke Dashboard
-                    </a>
-                </div>
             </div>
         </div>
 
@@ -361,7 +353,8 @@
                                     </div>
 
                                     <div class="quiz-actions">
-                                        <a href="{{ $quiz['link'] ?? $quizLink }}" target="_blank" rel="noopener" class="btn-sm btn-primary-sm">
+                                        <a href="{{ $quiz['link'] ?? $quizLink }}" target="_blank" rel="noopener"
+                                            class="btn-sm btn-primary-sm">
                                             Mulai Kuis
                                         </a>
                                     </div>
