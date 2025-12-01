@@ -536,28 +536,45 @@
         .articles-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 28px;
+            gap: 32px;
             width: 100%;
         }
 
         @media (max-width: 768px) {
             .articles-grid {
-                gap: 16px;
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
         }
 
         .article-card {
             background: var(--surface);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             overflow: hidden;
-            display: grid;
-            grid-template-rows: 220px 1fr;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-color: rgba(63, 166, 126, 0.3);
+        }
+
+        .article-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            overflow: hidden;
         }
 
         @media (max-width: 768px) {
-            .article-card {
-                grid-template-rows: 180px 1fr;
+            .article-image-wrapper {
+                height: 200px;
             }
         }
 
@@ -565,12 +582,36 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .article-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Gradient overlay untuk depth */
+        .article-image-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .article-card:hover .article-image-wrapper::after {
+            opacity: 1;
         }
 
         .article-content {
-            padding: 24px 26px 32px;
-            display: grid;
-            gap: 10px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
         }
 
         @media (max-width: 768px) {
@@ -581,19 +622,41 @@
 
         .article-content h3 {
             margin: 0;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
+            font-weight: 600;
             color: var(--ink-strong);
+            line-height: 1.4;
+            transition: color 0.2s ease;
+        }
+
+        .article-card:hover .article-content h3 {
+            color: var(--primary-main);
         }
 
         .article-content p {
             margin: 0;
             color: var(--ink-soft);
             font-size: 0.95rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .link-muted {
             color: var(--primary-main);
             font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: auto;
+            transition: gap 0.2s ease;
+        }
+
+        .article-card:hover .link-muted {
+            gap: 10px;
         }
 
         /* Full-width pricing section */
