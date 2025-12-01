@@ -26,7 +26,7 @@ class QuizController extends Controller
         $quizLevelsReady = Schema::hasTable('quiz_levels');
         $package = $this->currentPackage();
 
-        if (! $package || ! $quizzesReady) {
+        if (!$package || !$quizzesReady) {
             return view('student.quiz.index', [
                 'page' => 'quiz',
                 'title' => 'Koleksi Quiz',
@@ -44,8 +44,8 @@ class QuizController extends Controller
 
         $quizzes = Quiz::query()
             ->where('package_id', optional($package)->id)
-            ->with('subject')
-            ->when($quizLevelsReady, fn ($query) => $query->with(['levels' => fn ($levels) => $levels->orderBy('position')]))
+            ->with(['subject', 'quizItems'])
+            ->when($quizLevelsReady, fn($query) => $query->with(['levels' => fn($levels) => $levels->orderBy('position')]))
             ->orderBy('subject_id')
             ->orderBy('title')
             ->get();
@@ -56,7 +56,8 @@ class QuizController extends Controller
                 return [
                     'label' => $subject,
                     'accent' => SubjectPalette::accent($subject),
-                    'items' => $items->map(fn ($quiz) => [
+                    'items' => $items->map(fn($quiz) => [
+                        'id' => $quiz->id,
                         'slug' => $quiz->slug,
                         'title' => $quiz->title,
                         'summary' => $quiz->summary,
@@ -72,12 +73,12 @@ class QuizController extends Controller
         $levelSources = $quizzes->pluck('class_level');
 
         if ($quizLevelsReady) {
-            $levelSources = $levelSources->merge($quizzes->flatMap(fn ($quiz) => $quiz->levels->pluck('label')));
+            $levelSources = $levelSources->merge($quizzes->flatMap(fn($quiz) => $quiz->levels->pluck('label')));
         }
 
         $stats = [
             'total' => $quizzes->count(),
-            'total_questions' => $quizzes->sum(fn ($quiz) => (int) $quiz->question_count),
+            'total_questions' => $quizzes->sum(fn($quiz) => (int) $quiz->question_count),
             'levels' => $levelSources->filter()->unique()->values()->all(),
         ];
 
@@ -85,6 +86,7 @@ class QuizController extends Controller
             'page' => 'quiz',
             'title' => 'Koleksi Quiz',
             'activePackage' => $package,
+            'quizzes' => $quizzes,
             'collections' => $collections,
             'stats' => $stats,
             'materialsLink' => $materialsLink,
@@ -94,7 +96,7 @@ class QuizController extends Controller
 
     public function show(string $slug): View
     {
-        if (! Schema::hasTable('quizzes')) {
+        if (!Schema::hasTable('quizzes')) {
             abort(404);
         }
 
@@ -107,8 +109,8 @@ class QuizController extends Controller
             ->where('slug', $slug)
             ->where('package_id', optional($package)->id)
             ->with('subject')
-            ->when($levelsReady, fn ($query) => $query->with('levels'))
-            ->when($takeawaysReady, fn ($query) => $query->with('takeaways'))
+            ->when($levelsReady, fn($query) => $query->with('levels'))
+            ->when($takeawaysReady, fn($query) => $query->with('takeaways'))
             ->firstOrFail();
 
         $platformLink = $quiz->link ?? $this->quizLink();
@@ -141,7 +143,7 @@ class QuizController extends Controller
     {
         $enrollment = StudentAccess::activeEnrollment(Auth::user());
 
-        if (! $enrollment || ! $enrollment->package) {
+        if (!$enrollment || !$enrollment->package) {
             if ($required) {
                 abort(403);
             }

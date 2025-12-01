@@ -53,7 +53,7 @@
             padding: 0 40px;
             display: flex;
             flex-direction: column;
-            gap: 48px;
+            gap: 40px;
         }
 
         /* --- 1. Hero Section --- */
@@ -733,10 +733,9 @@
                 </div>
             </div>
         </div>
-    </div>
 
 
-    {{-- 2. Sesi Sedang Berjalan (Live Session) --}}
+        {{-- 2. Sesi Sedang Berjalan (Live Session) --}}
     @if (!empty($schedule['current']))
         <section>
             <div class="highlight-card"

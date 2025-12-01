@@ -245,11 +245,14 @@
             text-decoration: none;
             transition: all 0.2s;
             display: inline-block;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-primary-sm {
             background: var(--primary);
             color: white;
+            border: none;
         }
 
         .btn-primary-sm:hover {
@@ -347,16 +350,16 @@
                                         </div>
                                     </div>
 
+
                                     <div class="quiz-meta">
                                         <span>⏱ {{ $quiz['duration'] }}</span>
                                         <span>📝 {{ $quiz['questions'] }} Soal</span>
                                     </div>
 
                                     <div class="quiz-actions">
-                                        <a href="{{ $quiz['link'] ?? $quizLink }}" target="_blank" rel="noopener"
-                                            class="btn-sm btn-primary-sm">
+                                        <button onclick="openQuizPreview({{ $quiz['id'] }})" class="btn-sm btn-primary-sm">
                                             Mulai Kuis
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -383,4 +386,98 @@
         @endif
 
     </div>
+
+    {{-- Preview Modal --}}
+    <div id="quizPreviewModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div
+            style="background: white; border-radius: 16px; max-width: 700px; width: 90%; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div
+                style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="quizTitle" style="margin: 0; font-size: 1.5rem; font-weight: 700;">Preview Kuis</h2>
+                <button onclick="closeQuizPreview()"
+                    style="border: none; background: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; padding: 0; width: 32px; height: 32px;">&times;</button>
+            </div>
+            <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                <div id="quizItemsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preview Modal Functions
+        window.openQuizPreview = function (quizId) {
+            const modal = document.getElementById('quizPreviewModal');
+            const itemsList = document.getElementById('quizItemsList');
+            const quizTitle = document.getElementById('quizTitle');
+
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Loading
+            itemsList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Memuat...</p>';
+
+            // Get quizzes data
+            const quizzes = @json($quizzes);
+            const quiz = quizzes.find(q => q.id === quizId);
+
+            if (!quiz) {
+                itemsList.innerHTML = '<p style="color: #ef4444;">Kuis tidak ditemukan</p>';
+                return;
+            }
+
+            // Update title
+            quizTitle.textContent = quiz.title;
+
+            // Display items
+            if (quiz.quiz_items && quiz.quiz_items.length > 0) {
+                let html = '';
+                quiz.quiz_items.forEach((item, index) => {
+                    html += `
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+                                <h3 style="margin: 0 0 12px 0; font-size: 1.1rem; color: #0f172a; font-weight: 600;">${index + 1}. ${item.name}</h3>
+                                <p style="color: #64748b; margin: 0 0 16px 0; line-height: 1.6;">${item.description}</p>
+                                <a href="${item.link}" target="_blank" rel="noopener" 
+                                   style="display: inline-block; background: #0f766e; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;">
+                                    🔗 Mulai Kuis
+                                </a>
+                            </div>
+                        `;
+                });
+                itemsList.innerHTML = html;
+            } else {
+                itemsList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Kuis ini belum memiliki soal</p>';
+            }
+        };
+
+        window.closeQuizPreview = function () {
+            const modal = document.getElementById('quizPreviewModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+
+        // Close modal when clicking outside
+        document.getElementById('quizPreviewModal')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeQuizPreview();
+            }
+        });
+
+        // Auto-open preview if 'preview' parameter exists in URL
+        window.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const previewId = urlParams.get('preview');
+
+            if (previewId) {
+                // Wait a bit for the page to fully load
+                setTimeout(() => {
+                    window.openQuizPreview(parseInt(previewId));
+                    // Remove the parameter from URL without reloading
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, '', newUrl);
+                }, 300);
+            }
+        });
+    </script>
 @endsection

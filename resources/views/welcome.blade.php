@@ -50,6 +50,7 @@
             color: var(--ink-strong);
             background: #ffffff;
             line-height: 1.7;
+            overflow-x: hidden;
         }
 
         img {
@@ -221,8 +222,7 @@
                 right: -100%;
                 width: 280px;
                 height: 100vh;
-                background: rgba(255, 255, 255, 0.85);
-                backdrop-filter: blur(20px);
+                background: #e6f7f1;
                 flex-direction: column;
                 justify-content: flex-start;
                 align-items: flex-start;
@@ -251,7 +251,7 @@
                 gap: 12px;
                 margin-top: 8px;
                 padding-top: 20px;
-                border-top: 1px solid rgba(0, 0, 0, 0.1);
+                border-top: 1px solid rgba(63, 166, 126, 0.2);
             }
 
             .nav-actions .btn {
@@ -631,6 +631,14 @@
             margin-bottom: 0;
         }
 
+        @media (max-width: 768px) {
+            .pricing-group {
+                margin-bottom: 40px;
+                position: relative;
+                overflow: visible;
+            }
+        }
+
         /* Header Jenjang (SD/SMP/SMA) */
         .pricing-group-header {
             text-align: center;
@@ -655,6 +663,18 @@
             font-size: 1rem;
         }
 
+        @media (max-width: 768px) {
+            .pricing-group-header h3 {
+                font-size: 1.3rem;
+                padding: 8px 20px;
+            }
+
+            .pricing-group-header p {
+                font-size: 0.9rem;
+                padding: 0 16px;
+            }
+        }
+
         /* Pricing Grid - Modified with auto-fill to prevent stretching */
         .pricing-grid {
             display: grid;
@@ -667,9 +687,35 @@
 
         @media (max-width: 768px) {
             .pricing-grid {
-                grid-template-columns: 1fr;
-                /* Di mobile tetap 1 kolom */
+                display: flex;
+                flex-direction: row;
                 gap: 16px;
+                width: 100%;
+                padding: 0;
+                overflow-x: auto;
+                overflow-y: visible;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                scroll-padding: 0 16px;
+            }
+
+            /* Hide scrollbar untuk tampilan lebih clean */
+            .pricing-grid::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .pricing-grid::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 4px;
+            }
+
+            .pricing-grid::-webkit-scrollbar-thumb {
+                background: var(--primary-main);
+                border-radius: 4px;
+            }
+
+            .pricing-grid::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-dark);
             }
         }
 
@@ -686,6 +732,21 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
             height: 100%;
             /* Pastikan tinggi kartu sama rata */
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-card {
+                padding: 20px;
+                gap: 12px;
+                width: 280px;
+                min-width: 280px;
+                max-width: 280px;
+                flex-shrink: 0;
+                box-sizing: border-box;
+                scroll-snap-align: start;
+            }
         }
 
         .pricing-card:hover {
@@ -713,6 +774,8 @@
             font-size: 1.15rem;
             line-height: 1.4;
             color: var(--ink-strong);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .pricing-price {
@@ -720,6 +783,8 @@
             font-weight: 700;
             color: var(--primary-dark);
             margin: 4px 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .pricing-meta {
@@ -730,6 +795,9 @@
             background: #f1f5f9;
             border-radius: 6px;
             align-self: flex-start;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
         }
 
         .pricing-features {
@@ -756,6 +824,14 @@
             font-weight: 800;
             flex-shrink: 0;
             margin-top: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-features li {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                max-width: 100%;
+            }
         }
 
         /* --- CSS TOMBOL SEJAJAR --- */
