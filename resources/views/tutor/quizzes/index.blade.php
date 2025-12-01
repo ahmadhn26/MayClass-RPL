@@ -196,6 +196,11 @@
             color: #2563eb;
         }
 
+        .tag-default {
+            background: #f8fafc;
+            color: #64748b;
+        }
+
         .card-summary {
             font-size: 0.9rem;
             color: #64748b;
@@ -512,30 +517,23 @@
                 {{-- BAGIAN GAMBAR SUDAH DIHAPUS DI SINI --}}
 
                 <div class="card-content">
-                    <h3 class="card-title" title="{{ $quiz->title }}">{{ $quiz->title }}</h3>
+                    <h3 class="card-title" title="{{ $quiz->title }}">📁 {{ $quiz->title }}</h3>
 
                     <div class="tags-row">
                         <span class="tag tag-subject">{{ $quiz->subject->name ?? 'Tanpa Mapel' }}</span>
                         <span class="tag tag-level">{{ $quiz->class_level ?? 'Semua Kelas' }}</span>
+                        <span class="tag tag-default">{{ $quiz->quizItems->count() }} Quiz</span>
                     </div>
 
                     <p class="card-summary">{{ Str::limit($quiz->summary, 100) }}</p>
 
                     <div class="card-actions">
+                        <button onclick="openQuizPreview({{ $quiz->id }})" class="action-btn btn-outline">
+                            Preview
+                        </button>
                         <a href="{{ route('tutor.quizzes.edit', $quiz) }}" class="action-btn btn-secondary">
                             Edit
                         </a>
-                        @if ($quiz->link)
-                            <a href="{{ $quiz->link }}" class="action-btn btn-outline" target="_blank" rel="noopener"
-                                title="Buka link quiz">
-                                Buka Quiz
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
-                        @endif
                     </div>
                 </div>
             </article>
@@ -597,29 +595,40 @@
                         placeholder="Tuliskan deskripsi singkat quiz..." required></textarea>
                 </div>
 
-                {{-- Link Quiz --}}
-                {{-- Link Quiz Dynamic --}}
-                <div class="dynamic-group span-full">
-                    <div class="dynamic-group__header">
-                        <span>Link Quiz (Google Form / Lainnya)</span>
-                        <button type="button" class="dynamic-add" data-add-link>+ Tambah Link</button>
-                    </div>
-                    <div class="dynamic-group__items" data-link-urls>
+                {{-- Quiz Items (Dynamic) --}}
+                <div class="form-group">
+                    <label class="form-label">Quiz dalam Folder (Minimal 1)</label>
+                    <div id="quizItemsList">
                         <div class="dynamic-item">
-                            <div class="dynamic-item__row">
-                                <input type="url" name="link_urls[]" placeholder="https://" required />
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; color: #64748b;">Nama Quiz</label>
+                                <input type="text" name="quiz_items[0][name]" class="form-control" 
+                                    placeholder="Contoh: Quiz Persamaan Linear" required />
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; color: #64748b;">Deskripsi</label>
+                                <textarea name="quiz_items[0][description]" rows="2" class="form-control" 
+                                    placeholder="Apa yang diujikan..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; color: #64748b;">Link Quiz</label>
+                                <input type="url" name="quiz_items[0][link]" class="form-control" 
+                                    placeholder="https://forms.google.com/..." required />
                             </div>
                             <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                                <button type="button" class="dynamic-item__remove" onclick="removeQuizItem(this)">Hapus Quiz</button>
                             </div>
                         </div>
                     </div>
-                    @error('link_urls.*') <div class="error-text">{{ $message }}</div> @enderror
+                    <button type="button" onclick="addQuizItem()" style="margin-top: 12px; padding: 8px 16px; border: 1px dashed #cbd5e1; background: #f8fafc; border-radius: 8px; cursor: pointer; color: #475569; font-weight: 500;">
+                        + Tambah Quiz
+                    </button>
                 </div>
 
                 <button type="submit" class="btn-submit">✓ Simpan Quiz</button>
-            </div>
-        </form>
+        <div class="modal-body" style="padding: 24px;">
+            <div id="previewQuizItems"></div>
+        </div>
     </div>
 </div>
 

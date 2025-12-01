@@ -683,7 +683,7 @@
             @if ($recentQuizzes->isNotEmpty())
                 <div class="cards-grid">
                     @foreach ($recentQuizzes as $quiz)
-                        <a href="{{ route('student.quiz.show', $quiz['slug']) }}" class="content-card">
+                        <a href="{{ $quiz['link'] ?? $quizLink }}" target="_blank" rel="noopener" class="content-card">
                             <span class="card-tag" style="background:#fff7ed; color:#c2410c;">{{ $quiz['questions'] }}
                                 Soal</span>
                             <h3 class="card-title">{{ $quiz['title'] }}</h3>

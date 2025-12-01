@@ -25,7 +25,7 @@ class QuizController extends BaseTutorController
 
         $quizzes = $tableReady
             ? Quiz::query()
-                ->with('subject')
+                ->with(['subject', 'quizItems'])
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($inner) use ($search) {
                         $inner->where('title', 'like', "%{$search}%")
@@ -88,8 +88,10 @@ class QuizController extends BaseTutorController
             'title' => ['required', 'string', 'max:255'],
             'class_level' => ['required', 'string', 'max:120'],
             'summary' => ['required', 'string'],
-            'link_urls' => ['required', 'array'],
-            'link_urls.*' => ['required', 'url', 'max:500'],
+            'quiz_items' => ['required', 'array', 'min:1'],
+            'quiz_items.*.name' => ['required', 'string', 'max:255'],
+            'quiz_items.*.description' => ['required', 'string'],
+            'quiz_items.*.link' => ['required', 'url', 'max:500'],
             'duration_label' => ['required', 'string', 'max:120'],
             'question_count' => ['required', 'integer', 'min:1', 'max:200'],
             'levels' => ['nullable', 'array'],
@@ -127,13 +129,23 @@ class QuizController extends BaseTutorController
                     'class_level' => $data['class_level'],
                     'title' => $data['title'],
                     'summary' => $data['summary'],
-                    'link_url' => $data['link_urls'],
+                    'link_url' => null,
                     'thumbnail_url' => UnsplashPlaceholder::quiz($subject->name ?? 'Quiz'),
                     'duration_label' => $data['duration_label'],
                     'question_count' => $data['question_count'],
                 ]);
 
                 Log::info('Quiz created successfully:', ['quiz_id' => $quiz->id]);
+
+                // Create quiz items
+                foreach ($data['quiz_items'] as $index => $item) {
+                    $quiz->quizItems()->create([
+                        'name' => $item['name'],
+                        'description' => $item['description'],
+                        'link' => $item['link'],
+                        'position' => $index,
+                    ]);
+                }
 
                 $this->syncLevels($quiz, $request->input('levels', []));
                 $this->syncTakeaways($quiz, $request->input('takeaways', []));
@@ -155,7 +167,7 @@ class QuizController extends BaseTutorController
 
     public function edit(Quiz $quiz)
     {
-        $quiz->load(['levels', 'takeaways']);
+        $quiz->load(['levels', 'takeaways', 'quizItems']);
 
         $packages = Schema::hasTable('packages')
             ? \Illuminate\Support\Facades\Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
@@ -187,8 +199,10 @@ class QuizController extends BaseTutorController
             'title' => ['required', 'string', 'max:255'],
             'class_level' => ['required', 'string', 'max:120'],
             'summary' => ['required', 'string'],
-            'link_urls' => ['required', 'array'],
-            'link_urls.*' => ['required', 'url', 'max:500'],
+            'quiz_items' => ['required', 'array', 'min:1'],
+            'quiz_items.*.name' => ['required', 'string', 'max:255'],
+            'quiz_items.*.description' => ['required', 'string'],
+            'quiz_items.*.link' => ['required', 'url', 'max:500'],
             'duration_label' => ['required', 'string', 'max:120'],
             'question_count' => ['required', 'integer', 'min:1', 'max:200'],
             'levels' => ['nullable', 'array'],
@@ -213,7 +227,7 @@ class QuizController extends BaseTutorController
                 'class_level' => $data['class_level'],
                 'title' => $data['title'],
                 'summary' => $data['summary'],
-                'link_url' => $data['link_urls'],
+                'link_url' => null,
                 'duration_label' => $data['duration_label'],
                 'question_count' => $data['question_count'],
             ];
@@ -223,8 +237,19 @@ class QuizController extends BaseTutorController
                 $payload['thumbnail_url'] = UnsplashPlaceholder::quiz($subjectName);
             }
 
-            DB::transaction(function () use ($quiz, $payload, $request) {
+            DB::transaction(function () use ($quiz, $payload, $request, $data) {
                 $quiz->update($payload);
+
+                // Delete old quiz items and recreate
+                $quiz->quizItems()->delete();
+                foreach ($data['quiz_items'] as $index => $item) {
+                    $quiz->quizItems()->create([
+                        'name' => $item['name'],
+                        'description' => $item['description'],
+                        'link' => $item['link'],
+                        'position' => $index,
+                    ]);
+                }
 
                 $this->syncLevels($quiz, $request->input('levels', []));
                 $this->syncTakeaways($quiz, $request->input('takeaways', []));

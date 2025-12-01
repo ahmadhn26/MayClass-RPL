@@ -81,4 +81,9 @@ class Quiz extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    public function quizItems(): HasMany
+    {
+        return $this->hasMany(QuizItem::class);
+    }
 }

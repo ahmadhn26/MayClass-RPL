@@ -361,8 +361,8 @@
                                     </div>
 
                                     <div class="quiz-actions">
-                                        <a href="{{ route('student.quiz.show', $quiz['slug']) }}" class="btn-sm btn-primary-sm">
-                                            Detail Kuis
+                                        <a href="{{ $quiz['link'] ?? $quizLink }}" target="_blank" rel="noopener" class="btn-sm btn-primary-sm">
+                                            Mulai Kuis
                                         </a>
                                     </div>
                                 </div>
