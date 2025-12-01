@@ -1,49 +1,16 @@
 @extends('tutor.layout')
 
-@section('title', 'Edit Materi - MayClass')
+@section('title', 'Edit Folder - MayClass')
 
 @push('styles')
     <style>
-        /* --- OVERLAY & MODAL STYLE --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow: hidden;
-        }
-
+        /* Form Styles */
         .form-card {
             background: #fff;
             border-radius: 16px;
-            width: 100%;
             max-width: 900px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            position: relative;
-            animation: popIn 0.3s ease-out;
-        }
-
-        @keyframes popIn {
-            0% {
-                transform: scale(0.95);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            margin: 40px auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .form-header {
@@ -52,9 +19,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
         }
 
         .form-header h1 {
@@ -68,9 +32,7 @@
             font-size: 1.5rem;
             color: #94a3b8;
             text-decoration: none;
-            line-height: 1;
             cursor: pointer;
-            transition: color 0.2s;
         }
 
         .close-btn:hover {
@@ -79,38 +41,13 @@
 
         .form-body {
             padding: 32px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
         }
 
-        .form-body::-webkit-scrollbar {
-            width: 6px;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .form-body::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .form-body::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 20px;
-        }
-
-        /* --- GRID SYSTEM --- */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            align-items: start;
-        }
-
-        .span-full {
-            grid-column: 1 / -1;
-        }
-
-        /* --- INPUTS --- */
-        label span {
+        .form-label {
             display: block;
             font-weight: 600;
             font-size: 0.9rem;
@@ -118,75 +55,40 @@
             margin-bottom: 8px;
         }
 
-        input[type="text"],
-        textarea,
-        select {
+        .form-control {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             font-family: inherit;
             font-size: 0.95rem;
-            background-color: #fff;
-            transition: border-color 0.2s;
         }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
+        .form-control:focus {
             outline: none;
             border-color: #3fa67e;
             box-shadow: 0 0 0 3px rgba(63, 166, 126, 0.1);
         }
 
-        textarea {
-            min-height: 120px;
+        textarea.form-control {
+            min-height: 80px;
             resize: vertical;
         }
 
-        /* --- DYNAMIC GROUPS --- */
+        /* Dynamic Groups */
         .dynamic-group {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 20px;
             background: #f8fafc;
+            margin-bottom: 20px;
         }
 
         .dynamic-group__header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 16px;
+            align-items: center;
             margin-bottom: 16px;
-        }
-
-        .dynamic-item {
-            display: grid;
-            gap: 12px;
-            padding: 16px;
-            border-radius: 10px;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 12px;
-        }
-
-        .dynamic-item__row {
-            display: grid;
-            gap: 12px;
-        }
-
-        .dynamic-item__actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .dynamic-item__remove {
-            border: none;
-            background: transparent;
-            color: #ef4444;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
         }
 
         .dynamic-add {
@@ -200,98 +102,71 @@
             cursor: pointer;
         }
 
-        /* --- UPLOAD & FILE INFO --- */
-        .upload-field {
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 32px;
-            text-align: center;
-            color: #64748b;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: border-color 0.2s;
+        .dynamic-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
 
-        .upload-field:hover {
-            border-color: #3fa67e;
+        .dynamic-item__row {
+            display: grid;
+            gap: 12px;
         }
 
-        .current-file {
-            margin-top: 12px;
-            padding: 10px 16px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            display: inline-block;
-            font-size: 0.9rem;
-            color: #475569;
-        }
-
-        .current-file a {
-            color: #3fa67e;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .current-file a:hover {
-            text-decoration: underline;
-        }
-
-        /* --- ACTIONS --- */
-        .form-actions {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
+        .dynamic-item__actions {
             display: flex;
             justify-content: flex-end;
-            gap: 16px;
+            margin-top: 8px;
         }
 
-        .btn-cancel {
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-weight: 600;
-            text-decoration: none;
-            color: #64748b;
-            background: white;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-
-        .btn-save {
-            background: #3fa67e;
-            color: white;
+        .dynamic-item__remove {
             border: none;
-            padding: 12px 32px;
-            border-radius: 10px;
+            background: transparent;
+            color: #ef4444;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
-        }
-
-        .btn-save:hover {
-            background: #2f8a67;
-            transform: translateY(-1px);
-        }
-
-        .error-text {
-            color: #ef4444;
             font-size: 0.85rem;
-            margin-top: 4px;
         }
 
-        /* Package Multi-Select Styling */
-        .package-checkbox-edit:checked + label {
-            border-color: #3fa67e !important;
-            background: rgba(63, 166, 126, 0.1) !important;
+        /* Package Selector */
+        .package-selector {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            background: white;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
-        .package-checkbox-edit:checked + label::before {
+        .package-checkbox-item {
+            margin-bottom: 8px;
+        }
+
+        .package-checkbox {
+            display: none;
+        }
+
+        .package-checkbox-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .package-checkbox:checked + .package-checkbox-label {
+            border-color: #3fa67e;
+            background: rgba(63, 166, 126, 0.1);
+        }
+
+        .package-checkbox:checked + .package-checkbox-label::before {
             content: '✓';
             position: absolute;
             right: 14px;
@@ -309,404 +184,337 @@
             font-weight: 700;
         }
 
-        .package-checkbox-edit + label:hover {
-            border-color: #3fa67e !important;
-            background: rgba(63, 166, 126, 0.05) !important;
+        .package-name {
+            font-weight: 600;
+            color: #1e293b;
         }
 
-        .package-checkbox-edit:checked + label span:last-child {
-            background: rgba(63, 166, 126, 0.15) !important;
-            color: #3fa67e !important;
+        .package-level {
+            font-size: 0.85rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-right: 28px;
         }
 
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Form Actions */
+        .form-actions {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+        }
 
-            .form-card {
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-            }
+        .btn-cancel {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #64748b;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
 
-            .form-header {
-                border-radius: 0;
-            }
+        .btn-cancel:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-save {
+            background: #3fa67e;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
+        }
+
+        .btn-save:hover {
+            background: #2f8a67;
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 4px;
         }
     </style>
 @endpush
 
 @section('content')
-    @php
-        $objectiveValues = collect(old('objectives', $material->objectives->pluck('description')->all()))
-            ->map(fn($value) => is_string($value) ? $value : '');
-        if ($objectiveValues->isEmpty())
-            $objectiveValues = collect(['']);
+    <div class="form-card">
+        <div class="form-header">
+            <h1>Edit Folder</h1>
+            <a href="{{ route('tutor.materials.index') }}" class="close-btn">&times;</a>
+        </div>
 
-        $chapterValues = collect(old('chapters', $material->chapters->map(fn($chapter) => [
-            'title' => $chapter->title,
-            'description' => $chapter->description,
-        ])->all()))
-            ->map(function ($chapter) {
-                return [
-                    'title' => is_array($chapter) ? ($chapter['title'] ?? '') : '',
-                    'description' => is_array($chapter) ? ($chapter['description'] ?? '') : '',
-                ];
-            });
+        <div class="form-body">
+            @if ($errors->any())
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                        @foreach ($errors->all() as $error)
+                            <li style="color: #dc2626;">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        if ($chapterValues->isEmpty())
-            $chapterValues = collect([['title' => '', 'description' => '']]);
+            <form method="POST" action="{{ route('tutor.materials.update', $material) }}" id="material-form">
+                @csrf
+                @method('PUT')
 
-        $chapterNextIndex = $chapterValues->keys()->max() + 1;
+                {{-- Hidden Level --}}
+                <input type="hidden" name="level" id="hiddenLevel" value="{{ old('level', $material->level) }}">
 
-        // Prepare GDrive Links
-        $gdriveLinks = collect(old('gdrive_links', $material->resource_url ?? []));
-        if ($gdriveLinks->isEmpty())
-            $gdriveLinks = collect(['']);
-
-
-    @endphp
-
-    <div class="modal-overlay">
-        <div class="form-card">
-
-            <div class="form-header">
-                <h1>Edit Materi</h1>
-                <a href="{{ route('tutor.materials.index') }}" class="close-btn">&times;</a>
-            </div>
-
-            <div class="form-body">
-                @if ($errors->any())
-                    <div
-                        style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-                        <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
-                        <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
-                            @foreach ($errors->all() as $error)
-                                <li style="color: #dc2626;">{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                {{-- Package Selection --}}
+                <div class="form-group">
+                    <label class="form-label">Pilih Paket Belajar (bisa lebih dari 1)</label>
+                    <div class="package-selector">
+                        @forelse ($packages as $package)
+                            <div class="package-checkbox-item">
+                                <input type="checkbox" name="package_ids[]" id="package_{{ $package->id }}"
+                                    value="{{ $package->id }}" data-level="{{ $package->level }}" 
+                                    class="package-checkbox"
+                                    onchange="handlePackageSelection()"
+                                    {{ in_array($package->id, $selectedPackageIds) ? 'checked' : '' }}>
+                                <label for="package_{{ $package->id }}" class="package-checkbox-label">
+                                    <span class="package-name">{{ $package->detail_title }}</span>
+                                    <span class="package-level">{{ $package->level }}</span>
+                                </label>
+                            </div>
+                        @empty
+                            <div style="text-align: center; color: #94a3b8; padding: 20px;">Belum ada paket tersedia</div>
+                        @endforelse
                     </div>
-                @endif
+                    @error('package_ids') <div class="error-text">{{ $message }}</div> @enderror
+                </div>
 
-                <form method="POST" action="{{ route('tutor.materials.update', $material) }}" enctype="multipart/form-data"
-                    id="material-form">
-                    @csrf
-                    @method('PUT')
+                {{-- Subject Selection --}}
+                <div class="form-group">
+                    <label class="form-label">Mata Pelajaran</label>
+                    <select name="subject_id" id="subjectSelect" class="form-control" required>
+                        <option value="">Memuat...</option>
+                    </select>
+                    @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
+                </div>
 
-                    {{-- 🟢 PERBAIKAN: Menambahkan Hidden Input Level --}}
-                    {{-- Nilai diambil dari old input atau relasi subject level saat ini --}}
-                    <input type="hidden" name="level" id="hidden-level"
-                        value="{{ old('level', $material->subject->level ?? '') }}">
+                {{-- Folder Name --}}
+                <div class="form-group">
+                    <label class="form-label">Nama Folder</label>
+                    <input type="text" name="title" class="form-control" 
+                        value="{{ old('title', $material->title) }}" 
+                        placeholder="Contoh: Aljabar Dasar" required>
+                    @error('title') <div class="error-text">{{ $message }}</div> @enderror
+                </div>
 
-                    <div class="form-grid">
-                        <label>
-                            <span>Pilih Paket Belajar (bisa lebih dari 1)</span>
-                            <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: white; max-height: 250px; overflow-y: auto;">
-                                @forelse ($packages as $package)
-                                    <div style="margin-bottom: 8px;">
-                                        <input 
-                                            type="checkbox" 
-                                            name="package_ids[]" 
-                                            id="edit_package_{{ $package->id }}" 
-                                            value="{{ $package->id }}" 
-                                            data-level="{{ $package->level }}"
-                                            class="package-checkbox-edit"
-                                            onchange="handleEditPackageSelection()"
-                                            {{ in_array($package->id, $selectedPackageIds) ? 'checked' : '' }}
-                                            style="display: none;">
-                                        <label for="edit_package_{{ $package->id }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: all 0.2s; position: relative;">
-                                            <span style="font-weight: 600; color: #1e293b;">{{ $package->detail_title ?? $package->title }}</span>
-                                            <span style="font-size: 0.85rem; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; margin-right: 28px;">{{ $package->level }}</span>
-                                        </label>
-                                    </div>
-                                @empty
-                                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Belum ada paket yang tersedia</div>
-                                @endforelse
-                            </div>
-                            @error('package_ids') <div class="error-text">{{ $message }}</div> @enderror
-                        </label>
+                {{-- Folder Description --}}
+                <div class="form-group">
+                    <label class="form-label">Deskripsi Folder</label>
+                    <textarea name="summary" class="form-control" 
+                        placeholder="Deskripsi singkat folder..." required>{{ old('summary', $material->summary) }}</textarea>
+                    @error('summary') <div class="error-text">{{ $message }}</div> @enderror
+                </div>
 
-                        <label>
-                            <span>Judul Materi</span>
-                            <input type="text" name="title" value="{{ old('title', $material->title) }}" required />
-                            @error('title') <div class="error-text">{{ $message }}</div> @enderror
-                        </label>
-
-                        <label>
-                            <span>Mata Pelajaran</span>
-                            <select name="subject_id" id="subject-select" required>>
-                                <option value="">Memuat...</option>
-                            </select>
-                            @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
-                        </label>
-
-                        {{-- FORM KELAS DIHAPUS (Data dikirim via hidden input di atas) --}}
-
-                        <label class="span-full">
-                            <span>Deskripsi Singkat</span>
-                            <textarea name="summary" required>{{ old('summary', $material->summary) }}</textarea>
-                            @error('summary') <div class="error-text">{{ $message }}</div> @enderror
-                        </label>
-
-                        <div class="dynamic-group span-full">
-                            <div class="dynamic-group__header">
-                                <span>Tujuan Pembelajaran</span>
-                                <button type="button" class="dynamic-add" data-add-objective>+ Tambah</button>
-                            </div>
-                            <div class="dynamic-group__items" data-objectives>
-                                @foreach ($objectiveValues as $value)
-                                    <div class="dynamic-item" data-objective-row>
-                                        <div class="dynamic-item__row">
-                                            <input type="text" name="objectives[]" value="{{ $value }}"
-                                                placeholder="Contoh: Memahami konsep persamaan linear" />
-                                        </div>
-                                        <div class="dynamic-item__actions">
-                                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            @error('objectives.*') <div class="error-text">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="dynamic-group span-full">
-                            <div class="dynamic-group__header">
-                                <span>Rangkuman Bab</span>
-                                <button type="button" class="dynamic-add" data-add-chapter>+ Tambah</button>
-                            </div>
-                            <div class="dynamic-group__items" data-chapters data-next-index="{{ $chapterNextIndex }}">
-                                @foreach ($chapterValues as $index => $chapter)
-                                    <div class="dynamic-item" data-chapter-row>
-                                        <div class="dynamic-item__row">
-                                            <input type="text" name="chapters[{{ $index }}][title]"
-                                                value="{{ $chapter['title'] }}" placeholder="Judul bab" />
-                                            <textarea name="chapters[{{ $index }}][description]"
-                                                placeholder="Ringkasan singkat bab">{{ $chapter['description'] }}</textarea>
-                                        </div>
-                                        <div class="dynamic-item__actions">
-                                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            @error('chapters.*') <div class="error-text">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="dynamic-group span-full">
-                            <div class="dynamic-group__header">
-                                <span>Link Materi (Google Drive)</span>
-                                <button type="button" class="dynamic-add" data-add-gdrive>+ Tambah Link</button>
-                            </div>
-                            <div class="dynamic-group__items" data-gdrive-links>
-                                @foreach ($gdriveLinks as $link)
-                                    <div class="dynamic-item">
-                                        <div class="dynamic-item__row">
-                                            <input type="url" name="gdrive_links[]" value="{{ $link }}"
-                                                placeholder="https://drive.google.com/..." required />
-                                        </div>
-                                        <div class="dynamic-item__actions">
-                                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            @error('gdrive_links.*') <div class="error-text">{{ $message }}</div> @enderror
-                        </div>
-
-
+                {{-- Material Items --}}
+                <div class="dynamic-group">
+                    <div class="dynamic-group__header">
+                        <span>Materi dalam Folder</span>
+                        <button type="button" class="dynamic-add" onclick="addMaterialItem()">+ Tambah Materi</button>
                     </div>
-
-                    <div class="form-actions">
-                        <a href="{{ route('tutor.materials.index') }}" class="btn-cancel">Batal</a>
-                        <button type="submit" class="btn-save">Simpan Perubahan</button>
+                    <div class="dynamic-group__items" id="materialItemsList">
+                        @forelse(old('material_items', $material->materialItems->toArray()) as $index => $item)
+                            <div class="dynamic-item">
+                                <div class="dynamic-item__row">
+                                    <div class="form-group" style="margin-bottom: 12px;">
+                                        <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                                        <input type="text" name="material_items[{{ $index }}][name]" class="form-control" 
+                                            value="{{ is_array($item) ? ($item['name'] ?? '') : $item->name }}"
+                                            placeholder="Contoh: Pengenalan Variabel" required />
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 12px;">
+                                        <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                                        <textarea name="material_items[{{ $index }}][description]" class="form-control" rows="2"
+                                            placeholder="Deskripsi materi..." required>{{ is_array($item) ? ($item['description'] ?? '') : $item->description }}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                                        <input type="url" name="material_items[{{ $index }}][link]" class="form-control" 
+                                            value="{{ is_array($item) ? ($item['link'] ?? '') : $item->link }}"
+                                            placeholder="https://drive.google.com/..." required />
+                                    </div>
+                                </div>
+                                <div class="dynamic-item__actions">
+                                    <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="dynamic-item">
+                                <div class="dynamic-item__row">
+                                    <div class="form-group" style="margin-bottom: 12px;">
+                                        <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                                        <input type="text" name="material_items[0][name]" class="form-control" 
+                                            placeholder="Contoh: Pengenalan Variabel" required />
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 12px;">
+                                        <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                                        <textarea name="material_items[0][description]" class="form-control" rows="2"
+                                            placeholder="Deskripsi materi..." required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                                        <input type="url" name="material_items[0][link]" class="form-control" 
+                                            placeholder="https://drive.google.com/..." required />
+                                    </div>
+                                </div>
+                                <div class="dynamic-item__actions">
+                                    <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
-                </form>
-            </div>
+                    @error('material_items') <div class="error-text">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ route('tutor.materials.index') }}" class="btn-cancel">Batal</a>
+                    <button type="submit" class="btn-save">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const objectiveContainer = document.querySelector('[data-objectives]');
-            const chapterContainer = document.querySelector('[data-chapters]');
-            const packageSelect = document.getElementById('package-select');
-            const subjectSelect = document.getElementById('subject-select');
-            const hiddenLevelInput = document.getElementById('hidden-level'); // 🟢 Ambil elemen hidden input
-            const currentSubjectId = "{{ old('subject_id', $material->subject_id) }}";
+        let materialItemIndex = {{ count(old('material_items', $material->materialItems)) }};
+        const currentSubjectId = "{{ old('subject_id', $material->subject_id) }}";
 
-            // --- Logic Dynamic Inputs (Objectives) ---
-            const templateObjective = () => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'dynamic-item';
-                wrapper.innerHTML = `
-                            <div class="dynamic-item__row">
-                                <input type="text" name="objectives[]" placeholder="Contoh: Memahami konsep persamaan linear" />
-                            </div>
-                            <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                            </div>
-                        `;
-                return wrapper;
-            };
+        // Add Material Item
+        window.addMaterialItem = function() {
+            const list = document.getElementById('materialItemsList');
+            if (!list) return;
+            
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <div class="dynamic-item__row">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                        <input type="text" name="material_items[${materialItemIndex}][name]" class="form-control" 
+                            placeholder="Contoh: Pengenalan Variabel" required />
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                        <textarea name="material_items[${materialItemIndex}][description]" class="form-control" rows="2"
+                            placeholder="Deskripsi materi..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                        <input type="url" name="material_items[${materialItemIndex}][link]" class="form-control" 
+                            placeholder="https://drive.google.com/..." required />
+                    </div>
+                </div>
+                <div class="dynamic-item__actions">
+                    <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+                </div>
+            `;
+            list.appendChild(div);
+            materialItemIndex++;
+        };
 
-            // --- Logic Dynamic Inputs (Chapters) ---
-            const templateChapter = (index) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'dynamic-item';
-                wrapper.innerHTML = `
-                            <div class="dynamic-item__row">
-                                <input type="text" name="chapters[${index}][title]" placeholder="Judul bab" />
-                                <textarea name="chapters[${index}][description]" placeholder="Ringkasan singkat bab"></textarea>
-                            </div>
-                            <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                            </div>
-                        `;
-                return wrapper;
-            };
+        // Remove Material Item
+        window.removeMaterialItem = function(button) {
+            const list = document.getElementById('materialItemsList');
+            if (!list) return;
+            
+            if (list.children.length > 1) {
+                button.closest('.dynamic-item').remove();
+            } else {
+                alert('Minimal harus ada satu materi dalam folder!');
+            }
+        };
 
-            // Helper: Bind Remove Button
-            const bindRemoval = (row) => {
-                row.querySelector('[data-remove-row]')?.addEventListener('click', function () {
-                    if (row.parentElement.children.length > 1) row.remove();
+        // Handle Package Selection
+        window.handlePackageSelection = function() {
+            const checkboxes = document.querySelectorAll('.package-checkbox:checked');
+            const levelInput = document.getElementById('hiddenLevel');
+            const subjectSelect = document.getElementById('subjectSelect');
+            
+            if (checkboxes.length > 0) {
+                const firstPackage = checkboxes[0];
+                const packageId = firstPackage.value;
+                const packageLevel = firstPackage.dataset.level;
+                
+                if (levelInput) {
+                    levelInput.value = packageLevel;
+                }
+                
+                loadSubjects(packageId, currentSubjectId);
+            } else {
+                subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+                subjectSelect.disabled = true;
+                
+                if (levelInput) {
+                    levelInput.value = '';
+                }
+            }
+        };
+
+        // Load Subjects
+        function loadSubjects(packageId, selectedId = null) {
+            const subjectSelect = document.getElementById('subjectSelect');
+            const levelInput = document.getElementById('hiddenLevel');
+            
+            subjectSelect.innerHTML = '<option value="">Memuat...</option>';
+            subjectSelect.disabled = true;
+
+            fetch(`/tutor/packages/${packageId}/subjects`)
+                .then(response => response.json())
+                .then(data => {
+                    subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+                    data.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.id;
+                        option.textContent = subject.name + ' (' + subject.level + ')';
+                        option.setAttribute('data-level', subject.level || '');
+                        
+                        if (selectedId && String(subject.id) === String(selectedId)) {
+                            option.selected = true;
+                            if (levelInput) levelInput.value = subject.level || '';
+                        }
+                        
+                        subjectSelect.appendChild(option);
+                    });
+                    subjectSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
                 });
-            };
+        }
 
-            // Initialize Removal on existing rows
-            document.querySelectorAll('[data-remove-row]').forEach(btn => {
-                bindRemoval(btn.closest('.dynamic-item'));
-            });
-
-            // Event Add Objective
-            document.querySelector('[data-add-objective]')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!objectiveContainer) return;
-                const row = templateObjective();
-                objectiveContainer.appendChild(row);
-                bindRemoval(row);
-            });
-
-            // Event Add Chapter
-            const addChapterBtn = document.querySelector('[data-add-chapter]');
-            let nextChapterIndex = Number(chapterContainer?.dataset.nextIndex || 0);
-
-            addChapterBtn?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!chapterContainer) return;
-                const row = templateChapter(nextChapterIndex++);
-                chapterContainer.appendChild(row);
-                bindRemoval(row);
-            });
-
-            // --- Logic Dynamic Inputs (GDrive) ---
-            const gdriveContainer = document.querySelector('[data-gdrive-links]');
-
-            const templateLink = (name, placeholder) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'dynamic-item';
-                wrapper.innerHTML = `
-                            <div class="dynamic-item__row">
-                                <input type="url" name="${name}[]" placeholder="${placeholder}" required />
-                            </div>
-                            <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                            </div>
-                        `;
-                return wrapper;
-            };
-
-            document.querySelector('[data-add-gdrive]')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!gdriveContainer) return;
-                const row = templateLink('gdrive_links', 'https://drive.google.com/...');
-                gdriveContainer.appendChild(row);
-                bindRemoval(row);
-            });
-
-
-
-            // 🟢 PERBAIKAN: Listener saat Mapel Berubah untuk update Hidden Level
+        // Subject change listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const subjectSelect = document.getElementById('subjectSelect');
+            const levelInput = document.getElementById('hiddenLevel');
+            
             if (subjectSelect) {
-                subjectSelect.addEventListener('change', function () {
+                subjectSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
-                    const level = selectedOption.getAttribute('data-level') || ''; // Ambil data level
-                    if (hiddenLevelInput) {
-                        hiddenLevelInput.value = level; // Isi ke hidden input
+                    const level = selectedOption.getAttribute('data-level') || '';
+                    if (levelInput) {
+                        levelInput.value = level;
                     }
                 });
             }
-
-            // Handle Package Multi-Selection in Edit Form
-            window.handleEditPackageSelection = function() {
-                const checkboxes = document.querySelectorAll('.package-checkbox-edit:checked');
-                
-                if (checkboxes.length > 0) {
-                    // Get first selected package to fetch subjects
-                    const firstPackage = checkboxes[0];
-                    const packageId = firstPackage.value;
-                    const packageLevel = firstPackage.dataset.level;
-                    
-                    // Update level
-                    if (hiddenLevelInput) {
-                        hiddenLevelInput.value = packageLevel;
-                    }
-                    
-                    // Fetch subjects for first selected package
-                    loadSubjects(packageId, currentSubjectId);
-                } else {
-                    // No package selected
-                    subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
-                    subjectSelect.disabled = true;
-                    
-                    if (hiddenLevelInput) {
-                        hiddenLevelInput.value = '';
-                    }
-                }
-            };
-
-            // --- AJAX Subject Dropdown ---
-            const loadSubjects = (packageId, selectedId = null) => {
-                subjectSelect.innerHTML = '<option value="">Memuat...</option>';
-                subjectSelect.disabled = true;
-
-                if (packageId) {
-                    fetch(`/tutor/packages/${packageId}/subjects`)
-                        .then(response => response.json())
-                        .then(data => {
-                            subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
-                            data.forEach(subject => {
-                                const option = document.createElement('option');
-                                option.value = subject.id;
-
-                                // 🟢 PERBAIKAN: Simpan Level di Atribut Data
-                                option.setAttribute('data-level', subject.level || '');
-
-                                option.textContent = subject.name + ' (' + subject.level + ')';
-
-                                if (selectedId && String(subject.id) === String(selectedId)) {
-                                    option.selected = true;
-                                    // 🟢 PERBAIKAN: Jika ini mapel terpilih saat load, isi hidden input
-                                    if (hiddenLevelInput) hiddenLevelInput.value = subject.level || '';
-                                }
-                                subjectSelect.appendChild(option);
-                            });
-                            subjectSelect.disabled = false;
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
-                        });
-                } else {
-                    subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
-                    subjectSelect.disabled = true;
-                }
-            };
-
-            // Initial load - get first checked package
-            const firstCheckedPackage = document.querySelector('.package-checkbox-edit:checked');
+            
+            // Initial load
+            const firstCheckedPackage = document.querySelector('.package-checkbox:checked');
             if (firstCheckedPackage) {
                 loadSubjects(firstCheckedPackage.value, currentSubjectId);
             }

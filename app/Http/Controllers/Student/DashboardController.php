@@ -81,8 +81,6 @@ class DashboardController extends Controller
         $schedule = ScheduleViewData::fromCollection($sessions);
 
         $materialsAvailable = Schema::hasTable('materials');
-        $materialChaptersReady = Schema::hasTable('material_chapters');
-        $materialObjectivesReady = Schema::hasTable('material_objectives');
         $quizzesAvailable = Schema::hasTable('quizzes');
         $quizLevelsReady = Schema::hasTable('quiz_levels');
 
@@ -91,21 +89,19 @@ class DashboardController extends Controller
                 ->whereHas('packages', function($query) use ($packageId) {
                     $query->where('packages.id', $packageId);
                 })
-                ->with('subject')
-                ->when($materialChaptersReady, fn ($query) => $query->withCount('chapters'))
-                ->when($materialObjectivesReady, fn ($query) => $query->withCount('objectives'))
+                ->with(['subject', 'materialItems'])
                 ->orderByDesc('created_at')
                 ->take(4)
                 ->get()
-                ->map(function (Material $material) use ($materialsLink, $materialChaptersReady, $materialObjectivesReady) {
+                ->map(function (Material $material) use ($materialsLink) {
                     return [
+                        'id' => $material->id,
                         'slug' => $material->slug,
                         'subject' => optional($material->subject)->name ?? 'Umum',
                         'title' => $material->title,
                         'summary' => $material->summary,
                         'level' => $material->level,
-                        'chapter_count' => $materialChaptersReady ? (int) $material->chapters_count : 0,
-                        'objective_count' => $materialObjectivesReady ? (int) $material->objectives_count : 0,
+                        'item_count' => $material->materialItems->count(),
                         'resource' => $material->resource_url ?? $materialsLink,
                         'accent' => SubjectPalette::accent(optional($material->subject)->name ?? 'Umum'),
                     ];

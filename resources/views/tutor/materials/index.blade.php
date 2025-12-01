@@ -903,7 +903,7 @@
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
-        Tambah Materi
+        Tambah Folder
     </button>
 </div>
 
@@ -940,25 +940,23 @@
         {{-- BAGIAN GAMBAR SUDAH DIHAPUS DI SINI --}}
 
         <div class="card-content">
-            <h3 class="card-title" title="{{ $material->title }}">{{ $material->title }}</h3>
+            <h3 class="card-title" title="{{ $material->title }}">📁 {{ $material->title }}</h3>
 
             <div class="tags-row">
                 <span class="tag tag-subject">{{ $material->subject->name ?? 'Tanpa Mapel' }}</span>
                 <span class="tag tag-level">{{ $material->level }}</span>
+                <span class="tag tag-default">{{ $material->materialItems->count() }} Materi</span>
             </div>
 
             <p class="card-summary">{{ Str::limit($material->summary, 100) }}</p>
 
             <div class="card-actions">
+                <button onclick="openPreviewModal({{ $material->id }})" class="action-btn btn-outline">
+                    Preview
+                </button>
                 <a href="{{ route('tutor.materials.edit', $material) }}" class="action-btn btn-secondary">
-                    Edit
+                    Edit Folder
                 </a>
-                @if (!empty($material->resource_path) && is_array($material->resource_path) && count($material->resource_path) > 0)
-                    <a href="{{ str_starts_with($material->resource_path[0], 'http') ? $material->resource_path[0] : route('tutor.materials.preview', $material->slug) }}"
-                        class="action-btn btn-outline" target="_blank" rel="noopener">
-                        Preview
-                    </a>
-                @endif
             </div>
         </div>
     </article>
@@ -970,7 +968,7 @@
 <div id="createModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">Tambah Materi Baru</h2>
+            <h2 class="modal-title">Tambah Folder Baru</h2>
             <button type="button" onclick="closeModal()" class="btn-close">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -978,7 +976,7 @@
             </button>
         </div>
 
-        <form action="{{ route('tutor.materials.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('tutor.materials.store') }}" method="POST">
             @csrf
 
             {{-- Paket & Mapel --}}
@@ -992,7 +990,7 @@
                                     value="{{ $package->id }}" data-level="{{ $package->level }}" class="package-checkbox"
                                     onchange="handlePackageSelection()">
                                 <label for="package_{{ $package->id }}" class="package-checkbox-label">
-                                    <span class="package-name">{{ $package->name }}</span>
+                                    <span class="package-name">{{ $package->detail_title }}</span>
                                     <span class="package-level">{{ $package->level }}</span>
                                 </label>
                             </div>
@@ -1010,112 +1008,250 @@
                 </div>
             </div>
 
-            {{-- Detail Materi --}}
-            <div class="form-group">
-                <label class="form-label">Judul Materi</label>
-                <input type="text" name="title" class="form-control" placeholder="Contoh: Aljabar Dasar" required>
-            </div>
-
             {{-- Hidden Level (Auto-filled from package) --}}
             <input type="hidden" name="level" id="hiddenLevel" required>
 
-            {{-- Dynamic GDrive Links --}}
-            <div class="dynamic-group span-full">
-                <div class="dynamic-group__header">
-                    <span>Link Materi (Google Drive)</span>
-                    <button type="button" class="dynamic-add" data-add-gdrive>+ Tambah Link</button>
-                </div>
-                <div class="dynamic-group__items" data-gdrive-links>
-                    <div class="dynamic-item">
-                        <div class="dynamic-item__row">
-                            <input type="url" name="gdrive_links[]" class="form-control" placeholder="https://drive.google.com/..." required />
-                        </div>
-                        <div class="dynamic-item__actions">
-                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                        </div>
-                    </div>
-                </div>
-                @error('gdrive_links.*') <div class="error-text">{{ $message }}</div> @enderror
+            {{-- Folder Details --}}
+            <div class="form-group">
+                <label class="form-label">Nama Folder</label>
+                <input type="text" name="title" class="form-control" placeholder="Contoh: Aljabar Dasar" required>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Ringkasan Materi</label>
-                <textarea name="summary" rows="3" class="form-control" placeholder="Deskripsi singkat materi..."
+                <label class="form-label">Deskripsi Folder</label>
+                <textarea name="summary" rows="2" class="form-control" placeholder="Deskripsi singkat folder..."
                     required></textarea>
             </div>
 
-            {{-- Tujuan Pembelajaran Dinamis --}}
-            <div class="form-group">
-                <label class="form-label">Tujuan Pembelajaran</label>
-                <ul id="objectivesList" class="dynamic-list">
-                    <li class="dynamic-item">
-                        <input type="text" name="objectives[]" class="form-control"
-                            placeholder="Contoh: Memahami variabel">
-                    </li>
-                </ul>
-                <button type="button" class="btn-add-item" onclick="addObjective()">+ Tambah Tujuan</button>
-            </div>
-
-            {{-- Bab Materi Dinamis --}}
-            <div class="form-group">
-                <label class="form-label">Bab / Sub-Materi</label>
-                <div id="chaptersList" class="dynamic-list">
+           {{-- Dynamic Material Items --}}
+            <div class="dynamic-group span-full">
+                <div class="dynamic-group__header">
+                    <span>Materi dalam Folder</span>
+                    <button type="button" class="dynamic-add" onclick="addMaterialItem()">+ Tambah Materi</button>
+                </div>
+                <div class="dynamic-group__items" id="materialItemsList">
                     <div class="dynamic-item">
-                        <input type="text" name="chapters[0][title]" class="form-control" placeholder="Judul Bab">
-                        <input type="text" name="chapters[0][description]" class="form-control"
-                            placeholder="Deskripsi (opsional)">
+                        <div class="dynamic-item__row">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                                <input type="text" name="material_items[0][name]" class="form-control"
+                                    placeholder="Contoh: Pengenalan Variabel" required />
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                                <textarea name="material_items[0][description]" class="form-control" rows="2"
+                                    placeholder="Deskripsi materi..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                                <input type="url" name="material_items[0][link]" class="form-control"
+                                    placeholder="https://drive.google.com/..." required />
+                            </div>
+                        </div>
+                        <div class="dynamic-item__actions">
+                            <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="btn-add-item" onclick="addChapter()">+ Tambah Bab</button>
+                @error('material_items')
+                    <div class="error-text">{{ $message }}</div>
+                @enderror
             </div>
 
-            <button type="submit" class="btn-submit">Simpan Materi</button>
+            <button type="submit" class="btn-submit">Simpan Folder</button>
         </form>
+    </div>
+</div>
+
+{{-- Preview Modal --}}
+<div id="previewModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="previewFolderName">Preview Folder</h2>
+            <button type="button" onclick="closePreviewModal()" class="btn-close">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 24px;">
+            <div id="previewItemsList"></div>
+        </div>
     </div>
 </div>
 
 <script>
 // ========== GLOBAL FUNCTIONS (must be outside DOMContentLoaded) ==========
-// Dynamic Objectives
-let objectivesInitialized = false;
-window.addObjective = function() {
-    console.log('addObjective function called!');
-    const list = document.getElementById('objectivesList');
-    console.log('objectivesList element:', list);
+// Dynamic Material Items
+let materialItemIndex = 1;
+window.addMaterialItem = function() {
+    console.log('addMaterialItem function called!');
+    const list = document.getElementById('materialItemsList');
     if (!list) {
-        console.error('objectivesList not found!');
+        console.error('materialItemsList not found!');
         return;
     }
-    const li = document.createElement('li');
-    li.className = 'dynamic-item';
-    li.innerHTML = `
-            <input type="text" name="objectives[]" class="form-control" placeholder="Tujuan lainnya...">
-            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">×</button>
-        `;
-    list.appendChild(li);
-    console.log('New objective added');
-}
-
-// Dynamic Chapters
-let chapterIndex = 1;
-window.addChapter = function() {
-    console.log('addChapter function called!');
-    const list = document.getElementById('chaptersList');
-    console.log('chaptersList element:', list);
-    if (!list) {
-        console.error('chaptersList not found!');
-        return;
-    }
+    
     const div = document.createElement('div');
     div.className = 'dynamic-item';
     div.innerHTML = `
-            <input type="text" name="chapters[${chapterIndex}][title]" class="form-control" placeholder="Judul Bab">
-            <input type="text" name="chapters[${chapterIndex}][description]" class="form-control" placeholder="Deskripsi">
-            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">×</button>
-        `;
+        <div class="dynamic-item__row">
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                <input type="text" name="material_items[${materialItemIndex}][name]" class="form-control" 
+                    placeholder="Contoh: Pengenalan Variabel" required />
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                <textarea name="material_items[${materialItemIndex}][description]" class="form-control" rows="2"
+                    placeholder="Deskripsi materi..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                <input type="url" name="material_items[${materialItemIndex}][link]" class="form-control" 
+                    placeholder="https://drive.google.com/..." required />
+            </div>
+        </div>
+        <div class="dynamic-item__actions">
+            <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+        </div>
+    `;
     list.appendChild(div);
-    chapterIndex++;
-    console.log('New chapter added, index:', chapterIndex);
+    materialItemIndex++;
+    console.log('New material item added, index:', materialItemIndex);
+}
+
+window.removeMaterialItem = function(button) {
+    const list = document.getElementById('materialItemsList');
+    if (!list) return;
+    
+    // Prevent removing if it's the last item (minimum 1)
+    if (list.children.length > 1) {
+        button.closest('.dynamic-item').remove();
+        console.log('Material item removed');
+    } else {
+        alert('Minimal harus ada satu materi dalam folder!');
+    }
+}
+
+// Preview Modal Functions
+window.openPreviewModal = function(materialId) {
+    console.log('Opening preview for material:', materialId);
+    const modal = document.getElementById('previewModal');
+    const previewList = document.getElementById('previewItemsList');
+    
+    // Show modal
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Show loading
+    previewList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Memuat...</p>';
+    
+    // Find material data from the page
+    const materials = @json($materials);
+    const material = materials.find(m => m.id === materialId);
+    
+    if (!material) {
+        previewList.innerHTML = '<p style="color: #ef4444;">Folder tidak ditemukan</p>';
+        return;
+    }
+    
+    // Update title
+    document.getElementById('previewFolderName').textContent = material.title;
+    
+    // Display material items
+    if (material.material_items && material.material_items.length > 0) {
+        let html = '';
+        material.material_items.forEach((item, index) => {
+            html += `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">${index + 1}. ${item.name}</h3>
+                    </div>
+                    <p style="color: #64748b; margin-bottom: 16px; line-height: 1.6;">${item.description}</p>
+                    <a href="${item.link}" target="_blank" rel="noopener" 
+                       style="display: inline-block; background: #3fa67e; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                        🔗 Buka Materi
+                    </a>
+                </div>
+            `;
+        });
+        previewList.innerHTML = html;
+    } else {
+        previewList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Folder ini belum memiliki materi</p>';
+    }
+}
+
+window.closePreviewModal = function() {
+    const modal = document.getElementById('previewModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Handle Package Multi-Selection (MOVED TO GLOBAL SCOPE)
+window.handlePackageSelection = function() {
+    console.log('handlePackageSelection called!');
+    const checkboxes = document.querySelectorAll('.package-checkbox:checked');
+    const levelInput = document.getElementById('hiddenLevel');
+
+    if (checkboxes.length > 0) {
+        // Get first selected package to fetch subjects
+        const firstPackage = checkboxes[0];
+        const packageId = firstPackage.value;
+        const packageLevel = firstPackage.dataset.level;
+
+        console.log('Package selected:', packageId, 'Level:', packageLevel);
+
+        // Update level
+        if (levelInput) {
+            levelInput.value = packageLevel;
+        }
+
+        // Fetch subjects for first selected package
+        fetchSubjects(packageId);
+    } else {
+        // No package selected
+        const subjectSelect = document.getElementById('subjectSelect');
+        subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+        subjectSelect.disabled = true;
+
+        if (levelInput) {
+            levelInput.value = '';
+        }
+    }
+}
+
+// AJAX Fetch Subjects (MOVED TO GLOBAL SCOPE)
+function fetchSubjects(packageId) {
+    console.log('fetchSubjects called with packageId:', packageId);
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    if (!packageId) {
+        subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+        subjectSelect.disabled = true;
+        return;
+    }
+
+    subjectSelect.innerHTML = '<option>Loading...</option>';
+    subjectSelect.disabled = true;
+
+    fetch(`/tutor/packages/${packageId}/subjects`)
+        .then(response => {
+            console.log('Fetch response received:', response);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Subjects data:', data);
+            subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+            data.forEach(subject => {
+                subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
+            });
+            subjectSelect.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error fetching subjects:', error);
+            subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
+        });
 }
 
 // Wrap everything else in DOMContentLoaded to ensure DOM is ready
@@ -1256,64 +1392,6 @@ document.addEventListener('DOMContentLoaded', function() {
         clearGdriveBtn.style.display = 'none';
         gdriveInput.focus();
     });
-
-    // Handle Package Multi-Selection
-    function handlePackageSelection() {
-        const checkboxes = document.querySelectorAll('.package-checkbox:checked');
-        const levelInput = document.getElementById('hiddenLevel');
-
-        if (checkboxes.length > 0) {
-            // Get first selected package to fetch subjects
-            const firstPackage = checkboxes[0];
-            const packageId = firstPackage.value;
-            const packageLevel = firstPackage.dataset.level;
-
-            // Update level
-            if (levelInput) {
-                levelInput.value = packageLevel;
-            }
-
-            // Fetch subjects for first selected package
-            fetchSubjects(packageId);
-        } else {
-            // No package selected
-            const subjectSelect = document.getElementById('subjectSelect');
-            subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
-            subjectSelect.disabled = true;
-
-            if (levelInput) {
-                levelInput.value = '';
-            }
-        }
-    }
-
-    // AJAX Fetch Subjects
-    function fetchSubjects(packageId) {
-        const subjectSelect = document.getElementById('subjectSelect');
-
-        if (!packageId) {
-            subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
-            subjectSelect.disabled = true;
-            return;
-        }
-
-        subjectSelect.innerHTML = '<option>Loading...</option>';
-        subjectSelect.disabled = true;
-
-        fetch(`/tutor/packages/${packageId}/subjects`)
-            .then(response => response.json())
-            .then(data => {
-                subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
-                data.forEach(subject => {
-                    subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
-                });
-                subjectSelect.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
-            });
-    }
 
     // ========== DYNAMIC GDRIVE LINKS ==========
     function initializeDynamicButtons() {

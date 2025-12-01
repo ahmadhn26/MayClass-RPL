@@ -25,7 +25,7 @@ class MaterialController extends BaseTutorController
 
         $materials = $tableReady
             ? Material::query()
-                ->with('subject')
+                ->with(['subject', 'materialItems']) // Eager load material items
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($inner) use ($search) {
                         $inner->where('title', 'like', "%{$search}%")
@@ -81,29 +81,25 @@ class MaterialController extends BaseTutorController
         $data = $request->validate([
             'package_ids' => ['required', 'array', 'min:1'],
             'package_ids.*' => ['required', 'exists:packages,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'], // Folder name
             'subject_id' => ['required', 'exists:subjects,id'],
             'level' => ['required', 'string', 'max:120'],
-            'summary' => ['required', 'string'],
-            'gdrive_links' => ['nullable', 'array'],
-            'gdrive_links.*' => ['required', 'url', 'max:500'],
-            'quiz_urls' => ['nullable', 'array'],
-            'quiz_urls.*' => ['required', 'url', 'max:500'],
-            'objectives' => ['nullable', 'array'],
-            'objectives.*' => ['nullable', 'string', 'max:255'],
-            'chapters' => ['nullable', 'array'],
-            'chapters.*.title' => ['nullable', 'string', 'max:255'],
-            'chapters.*.description' => ['nullable', 'string'],
+            'summary' => ['required', 'string'], // Folder description
+            'material_items' => ['required', 'array', 'min:1'], // Array of items in folder
+            'material_items.*.name' => ['required', 'string', 'max:255'],
+            'material_items.*.description' => ['required', 'string'],
+            'material_items.*.link' => ['required', 'url', 'max:500'],
         ]);
 
-        $slug = Str::slug($data['title']) ?: 'materi-' . Str::random(6);
+        $slug = Str::slug($data['title']) ?: 'folder-' . Str::random(6);
         $uniqueSlug = $slug;
         $counter = 1;
         while (Material::where('slug', $uniqueSlug)->exists()) {
             $uniqueSlug = $slug . '-' . $counter++;
         }
 
-        DB::transaction(function () use ($data, $uniqueSlug, $request) {
+        DB::transaction(function () use ($data, $uniqueSlug) {
+            // Create the folder (material)
             $material = Material::create([
                 'slug' => $uniqueSlug,
                 'subject_id' => $data['subject_id'],
@@ -111,25 +107,32 @@ class MaterialController extends BaseTutorController
                 'level' => $data['level'],
                 'summary' => $data['summary'],
                 'thumbnail_url' => UnsplashPlaceholder::material(\App\Models\Subject::find($data['subject_id'])->name ?? 'Material'),
-                'resource_path' => $data['gdrive_links'] ?? [],
-                'quiz_urls' => $data['quiz_urls'] ?? [],
+                'resource_path' => [], // No longer used for folder system
+                'quiz_urls' => [], // No longer used for folder system
             ]);
 
             // Sync packages to pivot table
             $material->packages()->sync($data['package_ids']);
 
-            $this->syncObjectives($material, $request->input('objectives', []));
-            $this->syncChapters($material, $request->input('chapters', []));
+            // Create material items within the folder
+            foreach ($data['material_items'] as $index => $item) {
+                $material->materialItems()->create([
+                    'name' => $item['name'],
+                    'description' => $item['description'],
+                    'link' => $item['link'],
+                    'position' => $index,
+                ]);
+            }
         });
 
         return redirect()
             ->route('tutor.materials.index')
-            ->with('status', __('Materi baru berhasil disimpan.'));
+            ->with('status', __('Folder materi berhasil disimpan.'));
     }
 
     public function edit(Material $material)
     {
-        $material->load(['objectives', 'chapters', 'packages']);
+        $material->load(['materialItems', 'packages']);
 
         $packages = Schema::hasTable('packages')
             ? Auth::user()->packages()->orderBy('level')->orderBy('price')->get()
@@ -159,19 +162,14 @@ class MaterialController extends BaseTutorController
         $data = $request->validate([
             'package_ids' => ['required', 'array', 'min:1'],
             'package_ids.*' => ['required', 'exists:packages,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'], // Folder name
             'subject_id' => ['required', 'exists:subjects,id'],
             'level' => ['required', 'string', 'max:120'],
-            'summary' => ['required', 'string'],
-            'gdrive_links' => ['nullable', 'array'],
-            'gdrive_links.*' => ['required', 'url', 'max:500'],
-            'quiz_urls' => ['nullable', 'array'],
-            'quiz_urls.*' => ['required', 'url', 'max:500'],
-            'objectives' => ['nullable', 'array'],
-            'objectives.*' => ['nullable', 'string', 'max:255'],
-            'chapters' => ['nullable', 'array'],
-            'chapters.*.title' => ['nullable', 'string', 'max:255'],
-            'chapters.*.description' => ['nullable', 'string'],
+            'summary' => ['required', 'string'], // Folder description
+            'material_items' => ['required', 'array', 'min:1'], // Array of items in folder
+            'material_items.*.name' => ['required', 'string', 'max:255'],
+            'material_items.*.description' => ['required', 'string'],
+            'material_items.*.link' => ['required', 'url', 'max:500'],
         ]);
 
         $payload = [
@@ -181,29 +179,36 @@ class MaterialController extends BaseTutorController
             'summary' => $data['summary'],
         ];
 
-        $payload['resource_path'] = $data['gdrive_links'] ?? [];
-        $payload['quiz_urls'] = $data['quiz_urls'] ?? [];
+        $payload['resource_path'] = []; // No longer used
+        $payload['quiz_urls'] = []; // No longer used
 
         if ($material->subject_id !== $data['subject_id']) {
             $payload['thumbnail_url'] = UnsplashPlaceholder::material(\App\Models\Subject::find($data['subject_id'])->name ?? 'Material');
         }
 
-        DB::transaction(function () use ($material, $payload, $request, $data) {
+        DB::transaction(function () use ($material, $payload, $data) {
             $material->update($payload);
 
             // Sync packages
             $material->packages()->sync($data['package_ids']);
 
-            $material->objectives()->delete();
-            $material->chapters()->delete();
+            // Delete old material items and create new ones
+            $material->materialItems()->delete();
 
-            $this->syncObjectives($material, $request->input('objectives', []));
-            $this->syncChapters($material, $request->input('chapters', []));
+            // Create new material items
+            foreach ($data['material_items'] as $index => $item) {
+                $material->materialItems()->create([
+                    'name' => $item['name'],
+                    'description' => $item['description'],
+                    'link' => $item['link'],
+                    'position' => $index,
+                ]);
+            }
         });
 
         return redirect()
             ->route('tutor.materials.index')
-            ->with('status', __('Materi berhasil diperbarui.'));
+            ->with('status', __('Folder materi berhasil diperbarui.'));
     }
 
     public function preview(Material $material)

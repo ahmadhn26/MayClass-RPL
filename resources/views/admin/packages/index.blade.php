@@ -1056,10 +1056,6 @@
                         <input type="number" name="max_students" class="form-control" min="1"
                             placeholder="Kosongkan jika tak terbatas">
                     </div>
-                    <div class="form-group">
-                        <label>Label Harga *</label>
-                        <input type="text" name="card_price_label" class="form-control" required>
-                    </div>
                     <div class="form-group full-width">
                         <label>Judul Paket *</label>
                         <input type="text" name="detail_title" class="form-control" required>
@@ -1182,10 +1178,6 @@
                             placeholder="Contoh: 25" />
                         <p class="helper-text">Biarkan kosong jika kuota tidak dibatasi.</p>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_card_price_label">Label Harga *</label>
-                        <input type="text" id="edit_card_price_label" name="card_price_label" required />
-                    </div>
                     <div class="form-group full-width">
                         <label for="edit_detail_title">Judul Paket *</label>
                         <input type="text" id="edit_detail_title" name="detail_title" required />
@@ -1276,7 +1268,6 @@
                 document.getElementById('edit_tag').value = data.tag || '';
                 document.getElementById('edit_price').value = data.price || '';
                 document.getElementById('edit_max_students').value = data.max_students || '';
-                document.getElementById('edit_card_price_label').value = data.card_price_label || '';
                 document.getElementById('edit_detail_title').value = data.detail_title || '';
                 document.getElementById('edit_summary').value = data.summary || '';
 

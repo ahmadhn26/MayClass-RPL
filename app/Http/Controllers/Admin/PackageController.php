@@ -163,7 +163,6 @@ class PackageController extends BaseAdminController
             'level' => ['required', 'string', 'max:255', Rule::in($stageKeys)],
             'grade_range' => ['required', 'string', 'max:255'],
             'tag' => ['nullable', 'string', 'max:50'],
-            'card_price_label' => ['required', 'string', 'max:50'],
             'detail_title' => ['required', 'string', 'max:255'],
             'image_url' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -177,8 +176,10 @@ class PackageController extends BaseAdminController
             'card_features.*' => ['nullable', 'string', 'max:255'],
         ]);
 
-        // Mirror card_price_label to detail_price_label
-        $validated['detail_price_label'] = $validated['card_price_label'];
+        // Auto-generate price labels with "per Bulan" suffix
+        $formattedPrice = 'Rp ' . number_format($validated['price'], 0, ',', '.');
+        $validated['card_price_label'] = $formattedPrice . ' per Bulan';
+        $validated['detail_price_label'] = $formattedPrice . ' per Bulan';
 
         // Auto-generate slug if not present (create) or if title changed (update)
         if (!isset($validated['slug'])) {

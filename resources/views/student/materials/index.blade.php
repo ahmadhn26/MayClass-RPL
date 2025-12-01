@@ -305,22 +305,20 @@
                                 <div class="material-item">
                                     <div class="material-top">
                                         <div class="material-info">
-                                            <h4>{{ $material['title'] }}</h4>
+                                            <h4>📁 {{ $material['title'] }}</h4>
                                             <p>{{ Str::limit($material['summary'], 100) }}</p>
                                         </div>
                                         <span class="material-tag">{{ $material['level'] }}</span>
                                     </div>
                                     
                                     <div class="material-meta">
-                                        <span>{{ $material['chapter_count'] }} Bab</span>
-                                        <span>{{ $material['objective_count'] }} Tujuan Pembelajaran</span>
+                                        <span>📄 {{ $material['item_count'] }} Materi</span>
                                     </div>
 
                                     <div class="material-actions">
-                                        <a href="{{ route('student.materials.show', $material['slug']) }}" class="btn-sm btn-primary-sm">
-                                            Buka Materi
-                                        </a>
-
+                                        <button onclick="openFolderPreview({{ $material['id'] }})" class="btn-sm btn-primary-sm">
+                                            Lihat Materi
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -342,9 +340,98 @@
                     <a href="{{ $materialsLink }}" target="_blank" rel="noopener" class="btn-sm btn-primary-sm">
                         Cek Google Drive
                     </a>
-                </div>
             </div>
         @endif
 
     </div>
+
+    {{-- Preview Modal --}}
+    <div id="folderPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div style="background: white; border-radius: 16px; max-width: 700px; width: 90%; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="folderTitle" style="margin: 0; font-size: 1.5rem; font-weight: 700;">Preview Folder</h2>
+                <button onclick="closeFolderPreview()" style="border: none; background: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; padding: 0; width: 32px; height: 32px;">&times;</button>
+            </div>
+            <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                <div id="folderItemsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preview Modal Functions
+        window.openFolderPreview = function(materialId) {
+            const modal = document.getElementById('folderPreviewModal');
+            const itemsList = document.getElementById('folderItemsList');
+            const folderTitle = document.getElementById('folderTitle');
+            
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Loading
+            itemsList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Memuat...</p>';
+            
+            // Get materials data
+            const materials = @json($materials);
+            const material = materials.find(m => m.id === materialId);
+            
+            if (!material) {
+                itemsList.innerHTML = '<p style="color: #ef4444;">Folder tidak ditemukan</p>';
+                return;
+            }
+            
+            // Update title
+            folderTitle.textContent = material.title;
+            
+            // Display items
+            if (material.material_items && material.material_items.length > 0) {
+                let html = '';
+                material.material_items.forEach((item, index) => {
+                    html += `
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+                            <h3 style="margin: 0 0 12px 0; font-size: 1.1rem; color: #0f172a; font-weight: 600;">${index + 1}. ${item.name}</h3>
+                            <p style="color: #64748b; margin: 0 0 16px 0; line-height: 1.6;">${item.description}</p>
+                            <a href="${item.link}" target="_blank" rel="noopener" 
+                               style="display: inline-block; background: #0f766e; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;">
+                                🔗 Buka Materi
+                            </a>
+                        </div>
+                    `;
+                });
+                itemsList.innerHTML = html;
+            } else {
+                itemsList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Folder ini belum memiliki materi</p>';
+            }
+        };
+
+        window.closeFolderPreview = function() {
+            const modal = document.getElementById('folderPreviewModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+
+        // Close modal when clicking outside
+        document.getElementById('folderPreviewModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFolderPreview();
+            }
+        });
+
+        // Auto-open preview if 'preview' parameter exists in URL
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const previewId = urlParams.get('preview');
+            
+            if (previewId) {
+                // Wait a bit for the page to fully load
+                setTimeout(() => {
+                    window.openFolderPreview(parseInt(previewId));
+                    // Remove the parameter from URL without reloading
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, '', newUrl);
+                }, 300);
+            }
+        });
+    </script>
 @endsection

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('card_price_label');
             $table->string('detail_title');
             $table->string('detail_price_label');
-            $table->string('image_url');
+            $table->string('image_url')->nullable();
             $table->decimal('price', 12, 2);
             $table->text('summary');
             $table->timestamps();

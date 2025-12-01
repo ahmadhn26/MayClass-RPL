@@ -658,14 +658,14 @@
             @if ($recentMaterials->isNotEmpty())
                 <div class="cards-grid">
                     @foreach ($recentMaterials as $material)
-                        <a href="{{ route('student.materials.show', $material['slug']) }}" class="content-card">
+                        <a href="{{ route('student.materials') }}?preview={{ $material['id'] }}" class="content-card">
                             <span class="card-tag">{{ $material['subject'] }}</span>
-                            <h3 class="card-title">{{ $material['title'] }}</h3>
+                            <h3 class="card-title">📁 {{ $material['title'] }}</h3>
                             <p class="card-desc">{{ $material['summary'] }}</p>
                             <div class="card-meta">
                                 <span>Level {{ $material['level'] }}</span>
                                 <span>&bull;</span>
-                                <span>{{ $material['chapter_count'] }} Bab</span>
+                                <span>{{ $material['item_count'] }} Materi</span>
                             </div>
                         </a>
                     @endforeach

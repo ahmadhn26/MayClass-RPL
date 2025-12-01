@@ -64,5 +64,13 @@ class Material extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    /**
+     * Get the material items within this folder.
+     */
+    public function materialItems(): HasMany
+    {
+        return $this->hasMany(MaterialItem::class)->orderBy('position');
+    }
 }
 

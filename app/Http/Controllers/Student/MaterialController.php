@@ -29,8 +29,6 @@ class MaterialController extends Controller
         $package = $this->currentPackage();
 
         $materialsReady = Schema::hasTable('materials');
-        $chaptersReady = Schema::hasTable('material_chapters');
-        $objectivesReady = Schema::hasTable('material_objectives');
 
         if (! $package || ! $materialsReady) {
             return view('student.materials.index', [
@@ -38,6 +36,7 @@ class MaterialController extends Controller
                 'title' => 'Materi Pembelajaran',
                 'activePackage' => $package,
                 'collections' => collect(),
+                'materials' => collect(),
                 'stats' => [
                     'total' => 0,
                     'subjects' => 0,
@@ -52,31 +51,25 @@ class MaterialController extends Controller
             ->whereHas('packages', function($query) use ($package) {
                 $query->where('packages.id', optional($package)->id);
             })
-            ->with('subject')
-            ->when($objectivesReady, fn ($query) => $query->withCount('objectives'))
-            ->when($chaptersReady, fn ($query) => $query->withCount('chapters'))
+            ->with(['subject', 'materialItems'])
             ->orderBy('subject_id')
             ->orderBy('title')
             ->get();
 
         $collections = $materials
             ->groupBy(fn($material) => $material->subject->name ?? 'Tanpa Mapel')
-            ->map(function ($items, $subject) use ($chaptersReady, $objectivesReady) {
+            ->map(function ($items, $subject) {
                 return [
                     'label' => $subject,
                     'accent' => SubjectPalette::accent($subject),
-                    'items' => $items->map(function ($material) use ($chaptersReady, $objectivesReady) {
-                        $resource = $this->resourceEndpoints($material);
-
+                    'items' => $items->map(function ($material) {
                         return [
+                            'id' => $material->id,
                             'slug' => $material->slug,
                             'level' => $material->level,
                             'title' => $material->title,
                             'summary' => $material->summary,
-                            'view_url' => $resource['view'],
-                            'download_url' => $resource['download'],
-                            'chapter_count' => $chaptersReady ? (int) $material->chapters_count : 0,
-                            'objective_count' => $objectivesReady ? (int) $material->objectives_count : 0,
+                            'item_count' => $material->materialItems->count(),
                         ];
                     })->values()->all(),
                 ];
@@ -94,6 +87,7 @@ class MaterialController extends Controller
             'title' => 'Materi Pembelajaran',
             'activePackage' => $package,
             'collections' => $collections,
+            'materials' => $materials, // Pass raw materials for preview modal
             'stats' => $stats,
             'materialsLink' => $materialsLink,
             'quizLink' => $quizLink,
