@@ -348,71 +348,87 @@
         /* --- Calendar Grid --- */
         .calendar-grid {
             display: grid;
-            gap: 1px;
-            background: var(--border);
-            /* Creates grid lines */
-            border: 1px solid var(--border);
-            \
-     border-radius: var(--radius-md);
+            gap: 12px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
             overflow: visible;
-            /* Changed from hidden to allow mobile scroll */
+            padding: 4px;
         }
 
         .calendar-cell {
             background: var(--surface);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
             padding: 16px;
-            min-height: 120px;
+            min-height: 110px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            transition: background 0.2s;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .calendar-cell.is-active {
-            background: #f0fdfa;
-            /* Light Teal background for active day */
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-color: #7dd3fc;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
         }
 
         .calendar-cell:hover {
-            background: #fafafa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
         }
 
         .cell-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .day-number {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--text-main);
+            line-height: 1;
         }
 
         .day-name {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: #94a3b8;
             font-weight: 600;
+            letter-spacing: 0.05em;
         }
 
         /* Event Item inside Calendar */
         .calendar-event {
-            background: var(--primary-light);
-            border-left: 3px solid var(--primary);
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border-left: 3px solid #3b82f6;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
             color: var(--text-main);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .calendar-event:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
         }
 
         .event-time {
             font-weight: 700;
-            font-size: 0.8rem;
-            color: var(--primary);
+            font-size: 0.75rem;
+            color: #2563eb;
             display: block;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            letter-spacing: 0.025em;
         }
 
         /* --- Range List --- */

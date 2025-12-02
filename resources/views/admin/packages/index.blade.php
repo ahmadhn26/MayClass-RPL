@@ -880,7 +880,6 @@
                         <th>Kuota</th>
                         <th>Mata Pelajaran</th>
                         <th>Tutor</th>
-                        <th>Tag / Label</th>
                         <th style="text-align: right;">Aksi</th>
                     </tr>
                 </thead>
@@ -943,13 +942,6 @@
                                 </div>
                             @else
                                 <span class="text-muted">Belum ada</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($package->tag)
-                                <span class="tag-pill tag-highlight">{{ $package->tag }}</span>
-                            @else
-                                <span class="tag-pill tag-default">—</span>
                             @endif
                         </td>
                         <td>
@@ -1042,10 +1034,6 @@
                         <label>Rentang Kelas *</label>
                         <input type="text" name="grade_range" class="form-control" placeholder="Contoh: Kelas 10 - 12"
                             required>
-                    </div>
-                    <div class="form-group">
-                        <label>Tag (Opsional)</label>
-                        <input type="text" name="tag" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Harga (Numerik) *</label>
@@ -1165,10 +1153,6 @@
                             placeholder="Contoh: Kelas 10 - 12 & UTBK" required />
                     </div>
                     <div class="form-group">
-                        <label for="edit_tag">Tag</label>
-                        <input type="text" id="edit_tag" name="tag" />
-                    </div>
-                    <div class="form-group">
                         <label for="edit_price">Harga (numerik) *</label>
                         <input type="number" id="edit_price" name="price" min="0" step="1000" required />
                     </div>
@@ -1265,7 +1249,6 @@
                 // Populate basic fields
                 document.getElementById('edit_level').value = data.level || '';
                 document.getElementById('edit_grade_range').value = data.grade_range || '';
-                document.getElementById('edit_tag').value = data.tag || '';
                 document.getElementById('edit_price').value = data.price || '';
                 document.getElementById('edit_max_students').value = data.max_students || '';
                 document.getElementById('edit_detail_title').value = data.detail_title || '';
@@ -1328,6 +1311,17 @@
                 @else
                     tutorSelection.innerHTML = '<p class="helper-text">Belum ada tutor aktif.</p>';
                 @endif
+
+                // Setup level change listener for filtering
+                const editLevelSelect = document.getElementById('edit_level');
+                if (editLevelSelect) {
+                    // Remove any existing listener to avoid duplicates
+                    editLevelSelect.removeEventListener('change', filterEditModalSubjects);
+                    // Add new listener
+                    editLevelSelect.addEventListener('change', filterEditModalSubjects);
+                    // Run initial filter based on loaded data
+                    filterEditModalSubjects();
+                }
 
                 // Open modal
                 document.getElementById('editPackageModal').classList.add('active');
@@ -1407,6 +1401,58 @@
                 });
             }
         }
+
+        // Filter subjects by level in Add Package Modal
+        function filterAddModalSubjects() {
+            const levelSelect = document.querySelector('#addPackageModal select[name="level"]');
+            if (!levelSelect) return;
+            
+            const selectedLevel = levelSelect.value;
+            const subjectGroups = document.querySelectorAll('#addPackageModal .subject-group');
+            
+            subjectGroups.forEach(group => {
+                const groupTitle = group.querySelector('h4').textContent.trim();
+                
+                if (selectedLevel === '' || groupTitle === selectedLevel) {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                    // Uncheck hidden subjects
+                    const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => cb.checked = false);
+                }
+            });
+        }
+
+        // Filter subjects by level in Edit Package Modal  
+        function filterEditModalSubjects() {
+            const levelSelect = document.getElementById('edit_level');
+            if (!levelSelect) return;
+            
+            const selectedLevel = levelSelect.value;
+            const subjectGroups = document.querySelectorAll('#edit-subject-selection .subject-group');
+            
+            subjectGroups.forEach(group => {
+                const groupTitle = group.querySelector('h4').textContent.trim();
+                
+                if (selectedLevel === '' || groupTitle === selectedLevel) {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                    // Uncheck hidden subjects
+                    const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => cb.checked = false);
+                }
+            });
+        }
+
+        // Initialize Add Modal filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const addLevelSelect = document.querySelector('#addPackageModal select[name="level"]');
+            if (addLevelSelect) {
+                addLevelSelect.addEventListener('change', filterAddModalSubjects);
+            }
+        });
     </script>
 @endpush
 @endsection
