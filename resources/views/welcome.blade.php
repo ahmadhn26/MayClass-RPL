@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         :root {
             color-scheme: light;
@@ -683,102 +685,17 @@
         }
 
         /* UPDATED PRICING LAYOUT */
-        .pricing-group {
-            margin-bottom: 60px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pricing-group:last-child {
-            margin-bottom: 0;
-        }
-
-        @media (max-width: 768px) {
-            .pricing-group {
-                margin-bottom: 40px;
-                position: relative;
-                overflow: visible;
-            }
-        }
-
-        /* Header Jenjang (SD/SMP/SMA) */
-        .pricing-group-header {
-            text-align: center;
-            margin-bottom: 32px;
-            position: relative;
-        }
-
-        .pricing-group-header h3 {
-            display: inline-block;
-            margin: 0;
-            font-size: 1.6rem;
-            color: var(--primary-dark);
-            background: rgba(63, 166, 126, 0.1);
-            padding: 8px 32px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-        .pricing-group-header p {
-            margin: 12px 0 0;
-            color: var(--ink-muted);
-            font-size: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .pricing-group-header h3 {
-                font-size: 1.3rem;
-                padding: 8px 20px;
-            }
-
-            .pricing-group-header p {
-                font-size: 0.9rem;
-                padding: 0 16px;
-            }
-        }
-
-        /* Pricing Grid - Modified with auto-fill to prevent stretching */
         .pricing-grid {
             display: grid;
-            /* Menggunakan auto-fill agar jika hanya ada 1 item, dia tidak akan melar memenuhi layar */
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 24px;
-            justify-content: center;
             width: 100%;
         }
 
         @media (max-width: 768px) {
             .pricing-grid {
-                display: flex;
-                flex-direction: row;
+                grid-template-columns: 1fr;
                 gap: 16px;
-                width: 100%;
-                padding: 0;
-                overflow-x: auto;
-                overflow-y: visible;
-                -webkit-overflow-scrolling: touch;
-                scroll-snap-type: x mandatory;
-                scroll-padding: 0 16px;
-            }
-
-            /* Hide scrollbar untuk tampilan lebih clean */
-            .pricing-grid::-webkit-scrollbar {
-                height: 8px;
-            }
-
-            .pricing-grid::-webkit-scrollbar-track {
-                background: #f1f5f9;
-                border-radius: 4px;
-            }
-
-            .pricing-grid::-webkit-scrollbar-thumb {
-                background: var(--primary-main);
-                border-radius: 4px;
-            }
-
-            .pricing-grid::-webkit-scrollbar-thumb:hover {
-                background: var(--primary-dark);
             }
         }
 
@@ -794,8 +711,7 @@
             box-shadow: 0 16px 30px rgba(15, 23, 42, 0.04);
             transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
             height: 100%;
-            /* Pastikan tinggi kartu sama rata */
-            max-width: 100%;
+            width: 100%;
             overflow: hidden;
         }
 
@@ -1467,6 +1383,220 @@
             }
         }
 
+        /* --- FILTER DROPDOWN STYLES --- */
+        .filter-container {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto 48px;
+            z-index: 50;
+        }
+
+        .filter-btn {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--ink-strong);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-main);
+            box-shadow: 0 8px 16px rgba(63, 166, 126, 0.12);
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            transform-origin: top;
+        }
+
+        .filter-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+        }
+
+        .filter-option:hover {
+            background: rgba(63, 166, 126, 0.08);
+            color: var(--primary-main);
+        }
+
+        .filter-option.active {
+            background: rgba(63, 166, 126, 0.12);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* --- SWIPER CUSTOM STYLES --- */
+        .swiper {
+            width: 100%;
+            padding-bottom: 60px !important;
+            padding-top: 20px !important;
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            height: auto;
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: var(--primary-main) !important;
+            background: rgba(255, 255, 255, 0.95);
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: var(--primary-main);
+            color: #fff !important;
+            box-shadow: 0 10px 25px rgba(63, 166, 126, 0.4);
+            transform: scale(1.05);
+            border-color: var(--primary-main);
+        }
+
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 22px !important;
+            font-weight: bold;
+        }
+
+        .swiper-pagination-bullet {
+            width: 10px !important;
+            height: 10px !important;
+            background: #cbd5e1 !important;
+            opacity: 1 !important;
+            transition: all 0.3s ease;
+            margin: 0 6px !important;
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 32px !important;
+            border-radius: 10px !important;
+            background: var(--primary-main) !important;
+        }
+
+        /* Testimonial Card Redesign */
+        .testimonial-card {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            text-align: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .testimonial-quote {
+            font-size: 1.25rem;
+            font-style: italic;
+            color: var(--ink-strong);
+            line-height: 1.8;
+            font-weight: 500;
+        }
+
+        .testimonial-author {
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .testimonial-avatar {
+            width: 88px;
+            height: 88px;
+            border-width: 3px;
+            border-color: var(--primary-main);
+        }
+
+        .testimonial-meta {
+            align-items: center;
+        }
+
+        /* Mentor Card Redesign */
+        .mentor-profile {
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease;
+        }
+
+        .mentor-profile:hover {
+            transform: translateY(-5px);
+        }
+
+        .mentor-profile::after {
+            display: none;
+        }
+
+        .mentor-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            margin-bottom: 12px;
+            border: 4px solid rgba(63, 166, 126, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .testimonial-card {
+                padding: 24px;
+            }
+
+            .testimonial-quote {
+                font-size: 1rem;
+            }
+
+            .swiper-button-next,
+            .swiper-button-prev {
+                display: none !important;
+            }
+
+            .mentor-profile {
+                max-width: 100%;
+            }
+        }
+
         /* ============ HORIZONTAL SCROLL CONTAINERS (Mobile) ============ */
         @media (max-width: 1024px) {
 
@@ -1971,7 +2101,7 @@
         </section>
     @endif
 
-    <section class="pricing-section" id="paket">
+    <section class="pricing-section" id="paket" x-data="{ selectedLevel: 'Semua Jenjang', openDropdown: false }">
         <div class="container">
             <div class="section-header" data-reveal>
                 <h2 class="section-title">Pilih Paket Favoritmu</h2>
@@ -1979,6 +2109,33 @@
                     Mulai dari SD, SMP, hingga SMA—MayClass siap menemanimu dengan sesi
                     interaktif dan laporan perkembangan rutin.
                 </p>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="filter-container" data-reveal>
+                <button class="filter-btn" @click="openDropdown = !openDropdown" @click.outside="openDropdown = false">
+                    <span x-text="selectedLevel"></span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        :style="openDropdown ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s;">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </button>
+
+                <div class="filter-dropdown" x-show="openDropdown" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                    style="display: none;">
+                    <div class="filter-option" :class="{ 'active': selectedLevel === 'Semua Jenjang' }"
+                        @click="selectedLevel = 'Semua Jenjang'; openDropdown = false">Semua Jenjang</div>
+                    <div class="filter-option" :class="{ 'active': selectedLevel === 'SD' }"
+                        @click="selectedLevel = 'SD'; openDropdown = false">Jenjang SD</div>
+                    <div class="filter-option" :class="{ 'active': selectedLevel === 'SMP' }"
+                        @click="selectedLevel = 'SMP'; openDropdown = false">Jenjang SMP</div>
+                    <div class="filter-option" :class="{ 'active': selectedLevel === 'SMA' }"
+                        @click="selectedLevel = 'SMA'; openDropdown = false">Jenjang SMA & Alumni</div>
+                </div>
             </div>
 
             @php
@@ -2028,58 +2185,55 @@
 
             @php($hasAnyPackage = false)
 
-            @foreach ($groupedLevels as $key => $levelGroup)
-            @if ($levelGroup['items']->isNotEmpty())
-            @php($hasAnyPackage = true)
-            <div class="pricing-group">
-                <div class="pricing-group-header" data-reveal>
-                    <h3>{{ $levelGroup['label'] }}</h3>
-                    <p>{{ $levelGroup['desc'] }}</p>
-                </div>
+            <div class="pricing-grid">
+                @foreach ($groupedLevels as $key => $levelGroup)
+                @if ($levelGroup['items']->isNotEmpty())
+                @php($hasAnyPackage = true)
+                @foreach ($levelGroup['items'] as $package)
+                @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
+                <article class="pricing-card"
+                    x-show="selectedLevel === 'Semua Jenjang' || selectedLevel === '{{ $key }}'"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100" data-reveal>
+                    <span class="badge">
+                        {{ $package['tag'] ?? $key }}
+                    </span>
+                    <strong>{{ $package['detail_title'] }}</strong>
+                    <div class="pricing-price">{{ $package['card_price'] }}</div>
 
-                <div class="pricing-grid">
-                    @foreach ($levelGroup['items'] as $package)
-                    @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
-                    <article class="pricing-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
-                        <span class="badge">
-                            {{ $package['tag'] ?? $key }}
-                        </span>
-                        <strong>{{ $package['detail_title'] }}</strong>
-                        <div class="pricing-price">{{ $package['card_price'] }}</div>
-
-                        @if (!empty($package['grade_range']))
-                            <div class="pricing-meta">
-                                {{-- Jika isinya angka saja (misal "8"), tambahkan kata "Kelas" --}}
-                                @if(is_numeric($package['grade_range']))
-                                    Kelas {{ $package['grade_range'] }}
-                                @else
-                                    {{ $package['grade_range'] }}
-                                @endif
-                            </div>
-                        @endif
-
-                        @if ($package['summary'] ?? false)
-                            <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
-                                {{ $package['summary'] }}
-                            </p>
-                        @endif
-                        @if ($features->isNotEmpty())
-                            <ul class="pricing-features">
-                                @foreach ($features as $feature)
-                                    <li>{{ $feature }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                        <div class="pricing-actions">
-                            <a class="btn btn-primary" href="{{ route('packages.show', $package['slug']) }}">Detail
-                                Paket</a>
+                    @if (!empty($package['grade_range']))
+                        <div class="pricing-meta">
+                            {{-- Jika isinya angka saja (misal "8"), tambahkan kata "Kelas" --}}
+                            @if(is_numeric($package['grade_range']))
+                                Kelas {{ $package['grade_range'] }}
+                            @else
+                                {{ $package['grade_range'] }}
+                            @endif
                         </div>
-                    </article>
-                    @endforeach
-                </div>
+                    @endif
+
+                    @if ($package['summary'] ?? false)
+                        <p style="margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem;">
+                            {{ $package['summary'] }}
+                        </p>
+                    @endif
+                    @if ($features->isNotEmpty())
+                        <ul class="pricing-features">
+                            @foreach ($features as $feature)
+                                <li>{{ $feature }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    <div class="pricing-actions">
+                        <a class="btn btn-primary" href="{{ route('packages.show', $package['slug']) }}">Detail
+                            Paket</a>
+                    </div>
+                </article>
+                @endforeach
+                @endif
+                @endforeach
             </div>
-            @endif
-            @endforeach
 
             @if (!$hasAnyPackage)
                 <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 16px; width: 100%;">
@@ -2131,34 +2285,44 @@
                     di ujian bergengsi.
                 </p>
             </div>
-            <div class="testimonials-grid">
-                @forelse($landingContents['testimonial'] ?? [] as $testimonial)
-                    <article class="testimonial-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
-                        <div class="testimonial-rating" aria-label="Rating bintang lima">
-                            <span aria-hidden="true">★</span><span aria-hidden="true">★</span><span
-                                aria-hidden="true">★</span><span aria-hidden="true">★</span><span
-                                aria-hidden="true">★</span>
+            <!-- Swiper Testimonials -->
+            <div class="swiper testimonials-slider" data-reveal>
+                <div class="swiper-wrapper">
+                    @forelse($landingContents['testimonial'] ?? [] as $testimonial)
+                        <div class="swiper-slide">
+                            <article class="testimonial-card">
+                                <div class="testimonial-rating" aria-label="Rating bintang lima">
+                                    <span aria-hidden="true">★</span><span aria-hidden="true">★</span><span
+                                        aria-hidden="true">★</span><span aria-hidden="true">★</span><span
+                                        aria-hidden="true">★</span>
+                                </div>
+                                <p class="testimonial-quote">
+                                    “{{ $testimonial->content['quote'] }}”
+                                </p>
+                                <div class="testimonial-author">
+                                    <div class="testimonial-avatar">
+                                        <img src="{{ asset($testimonial->image ?? 'images/avatar-placeholder.svg') }}"
+                                            alt="{{ $testimonial->content['name'] }}"
+                                            onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($testimonial->content['name']) }}&background=random'" />
+                                    </div>
+                                    <div class="testimonial-meta">
+                                        <strong>{{ $testimonial->content['name'] }}</strong>
+                                        <span>{{ $testimonial->content['role'] }}</span>
+                                    </div>
+                                </div>
+                            </article>
                         </div>
-                        <p class="testimonial-quote">
-                            “{{ $testimonial->content['quote'] }}”
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="testimonial-avatar">
-                                <img src="{{ asset($testimonial->image ?? 'images/avatar-placeholder.svg') }}"
-                                    alt="{{ $testimonial->content['name'] }}"
-                                    onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($testimonial->content['name']) }}&background=random'" />
-                            </div>
-                            <div class="testimonial-meta">
-                                <strong>{{ $testimonial->content['name'] }}</strong>
-                                <span>{{ $testimonial->content['role'] }}</span>
+                    @empty
+                        <div class="swiper-slide">
+                            <div style="text-align: center; padding: 2rem;">
+                                <p style="color: var(--ink-muted);">Belum ada testimoni.</p>
                             </div>
                         </div>
-                    </article>
-                @empty
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
-                        <p style="color: var(--ink-muted);">Belum ada testimoni.</p>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
             </div>
         </div>
     </section>
@@ -2173,40 +2337,50 @@
                     menyenangkan.
                 </p>
             </div>
-            <div class="mentor-grid">
-                @forelse($landingContents['mentor'] ?? [] as $mentor)
-                    <article class="mentor-profile" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
-                        <div class="mentor-avatar">
-                            <img src="{{ asset($mentor->image ?? 'images/avatar-placeholder.svg') }}"
-                                alt="{{ $mentor->content['name'] }}"
-                                onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor->content['name']) }}&background=random'" />
+            <!-- Swiper Mentors -->
+            <div class="swiper mentor-slider" data-reveal>
+                <div class="swiper-wrapper">
+                    @forelse($landingContents['mentor'] ?? [] as $mentor)
+                        <div class="swiper-slide">
+                            <article class="mentor-profile">
+                                <div class="mentor-avatar">
+                                    <img src="{{ asset($mentor->image ?? 'images/avatar-placeholder.svg') }}"
+                                        alt="{{ $mentor->content['name'] }}"
+                                        onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor->content['name']) }}&background=random'" />
+                                </div>
+                                <div class="mentor-info">
+                                    <strong>{{ $mentor->content['name'] }}</strong>
+                                    <span class="mentor-role">{{ $mentor->content['role'] }}</span>
+                                </div>
+                                <p class="mentor-saying">“{{ $mentor->content['quote'] }}”</p>
+                                <div class="mentor-meta">
+                                    @if(isset($mentor->content['meta']) && is_array($mentor->content['meta']))
+                                        @foreach($mentor->content['meta'] as $meta)
+                                            <span>{{ $meta }}</span>
+                                        @endforeach
+                                    @else
+                                        {{-- Legacy Fallback --}}
+                                        @if(!empty($mentor->content['meta_1']))
+                                            <span>{{ $mentor->content['meta_1'] }}</span>
+                                        @endif
+                                        @if(!empty($mentor->content['meta_2']))
+                                            <span>{{ $mentor->content['meta_2'] }}</span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </article>
                         </div>
-                        <div class="mentor-info">
-                            <strong>{{ $mentor->content['name'] }}</strong>
-                            <span class="mentor-role">{{ $mentor->content['role'] }}</span>
+                    @empty
+                        <div class="swiper-slide">
+                            <div style="text-align: center; padding: 2rem;">
+                                <p style="color: var(--ink-muted);">Belum ada data mentor.</p>
+                            </div>
                         </div>
-                        <p class="mentor-saying">“{{ $mentor->content['quote'] }}”</p>
-                        <div class="mentor-meta">
-                            @if(isset($mentor->content['meta']) && is_array($mentor->content['meta']))
-                                @foreach($mentor->content['meta'] as $meta)
-                                    <span>{{ $meta }}</span>
-                                @endforeach
-                            @else
-                                {{-- Legacy Fallback --}}
-                                @if(!empty($mentor->content['meta_1']))
-                                    <span>{{ $mentor->content['meta_1'] }}</span>
-                                @endif
-                                @if(!empty($mentor->content['meta_2']))
-                                    <span>{{ $mentor->content['meta_2'] }}</span>
-                                @endif
-                            @endif
-                        </div>
-                    </article>
-                @empty
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
-                        <p style="color: var(--ink-muted);">Belum ada data mentor.</p>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
             </div>
         </div>
     </section>
@@ -2329,8 +2503,53 @@
     </footer>
     {{-- REDESIGNED FOOTER END --}}
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Testimonials Swiper
+            const testimonialSwiper = new Swiper('.testimonials-slider', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                loop: true,
+                speed: 800,
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                },
+            });
+
+            // Initialize Mentor Swiper
+            const mentorSwiper = new Swiper('.mentor-slider', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                loop: true,
+                speed: 800,
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                effect: 'slide',
+            });
             const root = document.documentElement;
 
             if (!root || root.dataset.page !== 'landing') {
