@@ -297,6 +297,20 @@
             display: none;
         }
 
+        .logo-area {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            height: 32px;
+            width: auto;
+        }
+
         /* Overlay */
         .sidebar-overlay {
             position: fixed;
@@ -443,14 +457,14 @@
     <div class="dashboard-shell">
         {{-- Mobile Header --}}
         <div class="mobile-header">
-            <div class="logo-area">
-                <span style="font-weight: 700; font-size: 1.25rem; color: var(--text-main);">Tutor Panel</span>
-            </div>
             <button class="hamburger-btn" id="tutorHamburger" aria-label="Toggle Menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
+            <div class="logo-area">
+                <span>Tutor Panel</span>
+            </div>
         </div>
 
         {{-- Sidebar Overlay --}}

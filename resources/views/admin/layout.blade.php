@@ -80,6 +80,20 @@
             width: auto;
         }
 
+        .logo-area {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            height: 32px;
+            width: auto;
+        }
+
         .hamburger-btn {
             background: none;
             border: none;
@@ -437,15 +451,14 @@
 <body>
     <!-- Mobile Header -->
     <header class="mobile-header">
-        <div class="mobile-brand">
-            <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo">
-            <span>Admin Panel</span>
-        </div>
-        <button class="hamburger-btn" id="adminHamburger">
+        <button class="hamburger-btn" id="adminHamburger" aria-label="Toggle Menu">
             <span></span>
             <span></span>
             <span></span>
         </button>
+        <div class="logo-area">
+            <span>Admin Panel</span>
+        </div>
     </header>
 
     <!-- Overlay -->
