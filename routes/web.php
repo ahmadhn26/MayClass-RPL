@@ -95,6 +95,28 @@ Route::get('/debug-google', function () {
     ]);
 });
 
+// Temporary test route for email preview
+Route::get('/test-mail', function () {
+    $user = new \App\Models\User([
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+    ]);
+
+    $package = new \App\Models\Package([
+        'detail_title' => 'Paket Belajar Premium',
+    ]);
+
+    $order = new \App\Models\Order([
+        'total' => 150000,
+        'paid_at' => now(),
+    ]);
+
+    $order->setRelation('user', $user);
+    $order->setRelation('package', $package);
+
+    return new \App\Mail\PaymentApproved($order);
+});
+
 Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/packages/{slug}', [PackageController::class, 'show'])->name('packages.show');
 

@@ -84,6 +84,13 @@ class FinanceController extends BaseAdminController
 
         $this->promoteUserToStudentIfNeeded($order);
 
+        try {
+            \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\PaymentApproved($order));
+        } catch (\Exception $e) {
+            // Log error or just continue, we don't want to fail the approval if email fails
+            \Illuminate\Support\Facades\Log::error('Failed to send payment approval email: ' . $e->getMessage());
+        }
+
         return redirect()->back()->with('status', __('Pembayaran berhasil diverifikasi.'));
     }
 
