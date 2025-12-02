@@ -377,11 +377,6 @@
             <div class="empty-state">
                 <h3>Belum ada materi tercatat</h3>
                 <p>Materi pembelajaran akan muncul di sini setelah diterbitkan oleh tutor atau admin.</p>
-                <div style="margin-top: 20px;">
-                    <a href="{{ $materialsLink }}" target="_blank" rel="noopener" class="btn-sm btn-primary-sm">
-                        Cek Google Drive
-                    </a>
-                </div>
         @endif
 
         </div>

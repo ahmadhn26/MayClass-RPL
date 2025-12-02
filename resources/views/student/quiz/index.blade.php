@@ -377,11 +377,6 @@
             <div class="empty-state">
                 <h3>Belum ada kuis tercatat</h3>
                 <p>Tambahkan kuis melalui dashboard tutor untuk memulai latihan.</p>
-                <div style="margin-top: 20px;">
-                    <a href="{{ $quizLink }}" target="_blank" rel="noopener" class="btn-sm btn-primary-sm">
-                        Buka Google Drive
-                    </a>
-                </div>
             </div>
         @endif
 
