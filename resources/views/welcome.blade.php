@@ -2522,7 +2522,7 @@
                         <div
                             style="width: 100%; max-width: 600px; aspect-ratio: 1 / 1; position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.666427009756!2d106.84132437499019!3d-6.175392393811973!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d2e764b11d%3A0x437538555c4d90!2sJl.%20Kemayoran%20Gempol%20Gg.%20Lindra%20II%20No.27%2C%20RT.4%2FRW.7%2C%20Kb.%20Kosong%2C%20Kec.%20Kemayoran%2C%20Kota%20Jakarta%20Pusat%2C%20Daerah%20Khusus%20Ibukota%20Jakarta%2010630!5e0!3m2!1sid!2sid!4v1701490000000!5m2!1sid!2sid"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d494.5830393878767!2d106.85506449999999!3d-6.1562696!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f56ccd9b7d19%3A0x7da51f8f01b8c1f4!2sBimbel%20prima%20pade!5e0!3m2!1sid!2sid!4v1733126567000!5m2!1sid!2sid"
                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
                                 allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                             </iframe>
