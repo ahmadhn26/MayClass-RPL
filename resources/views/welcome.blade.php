@@ -2442,7 +2442,7 @@
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
                         <div class="contact-row">
-                            <a href="https://www.google.com/maps/search/?api=1&query=Jalan+Kemayoran+Gempol+Galindra+II+No.+27,+RT.4%2FRW.7,+Kb.+Kosong,+Kec.+Kemayoran,+Jakarta+Pusat+–+10630"
+                            <a href="https://maps.app.goo.gl/utk5opqnCtccpdCRA"
                                 target="_blank" rel="noopener noreferrer" class="contact-link">
                                 <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -2469,7 +2469,7 @@
                         </div>
 
                         <div class="contact-row">
-                            <a href="mailto:hello@mayclass.id" class="contact-link">
+                            <a href="mailto:mayclass.official@gmail.com" class="contact-link">
                                 <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path
@@ -2477,7 +2477,7 @@
                                     </path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
-                                <span>hello@mayclass.id</span>
+                                <span>mayclass.official@gmail.com</span>
                             </a>
                         </div>
 

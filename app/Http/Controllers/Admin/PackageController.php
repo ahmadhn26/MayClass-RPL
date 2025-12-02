@@ -74,7 +74,6 @@ class PackageController extends BaseAdminController
                 'id' => $package->id,
                 'level' => $package->level,
                 'grade_range' => $package->grade_range,
-                'tag' => $package->tag,
                 'price' => $package->price,
                 'max_students' => $package->max_students,
                 'card_price_label' => $package->card_price_label,
@@ -162,7 +161,6 @@ class PackageController extends BaseAdminController
             // Slug is auto-generated
             'level' => ['required', 'string', 'max:255', Rule::in($stageKeys)],
             'grade_range' => ['required', 'string', 'max:255'],
-            'tag' => ['nullable', 'string', 'max:50'],
             'detail_title' => ['required', 'string', 'max:255'],
             'image_url' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],

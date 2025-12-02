@@ -16,7 +16,6 @@ class Package extends Model
         'slug',
         'level',
         'grade_range',
-        'tag',
         'card_price_label',
         'detail_title',
         'detail_price_label',

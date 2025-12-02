@@ -229,13 +229,6 @@
                 @enderror
             </div>
             <div>
-                <label for="tag">Tag</label>
-                <input type="text" id="tag" name="tag" value="{{ old('tag') }}" />
-                @error('tag')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
-            </div>
-            <div>
                 <label for="price">Harga (numerik)</label>
                 <input type="number" id="price" name="price" value="{{ old('price') }}" min="0" step="1000" required />
                 @error('price')
@@ -409,5 +402,42 @@
                 });
             }
         }
+
+        // Filter subjects based on selected education level
+        function filterSubjectsByLevel() {
+            const levelSelect = document.getElementById('level');
+            const selectedLevel = levelSelect.value;
+            
+            // Get all subject groups
+            const subjectGroups = document.querySelectorAll('.subject-group');
+            
+            subjectGroups.forEach(group => {
+                const groupTitle = group.querySelector('h4').textContent.trim();
+                
+                if (selectedLevel === '') {
+                    // If no level selected, show all groups
+                    group.style.display = 'block';
+                } else if (groupTitle === selectedLevel) {
+                    // Show only matching level
+                    group.style.display = 'block';
+                } else {
+                    // Hide non-matching levels
+                    group.style.display = 'none';
+                    // Uncheck all checkboxes in hidden groups
+                    const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => cb.checked = false);
+                }
+            });
+        }
+
+        // Initialize filtering on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const levelSelect = document.getElementById('level');
+            if (levelSelect) {
+                levelSelect.addEventListener('change', filterSubjectsByLevel);
+                // Run initial filter
+                filterSubjectsByLevel();
+            }
+        });
     </script>
 @endsection
