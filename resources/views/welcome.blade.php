@@ -559,7 +559,7 @@
                 -ms-overflow-style: none;
                 scrollbar-width: none;
             }
-            
+
             .articles-grid::-webkit-scrollbar {
                 display: none;
             }
@@ -622,7 +622,7 @@
             font-size: 0.75rem;
             font-weight: 700;
             color: var(--primary-dark);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             z-index: 2;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -686,7 +686,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             padding-top: 20px;
         }
 
@@ -2104,7 +2104,8 @@
                                     target="{{ !empty($article->content['link']) ? '_blank' : '_self' }}">
                                     Baca Selengkapnya
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                     </svg>
                                 </a>
                             </div>
@@ -2472,6 +2473,29 @@
     </section>
 
     {{-- REDESIGNED FOOTER START --}}
+    <style>
+        /* ... existing styles ... */
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 0.8fr 0.8fr 1.4fr;
+            gap: 40px;
+            padding-bottom: 64px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        @media (max-width: 1024px) {
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .footer-top {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
     <footer>
         <div class="container">
             <div class="footer-top">
@@ -2481,6 +2505,29 @@
                         MayClass adalah platform bimbingan belajar premium yang menggabungkan materi berkualitas, mentor
                         berpengalaman, dan teknologi terkini untuk mengantarkan siswa menuju prestasi akademik terbaik.
                     </p>
+
+                    <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px;">
+                        <a href="https://maps.app.goo.gl/utk5opqnCtccpdCRA" target="_blank" rel="noopener noreferrer"
+                            class="contact-link" style="align-items: flex-start;">
+                            <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
+                                style="margin-top: 2px; flex-shrink: 0;">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span style="line-height: 1.5;">Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb.
+                                Kosong, Kec. Kemayoran, Jakarta Pusat – 10630</span>
+                        </a>
+
+                        <div
+                            style="width: 100%; max-width: 600px; aspect-ratio: 1 / 1; position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.666427009756!2d106.84132437499019!3d-6.175392393811973!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d2e764b11d%3A0x437538555c4d90!2sJl.%20Kemayoran%20Gempol%20Gg.%20Lindra%20II%20No.27%2C%20RT.4%2FRW.7%2C%20Kb.%20Kosong%2C%20Kec.%20Kemayoran%2C%20Kota%20Jakarta%20Pusat%2C%20Daerah%20Khusus%20Ibukota%20Jakarta%2010630!5e0!3m2!1sid!2sid!4v1701490000000!5m2!1sid!2sid"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -2506,46 +2553,40 @@
                 <div>
                     <span class="footer-heading">Hubungi Kami</span>
                     <div class="footer-contact-info">
+                        <!-- WHATSAPP -->
                         <div class="contact-row">
-                            <a href="https://maps.app.goo.gl/utk5opqnCtccpdCRA"
-                                target="_blank" rel="noopener noreferrer" class="contact-link">
+                            <a href="https://wa.me/6283194085776" target="_blank" class="contact-link">
                                 <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
-                                </svg>
-                                <span>Jalan Kemayoran Gempol Galindra II No. 27, RT.4/RW.7, Kb. Kosong, Kec. Kemayoran,
-                                    Jakarta Pusat – 10630</span>
-                            </a>
-                        </div>
-
-                        <div class="contact-row">
-                            <a href="https://wa.me/6283194085776" target="_blank" rel="noopener noreferrer"
-                                class="contact-link">
-                                <svg class="contact-icon" width="20" height="20" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="11" fill="#22c55e"></circle>
-                                    <path
-                                        d="M16.5 14.5c-.2.5-1 1-1.5 1.1-.4.1-.9.1-1.5 0-1.3-.3-2.7-1.1-3.7-2.1s-1.8-2.4-2.1-3.7c-.1-.6-.1-1.1 0-1.5.1-.5.6-1.3 1.1-1.5.3-.1.7 0 .9.3l.9 1.4c.2.3.2.7 0 1-.1.1-.2.3-.3.4-.1.2-.2.3-.1.5.2.5.7 1.1 1.2 1.6.5.5 1.1 1 1.6 1.2.2.1.4 0 .5-.1.1-.1.3-.2.4-.3.3-.2.7-.2 1 0l1.4.9c.3.2.4.6.3.9z"
-                                        fill="white" />
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 
+                                             19.79 19.79 0 0 1-8.63-3.07 
+                                             19.5 19.5 0 0 1-6-6 
+                                             19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72 
+                                             12.84 12.84 0 0 0 .7 2.81 
+                                             2 2 0 0 1-.45 2.11l-1.27 1.27a16 16 0 0 0 6 6l1.27-1.27
+                                             a2 2 0 0 1 2.11-.45 
+                                             12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                    </path>
                                 </svg>
                                 <span>0831-9408-5776 (WhatsApp)</span>
                             </a>
                         </div>
 
+                        <!-- EMAIL -->
                         <div class="contact-row">
                             <a href="mailto:mayclass.official@gmail.com" class="contact-link">
                                 <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path
-                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                    </path>
-                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 
+                                             1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6
+                                             c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
                                 </svg>
                                 <span>mayclass.official@gmail.com</span>
                             </a>
                         </div>
 
+                        <!-- JAM RESPON -->
                         <div class="contact-row">
                             <div class="contact-link">
                                 <svg class="contact-icon" width="20" height="20" fill="none" stroke="currentColor"
@@ -2556,7 +2597,57 @@
                                 <span>Jam respon: 09.00–21.00 WIB (Setiap hari)</span>
                             </div>
                         </div>
+                    </div>
 
+                    <div style="margin-top: 32px;">
+                        <p style="color: var(--footer-text); font-size: 0.9rem; margin-bottom: 12px;">Pembayaran dapat
+                            dilakukan melalui:</p>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: center;">
+                            <!-- Banks -->
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
+                                    alt="BCA" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg"
+                                    alt="Mandiri" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/6/68/BANK_BRI_logo.svg"
+                                    alt="BRI" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://www.theswiftcodes.com/images/bank-logo/generic/bank-negara-indonesia.png"
+                                    alt="SeaBank" style="max-height: 100%; max-width: 100%;">
+                            </div>
+
+                            <!-- E-Wallets -->
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg"
+                                    alt="GoPay" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg"
+                                    alt="OVO" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Shopee.svg"
+                                    alt="ShopeePay" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                            <div class="payment-icon"
+                                style="background: white; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; height: 40px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg"
+                                    alt="Dana" style="max-height: 100%; max-width: 100%;">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
