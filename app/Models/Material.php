@@ -50,9 +50,24 @@ class Material extends Model
 
     public function getResourceUrlAttribute(): array
     {
-        return $this->attributes['resource_path']
-            ? json_decode($this->attributes['resource_path'], true)
-            : [];
+        $resourcePath = $this->attributes['resource_path'] ?? null;
+
+        if (!$resourcePath) {
+            return [];
+        }
+
+        // If it's already an array (from cast), return it
+        if (is_array($resourcePath)) {
+            return $resourcePath;
+        }
+
+        // If it's a JSON string, decode it
+        if (is_string($resourcePath)) {
+            $decoded = json_decode($resourcePath, true);
+            return is_array($decoded) ? $decoded : [$resourcePath];
+        }
+
+        return [];
     }
 
     public function packages(): BelongsToMany
