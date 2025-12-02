@@ -542,93 +542,127 @@
             width: 100%;
         }
 
+        @media (max-width: 1024px) {
+            .articles-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .articles-grid {
-                grid-template-columns: 1fr;
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
                 gap: 20px;
+                padding-bottom: 24px;
+                /* Hide scrollbar */
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            
+            .articles-grid::-webkit-scrollbar {
+                display: none;
             }
         }
 
         .article-card {
             background: var(--surface);
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-radius: 24px;
+            border: 1px solid rgba(20, 59, 46, 0.06);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            height: 100%;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .article-card {
+                min-width: 280px;
+                max-width: 280px;
+                scroll-snap-align: center;
+            }
         }
 
         .article-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(31, 107, 79, 0.15);
             border-color: rgba(63, 166, 126, 0.3);
         }
 
         .article-image-wrapper {
             position: relative;
             width: 100%;
-            height: 240px;
+            height: 220px;
             overflow: hidden;
-        }
-
-        @media (max-width: 768px) {
-            .article-image-wrapper {
-                height: 200px;
-            }
         }
 
         .article-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .article-card:hover img {
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
 
-        /* Gradient overlay untuk depth */
-        .article-image-wrapper::after {
-            content: '';
+        .article-badge {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .article-card:hover .article-image-wrapper::after {
-            opacity: 1;
+            top: 16px;
+            left: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .article-content {
-            padding: 24px;
+            padding: 28px;
             display: flex;
             flex-direction: column;
             gap: 12px;
             flex: 1;
+            background: #ffffff;
         }
 
-        @media (max-width: 768px) {
-            .article-content {
-                padding: 20px;
-            }
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+            margin-bottom: 4px;
+        }
+
+        .article-meta svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary-main);
         }
 
         .article-content h3 {
             margin: 0;
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--ink-strong);
             line-height: 1.4;
             transition: color 0.2s ease;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .article-card:hover .article-content h3 {
@@ -644,21 +678,41 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            margin-bottom: 16px;
         }
 
-        .link-muted {
-            color: var(--primary-main);
+        .article-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 20px;
+        }
+
+        .btn-read-more {
+            color: var(--primary-dark);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            margin-top: auto;
-            transition: gap 0.2s ease;
+            gap: 8px;
+            transition: gap 0.2s ease, color 0.2s ease;
         }
 
-        .article-card:hover .link-muted {
-            gap: 10px;
+        .article-card:hover .btn-read-more {
+            gap: 12px;
+            color: var(--primary-main);
+        }
+
+        .btn-read-more svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.2s ease;
+        }
+
+        .article-card:hover .btn-read-more svg {
+            transform: translateX(2px);
         }
 
         /* Full-width pricing section */
@@ -2033,16 +2087,27 @@
             <div class="articles-grid">
                 @forelse($landingContents['article'] ?? [] as $article)
                     <article class="article-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
-                        <img src="{{ Str::startsWith($article->image ?? '', 'http') ? $article->image : asset($article->image ?? 'images/placeholder-article.jpg') }}"
-                            alt="{{ $article->content['title'] }}"
-                            onerror="this.src='https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80'" />
+                        <div class="article-image-wrapper">
+                            <span class="article-badge">Tips & Trik</span>
+                            <img src="{{ Str::startsWith($article->image ?? '', 'http') ? $article->image : asset($article->image ?? 'images/placeholder-article.jpg') }}"
+                                alt="{{ $article->content['title'] }}"
+                                onerror="this.src='https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80'" />
+                        </div>
                         <div class="article-content">
+
                             <h3>{{ $article->content['title'] }}</h3>
                             <p>
                                 {{ Str::limit($article->content['description'], 100) }}
                             </p>
-                            <a class="link-muted" href="{{ $article->content['link'] ?? route('packages.index') }}"
-                                target="{{ !empty($article->content['link']) ? '_blank' : '_self' }}">Selengkapnya</a>
+                            <div class="article-footer">
+                                <a class="btn-read-more" href="{{ $article->content['link'] ?? route('packages.index') }}"
+                                    target="{{ !empty($article->content['link']) ? '_blank' : '_self' }}">
+                                    Baca Selengkapnya
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </article>
                 @empty

@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             MentorSeeder::class,
             FaqSeeder::class,
             PackageSeeder::class,
+            ArticleSeeder::class,
         ]);
         // PackageSeeder::class,
         // LandingContentSeeder::class,
