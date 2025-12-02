@@ -4,13 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Material;
 use App\Models\MaterialChapter;
-use App\Models\MaterialItem;
 use App\Models\MaterialObjective;
 use App\Models\Package;
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 class MaterialSeeder extends Seeder
 {
@@ -18,25 +16,16 @@ class MaterialSeeder extends Seeder
     {
         $materialsAvailable = Schema::hasTable('materials');
 
-        if (!$materialsAvailable) {
-           $this->command->warn('⚠️  Materials table does not exist.');
-           return;
+        if (! $materialsAvailable) {
+            return;
         }
 
-        if (!Schema::hasTable('packages')) {
-            $this->command->warn('⚠️  Packages table does not exist.');
+        if (! Schema::hasTable('packages')) {
             return;
         }
 
         $chaptersAvailable = Schema::hasTable('material_chapters');
         $objectivesAvailable = Schema::hasTable('material_objectives');
-        $itemsAvailable = Schema::hasTable('material_items');
-
-        $this->command->info('🗑️  Clearing existing materials...');
-
-        if ($itemsAvailable) {
-            MaterialItem::query()->delete();
-        }
 
         if ($chaptersAvailable) {
             MaterialChapter::query()->delete();
@@ -51,15 +40,10 @@ class MaterialSeeder extends Seeder
         $packageLookup = Package::query()->pluck('id', 'slug');
         $subjectLookup = Subject::query()->pluck('id', 'name');
 
-        $this->command->info('📚 Creating material folders with items...');
-
-        // Google Drive link provided by user
-        $googleDriveLink = 'https://drive.google.com/drive/folders/1-1EAROM-rNnxqriYAOIXiVDPkAEudV_A?usp=share_link';
-
         $materials = [
             [
                 'slug' => 'matematika-sd-pecahan-dasar',
-                'package_slug' => 'sd-basic-level-classA',
+                'package_slug' => 'mayclass-sd-fundamental',
                 'subject' => 'Matematika',
                 'title' => 'Pecahan Dasar untuk SD',
                 'level' => 'SD',
@@ -85,22 +69,10 @@ class MaterialSeeder extends Seeder
                         'description' => 'Soal cerita yang mengaitkan pecahan dengan konteks makanan dan permainan.',
                     ],
                 ],
-                'items' => [
-                    [
-                        'name' => 'Modul Lengkap Matematika SD',
-                        'description' => 'Kumpulan materi matematika SD dari berbagai topik',
-                        'link' => $googleDriveLink,
-                    ],
-                    [
-                        'name' => 'Latihan Soal Pecahan',
-                        'description' => 'Bank soal latihan pecahan dengan pembahasan',
-                        'link' => $googleDriveLink,
-                    ],
-                ],
             ],
             [
                 'slug' => 'ipa-sd-proyek-sains',
-                'package_slug' => 'sd-basic-level-classB',
+                'package_slug' => 'mayclass-sd-unggul',
                 'subject' => 'IPA',
                 'title' => 'Proyek Sains Terapan',
                 'level' => 'SD',
@@ -126,22 +98,10 @@ class MaterialSeeder extends Seeder
                         'description' => 'Simulasi mencair, membeku, dan menguap dengan panduan eksperimen.',
                     ],
                 ],
-                'items' => [
-                    [
-                        'name' => 'E-Book IPA SD',
-                        'description' => 'Buku elektronik IPA lengkap untuk SD',
-                        'link' => $googleDriveLink,
-                    ],
-                    [
-                        'name' => 'Video Pembelajaran IPA',
-                        'description' => 'Koleksi video pembelajaran IPA interaktif',
-                        'link' => $googleDriveLink,
-                    ],
-                ],
             ],
             [
                 'slug' => 'ipa-smp-sistem-tata-surya',
-                'package_slug' => 'smp-intermediate-classA',
+                'package_slug' => 'mayclass-smp-eksplor',
                 'subject' => 'IPA',
                 'title' => 'Sistem Tata Surya',
                 'level' => 'SMP',
@@ -167,17 +127,10 @@ class MaterialSeeder extends Seeder
                         'description' => 'Gerhana, fase bulan, dan fenomena lainnya yang dapat diamati dari bumi.',
                     ],
                 ],
-                'items' => [
-                    [
-                        'name' => 'Materi Tata Surya Lengkap',
-                        'description' => 'Dokumen lengkap tentang sistem tata surya',
-                        'link' => $googleDriveLink,
-                    ],
-                ],
             ],
             [
                 'slug' => 'bahasa-inggris-sma-analytical-exposition',
-                'package_slug' => 'sma-advanced-classA',
+                'package_slug' => 'mayclass-sma-premium',
                 'subject' => 'Bahasa Inggris',
                 'title' => 'Analytical Exposition Text',
                 'level' => 'SMA',
@@ -203,35 +156,20 @@ class MaterialSeeder extends Seeder
                         'description' => 'Langkah-langkah menyusun kerangka dan menulis teks analytical exposition.',
                     ],
                 ],
-                'items' => [
-                    [
-                        'name' => 'English Learning Pack',
-                        'description' => 'Paket lengkap belajar bahasa Inggris',
-                        'link' => $googleDriveLink,
-                    ],
-                    [
-                        'name' => 'Sample Essays',
-                        'description' => 'Contoh-contoh essay analytical exposition',
-                        'link' => $googleDriveLink,
-                    ],
-                ],
             ],
         ];
 
-        $createdCount = 0;
-        $totalItems = 0;
-
         foreach ($materials as $materialData) {
-            $packageId = $packageLookup[$materialData['package_slug']] ?? $packageLookup->first();
+            $packageId = $packageLookup[$materialData['package_slug']] ?? null;
 
-            if (!$packageId) {
+            if (! $packageId) {
                 continue;
             }
 
             $material = Material::create([
                 'slug' => $materialData['slug'],
                 'package_id' => $packageId,
-                'subject_id' => $subjectLookup[$materialData['subject']] ?? $subjectLookup->first(),
+                'subject_id' => $subjectLookup[$materialData['subject']] ?? null,
                 'title' => $materialData['title'],
                 'level' => $materialData['level'],
                 'summary' => $materialData['summary'],
@@ -259,31 +197,6 @@ class MaterialSeeder extends Seeder
                     ]);
                 }
             }
-
-            // Create material items with Google Drive links
-            if ($itemsAvailable && isset($materialData['items'])) {
-                foreach (array_values($materialData['items']) as $index => $item) {
-                    MaterialItem::create([
-                        'material_id' => $material->id,
-                        'name' => $item['name'],
-                        'description' => $item['description'],
-                        'link' => $item['link'],
-                        'position' => $index + 1,
-                    ]);
-                    $totalItems++;
-                }
-            }
-
-            // Attach material to package (many-to-many relationship)
-            $material->packages()->attach($packageId);
-
-            $createdCount++;
         }
-
-        $this->command->info('✅ Created ' . $createdCount . ' material folders');
-        $this->command->info('📦 Total objectives: ' . MaterialObjective::count());
-        $this->command->info('📖 Total chapters: ' . MaterialChapter::count());
-        $this->command->info('🔗 Total material items (with links): ' . $totalItems);
-        $this->command->info('🎉 Material seeding completed!');
     }
 }

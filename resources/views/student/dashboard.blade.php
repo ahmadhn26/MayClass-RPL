@@ -445,10 +445,10 @@
 
         /* Responsive Breakpoints */
         @media (max-width: 1024px) {
-            .dashboard-container { padding: 0 16px; }
+            .dashboard-container { padding: 0 20px; }
             .dashboard-layout { 
                 grid-template-columns: 1fr; 
-                gap: 32px;
+                gap: 40px;
             }
             .sidebar-content { position: static; }
             .steps-grid { grid-template-columns: 1fr; }
@@ -459,17 +459,14 @@
                 overflow-x: auto;
                 scroll-snap-type: x mandatory;
                 -webkit-overflow-scrolling: touch;
-                gap: 16px;
-                padding: 4px 0px 20px;
-                margin: 0 -16px;
-                padding-left: 16px;
-                padding-right: 16px;
+                gap: 20px;
+                padding: 8px 0px 24px;
                 scrollbar-width: thin;
                 scrollbar-color: rgba(15, 118, 110, 0.3) rgba(0, 0, 0, 0.05);
             }
 
             .cards-grid::-webkit-scrollbar {
-                height: 5px;
+                height: 6px;
             }
 
             .cards-grid::-webkit-scrollbar-track {
@@ -483,241 +480,110 @@
             }
 
             .content-card {
-                flex: 0 0 280px;
+                flex: 0 0 85%;
                 scroll-snap-align: start;
-                max-width: 280px;
-                min-height: auto;
+                max-width: 85%;
             }
         }
 
         /* Tablet specific adjustments */
         @media (min-width: 641px) and (max-width: 1024px) {
             .content-card {
-                flex: 0 0 320px;
-                max-width: 320px;
+                flex: 0 0 48%;
+                max-width: 48%;
             }
         }
 
         /* Mobile specific optimizations */
         @media (max-width: 768px) {
-            .dashboard-container { 
-                padding: 0 12px;
-                gap: 20px;
-            }
+            .dashboard-container { padding: 0 16px; }
 
             .hero-card { 
-                padding: 16px; 
-                margin-bottom: 16px;
-            }
-
-            .hero-eyebrow {
-                font-size: 0.65rem;
-                margin-bottom: 6px;
+                padding: 24px; 
+                margin-bottom: 24px;
             }
 
             .hero-title { 
-                font-size: 1.3rem;
-                margin-bottom: 8px;
-                line-height: 1.25;
+                font-size: 1.5rem; 
             }
 
             .hero-desc {
-                font-size: 0.85rem;
-                margin-bottom: 0;
-                line-height: 1.45;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
+                font-size: 0.95rem;
             }
 
             .hero-actions { 
                 flex-direction: column; 
-                gap: 10px;
+                gap: 12px;
             }
 
             .btn-hero { 
                 width: 100%; 
                 justify-content: center;
                 min-height: 44px;
-                padding: 12px 20px;
-                font-size: 0.9rem;
+                padding: 14px 24px;
             }
 
             .stats-grid { 
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-                margin-bottom: 16px;
+                grid-template-columns: 1fr; 
+                gap: 16px;
+                margin-bottom: 20px;
             }
 
             .stat-card {
-                padding: 16px;
+                padding: 20px;
             }
 
             .stat-value {
-                font-size: 1.6rem;
-                margin-bottom: 4px;
+                font-size: 1.5rem;
             }
 
             .stat-label {
-                font-size: 0.8rem;
-                line-height: 1.3;
+                font-size: 0.85rem;
             }
 
             .section-header {
-                margin-top: 24px;
-                margin-bottom: 14px;
-                padding-bottom: 10px;
+                margin-top: 28px;
+                margin-bottom: 16px;
             }
 
             .section-title {
-                font-size: 1.05rem;
-            }
-
-            .link-more {
-                font-size: 0.85rem;
-                padding: 4px 10px;
-            }
-
-            .card-tag {
-                font-size: 0.7rem;
-                padding: 5px 10px;
+                font-size: 1.1rem;
             }
 
             .card-title {
-                font-size: 0.95rem;
-                line-height: 1.3;
+                font-size: 1rem;
             }
 
             .card-desc {
-                font-size: 0.83rem;
-                line-height: 1.5;
-            }
-
-            .card-meta {
-                font-size: 0.8rem;
-                margin-top: 6px;
-                padding-top: 12px;
-            }
-
-            .content-card {
-                padding: 18px;
-                gap: 10px;
-            }
-
-            .sidebar-card {
-                padding: 16px;
-            }
-
-            .sidebar-title {
-                font-size: 0.9rem;
-            }
-
-            .pkg-info {
-                padding: 14px;
-            }
-
-            .pkg-name {
-                font-size: 1rem;
-                margin-bottom: 6px;
-            }
-
-            .pkg-meta {
-                font-size: 0.8rem;
-            }
-
-            .schedule-list {
-                gap: 20px;
-                padding-left: 14px;
-            }
-
-            .schedule-item {
-                padding-left: 18px;
-            }
-
-            .schedule-item::before {
-                width: 10px;
-                height: 10px;
-                left: -19px;
-            }
-
-            .schedule-date {
-                font-size: 0.75rem;
-            }
-
-            .schedule-title {
-                font-size: 0.9rem;
-                margin-bottom: 3px;
-            }
-
-            .schedule-detail {
-                font-size: 0.8rem;
-            }
-
-            .inactive-card {
-                padding: 28px 20px;
-            }
-
-            .inactive-card h1 {
-                font-size: 1.6rem !important;
-                line-height: 1.3;
-            }
-
-            .inactive-card p {
-                font-size: 0.9rem !important;
-            }
-
-            .step-num {
-                font-size: 1.4rem !important;
-            }
-
-            .step-title {
-                font-size: 0.9rem;
-            }
-
-            .step-desc {
-                font-size: 0.78rem !important;
-            }
-
-            .empty-state {
-                padding: 40px 20px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Extra small mobile (iPhone SE, etc) */
-        @media (max-width: 375px) {
-            .dashboard-container {
-                padding: 0 10px;
-            }
-
-            .hero-title {
-                font-size: 1.25rem;
-            }
-
-            .hero-desc {
                 font-size: 0.85rem;
             }
 
-            .stat-value {
-                font-size: 1.4rem;
+            .sidebar-card {
+                padding: 20px;
             }
 
-            .stat-label {
-                font-size: 0.75rem;
+            .inactive-card {
+                padding: 32px 24px;
             }
 
-            .section-title {
-                font-size: 1rem;
+            .inactive-card h1 {
+                font-size: 1.75rem !important;
             }
 
-            .card-title {
-                font-size: 0.9rem;
+            .inactive-card p {
+                font-size: 0.95rem !important;
             }
 
-            .content-card {
-                padding: 16px;
+            .step-num {
+                font-size: 1.5rem !important;
+            }
+
+            .step-title {
+                font-size: 0.95rem;
+            }
+
+            .step-desc {
+                font-size: 0.8rem !important;
             }
         }
 
