@@ -35,10 +35,32 @@ class DashboardController extends Controller
         $hasActivePackage = StudentAccess::hasActivePackage($user);
 
         if (! $hasActivePackage) {
+            // Check if user has deactivated enrollment
+            $lastEnrollment = null;
+            $isDeactivated = false;
+            
+            if ($hasEnrollmentsTable && $user->enrollments()->exists()) {
+                $lastEnrollment = $user->enrollments()
+                    ->with('package')
+                    ->orderByDesc('ends_at')
+                    ->first();
+                
+                // If has enrollment but is_active = false → deactivated
+                $isDeactivated = $lastEnrollment && !$lastEnrollment->is_active;
+            }
+            
+            // Generate WhatsApp admin link
+            $whatsappAdminNumber = config('services.whatsapp.admin_general', '6281234567890');
+            $whatsappMessage = urlencode('Halo Admin MayClass, saya ingin menanyakan status akun saya.');
+            $whatsappAdminLink = "https://wa.me/{$whatsappAdminNumber}?text={$whatsappMessage}";
+
             return view('student.dashboard', [
                 'page' => 'dashboard',
                 'title' => 'Dashboard Siswa',
                 'hasActivePackage' => false,
+                'isDeactivated' => $isDeactivated,
+                'lastEnrollment' => $lastEnrollment,
+                'whatsappAdminLink' => $whatsappAdminLink,
                 'activePackage' => $this->formatActivePackage($activeEnrollment),
                 'materialsLink' => $materialsLink,
                 'quizLink' => $quizLink,
