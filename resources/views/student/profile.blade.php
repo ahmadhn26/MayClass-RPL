@@ -680,15 +680,42 @@
                 if (file) {
                     const url = URL.createObjectURL(file);
 
-                    // Update all previews
+                    // Update all existing image previews
                     imagePreviews.forEach(img => {
                         img.style.display = 'block';
                         img.src = url;
                     });
 
-                    // Hide all placeholders
+                    // Handle placeholders: hide them and create img if needed
                     placeholders.forEach(ph => {
+                        const parent = ph.parentElement;
+                        
+                        // Hide placeholder
                         ph.style.display = 'none';
+                        
+                        // Check if parent already has an img element
+                        let img = parent.querySelector('img[data-avatar-image]');
+                        
+                        // If not, create one
+                        if (!img) {
+                            img = document.createElement('img');
+                            img.setAttribute('data-avatar-image', '');
+                            img.src = url;
+                            img.alt = 'Preview';
+                            
+                            // Apply appropriate styles based on parent context
+                            if (parent.closest('.avatar-wrapper')) {
+                                // Sidebar avatar
+                                img.className = 'avatar-img';
+                            } else {
+                                // Form upload area avatar
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                            }
+                            
+                            parent.appendChild(img);
+                        }
                     });
                 }
             });
