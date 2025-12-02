@@ -2134,7 +2134,7 @@
                     <div class="filter-option" :class="{ 'active': selectedLevel === 'SMP' }"
                         @click="selectedLevel = 'SMP'; openDropdown = false">Jenjang SMP</div>
                     <div class="filter-option" :class="{ 'active': selectedLevel === 'SMA' }"
-                        @click="selectedLevel = 'SMA'; openDropdown = false">Jenjang SMA & Alumni</div>
+                        @click="selectedLevel = 'SMA'; openDropdown = false">Jenjang SMA</div>
                 </div>
             </div>
 
@@ -2155,7 +2155,7 @@
                         'items' => collect()
                     ],
                     'SMA' => [
-                        'label' => 'Jenjang SMA & Alumni',
+                        'label' => 'Jenjang SMA',
                         'desc' => 'Fokus intensif menembus PTN Impian dan Sekolah Kedinasan.',
                         'items' => collect()
                     ],
