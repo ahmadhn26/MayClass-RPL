@@ -48,15 +48,9 @@ class ScheduleViewData
     {
         $normalizedView = in_array($view, ['day', 'week'], true) ? $view : 'month';
 
-        $validSessions = $sessions->filter(fn ($session) => self::parseDate($session->start_at ?? null));
+        $validSessions = $sessions->filter(fn($session) => self::parseDate($session->start_at ?? null));
 
-        $defaultReference = $validSessions
-            ->map(fn ($session) => self::parseDate($session->start_at ?? null))
-            ->filter()
-            ->sortBy(fn (CarbonImmutable $date) => $date->timestamp)
-            ->first();
-
-        $reference = $referenceDate ?? $defaultReference ?? CarbonImmutable::now();
+        $reference = $referenceDate ?? CarbonImmutable::now();
 
         $sessionGroups = $validSessions->mapToGroups(function ($session) {
             $date = self::parseDate($session->start_at ?? null);
@@ -89,11 +83,11 @@ class ScheduleViewData
             if (!$start) {
                 return false;
             }
-            
+
             $duration = (int) ($session->duration_minutes ?? 90);
             $duration = $duration > 0 ? $duration : 90;
             $end = $start->addMinutes($duration);
-            
+
             // Session is current if now is between start and end time
             return $now->greaterThanOrEqualTo($start) && $now->lessThan($end);
         });
@@ -107,7 +101,7 @@ class ScheduleViewData
                 return $start ? $start->isFuture() : false;
             })
             ->sortBy('start_at')
-            ->map(fn ($session) => self::formatSession($session))
+            ->map(fn($session) => self::formatSession($session))
             ->values()
             ->take(3);
 
@@ -125,16 +119,16 @@ class ScheduleViewData
                 if (!$start) {
                     return false;
                 }
-                
+
                 $duration = (int) ($session->duration_minutes ?? 90);
                 $duration = $duration > 0 ? $duration : 90;
                 $end = $start->addMinutes($duration);
-                
+
                 // Session is past if end time has passed
                 return $end->lessThan($now);
             })
             ->sortByDesc('start_at')
-            ->map(fn ($session) => self::formatSession($session))
+            ->map(fn($session) => self::formatSession($session))
             ->values()
             ->take(10); // Limit to last 10 sessions
 
@@ -166,7 +160,7 @@ class ScheduleViewData
     {
         $startAt = self::parseDate($session->start_at ?? null);
 
-        if (! $startAt) {
+        if (!$startAt) {
             return [
                 'title' => $session->title,
                 'category' => $session->category,
@@ -249,7 +243,7 @@ class ScheduleViewData
                 'isMuted' => $view === 'month' ? $date->month !== $referenceDate->month : false,
                 'isToday' => $date->isSameDay($now),
                 'isActive' => $sessionsForDay->isNotEmpty(),
-                'sessions' => $sessionsForDay->map(fn ($session) => self::formatSession($session))->values()->all(),
+                'sessions' => $sessionsForDay->map(fn($session) => self::formatSession($session))->values()->all(),
             ];
         }
 
@@ -264,7 +258,7 @@ class ScheduleViewData
             }
         }
 
-        if (! empty($chunk)) {
+        if (!empty($chunk)) {
             $weeks[] = $chunk;
         }
 
@@ -293,9 +287,9 @@ class ScheduleViewData
             $key = $date->toDateString();
             $sessions = $sessionGroups->get($key, collect());
 
-            $formatted = $sessions->map(fn ($session) => self::formatSession($session))->values()->all();
+            $formatted = $sessions->map(fn($session) => self::formatSession($session))->values()->all();
 
-            if (! empty($formatted)) {
+            if (!empty($formatted)) {
                 $days[] = [
                     'date' => $key,
                     'label' => self::formatFullDate($date),
@@ -332,7 +326,7 @@ class ScheduleViewData
 
     private static function parseDate($value): ?CarbonImmutable
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 
