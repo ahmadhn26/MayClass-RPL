@@ -461,6 +461,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .nav-header {
+                order: -2;
+            }
+
             .summary-card {
                 order: -1;
             }
@@ -552,18 +556,15 @@
                     <select name="payment_method" id="payment-method-select" class="form-input" required>
                         <option value="">-- Pilih Metode Pembayaran --</option>
                         @foreach($paymentMethods as $method)
-                            <option value="{{ $method->slug }}" 
-                                    data-type="{{ $method->type }}"
-                                    data-bank="{{ $method->bank_name }}"
-                                    data-number="{{ $method->account_number }}"
-                                    data-holder="{{ $method->account_holder }}"
-                                    {{ old('payment_method') == $method->slug ? 'selected' : '' }}>
+                            <option value="{{ $method->slug }}" data-type="{{ $method->type }}"
+                                data-bank="{{ $method->bank_name }}" data-number="{{ $method->account_number }}"
+                                data-holder="{{ $method->account_holder }}" {{ old('payment_method') == $method->slug ? 'selected' : '' }}>
                                 {{ $method->name }}
                             </option>
                         @endforeach
                     </select>
                     @error('payment_method') <div class="input-error-msg">{{ $message }}</div> @enderror
-                    
+
                     {{-- DYNAMIC PAYMENT INFO DISPLAY --}}
                     <div id="payment-info-display" class="bank-details" style="display: none; margin-top: 16px;">
                         <div class="bank-row">
@@ -787,24 +788,24 @@
             // --- 3. Dynamic Payment Info Display ---
             const paymentSelect = document.getElementById('payment-method-select');
             const paymentInfo = document.getElementById('payment-info-display');
-            
+
             if (paymentSelect && paymentInfo) {
-                paymentSelect.addEventListener('change', function() {
+                paymentSelect.addEventListener('change', function () {
                     const option = this.options[this.selectedIndex];
-                    
+
                     if (!option.value) {
                         paymentInfo.style.display = 'none';
                         return;
                     }
-                    
+
                     const type = option.dataset.type;
                     const bank = option.dataset.bank;
                     const number = option.dataset.number;
                     const holder = option.dataset.holder;
-                    
+
                     // Show info box
                     paymentInfo.style.display = 'block';
-                    
+
                     // Update labels and values based on type
                     if (type === 'bank') {
                         document.getElementById('payment-label-1').textContent = 'Bank Tujuan';
@@ -815,7 +816,7 @@
                         document.getElementById('payment-value-1').textContent = option.text;
                         document.getElementById('payment-type-label').textContent = 'HP/Akun';
                     }
-                    
+
                     document.getElementById('payment-number').textContent = number || '-';
                     document.getElementById('payment-holder').textContent = holder || '-';
                 });
