@@ -666,7 +666,7 @@
             {{-- 4. Quizzes Section --}}
             <div class="section-header">
                 <h2 class="section-title">Kuis Latihan</h2>
-                <a href="{{ $quizLink }}" target="_blank" class="link-more">Buka Platform &rarr;</a>
+                <a href="{{ route('student.quiz') }}" class="link-more">Lihat Semua &rarr;</a>
             </div>
 
             @if ($recentQuizzes->isNotEmpty())
