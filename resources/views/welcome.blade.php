@@ -2500,7 +2500,8 @@
         <div class="container">
             <div class="footer-top">
                 <div class="footer-brand-col">
-                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" class="footer-logo" />
+                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" class="footer-logo"
+                        style="margin-left: 80px;" />
                     <p class="footer-desc">
                         MayClass adalah platform bimbingan belajar premium yang menggabungkan materi berkualitas, mentor
                         berpengalaman, dan teknologi terkini untuk mengantarkan siswa menuju prestasi akademik terbaik.
