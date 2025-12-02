@@ -18,11 +18,12 @@
         }
 
         .page-container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 0 auto;
+            padding: 0 24px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 32px;
         }
 
         /* --- 1. HEADER SECTION --- */
@@ -31,56 +32,58 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             background: var(--bg-surface);
-            padding: 24px 32px;
-            border-radius: var(--radius);
+            padding: 32px 40px;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .header-title h2 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-main);
-            margin: 0 0 4px 0;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.025em;
         }
 
         .header-title p {
             margin: 0;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         .btn-add {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             background: var(--primary);
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             text-decoration: none;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(15, 118, 110, 0.2);
             cursor: pointer;
             border: none;
         }
 
         .btn-add:hover {
             background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(15, 118, 110, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(15, 118, 110, 0.25);
         }
 
         /* --- 2. TABLE CARD --- */
         .table-card {
             background: var(--bg-surface);
-            border-radius: var(--radius);
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-card);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
@@ -90,26 +93,27 @@
 
         .package-table {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 0.92rem;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9375rem;
             min-width: 900px;
         }
 
         .package-table th {
-            background: #f8fafc;
+            background: linear-gradient(to bottom, #fafafa 0%, #f8fafc 100%);
             text-align: left;
-            padding: 16px 24px;
+            padding: 18px 28px;
             font-size: 0.75rem;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: #475569;
             font-weight: 700;
             letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .package-table td {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 20px 28px;
+            border-bottom: 1px solid #f1f5f9;
             color: var(--text-main);
             vertical-align: middle;
         }
@@ -119,11 +123,12 @@
         }
 
         .package-table tbody tr {
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
 
         .package-table tbody tr:hover {
-            background: #f1f5f9;
+            background: #f8fafc;
+            transform: scale(1.002);
         }
 
         /* Specific Column Styles */
@@ -131,37 +136,42 @@
             font-weight: 700;
             color: var(--text-main);
             display: block;
-            font-size: 1rem;
+            font-size: 1.0625rem;
+            line-height: 1.4;
+            margin-bottom: 4px;
         }
 
         .pkg-price-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            font-size: 0.8125rem;
+            color: #94a3b8;
+            font-weight: 500;
         }
 
         .pkg-level {
             display: inline-flex;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: #f0f9ff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             color: #0369a1;
-            font-size: 0.8rem;
+            font-size: 0.8125rem;
             font-weight: 600;
-            border: 1px solid #e0f2fe;
+            border: 1px solid #bae6fd;
         }
 
         .pkg-grades {
             display: block;
-            margin-top: 4px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            margin-top: 6px;
+            font-size: 0.8125rem;
+            color: #64748b;
+            font-weight: 500;
         }
 
         .pkg-price {
-            font-family: monospace;
-            font-size: 1rem;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: 1.0625rem;
             font-weight: 700;
             color: var(--primary);
+            letter-spacing: -0.025em;
         }
 
         .tag-pill {
@@ -190,62 +200,71 @@
         .action-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             justify-content: flex-end;
         }
 
         .btn-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            color: #64748b;
             cursor: pointer;
-            background: transparent;
+            background: white;
         }
 
         .btn-icon:hover {
-            background: #f1f5f9;
+            background: #f8fafc;
             color: var(--text-main);
-            border-color: var(--border-color);
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .btn-icon.delete:hover {
-            background: #fee2e2;
-            color: #b91c1c;
+            background: #fef2f2;
+            color: #dc2626;
             border-color: #fecaca;
         }
 
         .subject-pills {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             align-items: center;
         }
 
         .subject-pill {
             display: inline-flex;
-            padding: 3px 10px;
-            border-radius: 99px;
-            background: #e0f2fe;
+            padding: 5px 12px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
             color: #0369a1;
             font-size: 0.75rem;
             font-weight: 600;
             border: 1px solid #bae6fd;
+            transition: all 0.2s ease;
+        }
+
+        .subject-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(3, 105, 161, 0.1);
         }
 
         .subject-pill-more {
             display: inline-flex;
-            padding: 3px 10px;
-            border-radius: 99px;
+            padding: 5px 12px;
+            border-radius: 8px;
             background: #f1f5f9;
             color: #64748b;
             font-size: 0.75rem;
             font-weight: 600;
+            border: 1px solid #e2e8f0;
         }
 
         .text-muted {
@@ -868,6 +887,25 @@
         </button>
     </div>
 
+    {{-- Search Box --}}
+    <div style="margin-bottom: 0px;">
+        <div style="position: relative; max-width: 500px;">
+            <svg style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #94a3b8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input 
+                type="text" 
+                id="packageSearch" 
+                placeholder="Cari paket berdasarkan nama, jenjang, atau mata pelajaran..." 
+                style="width: 100%; padding: 12px 16px 12px 48px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.2s; background: white;"
+                onkeyup="filterPackages()"
+                onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"
+            />
+        </div>
+        <p id="searchResults" style="margin-top: 8px; font-size: 0.875rem; color: #64748b;"></p>
+    </div>
+
     {{-- Table --}}
     <div class="table-card">
         <div class="table-responsive">
@@ -1453,6 +1491,43 @@
                 addLevelSelect.addEventListener('change', filterAddModalSubjects);
             }
         });
+
+        // Package Search Filter
+        function filterPackages() {
+            const searchInput = document.getElementById('packageSearch');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const table = document.querySelector('.package-table tbody');
+            const rows = table.querySelectorAll('tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                // Get text content from all relevant columns
+                const packageName = row.querySelector('.pkg-name')?.textContent.toLowerCase() || '';
+                const level = row.querySelector('.pkg-level')?.textContent.toLowerCase() || '';
+                const gradeRange = row.querySelector('.pkg-grades')?.textContent.toLowerCase() || '';
+                const subjects = Array.from(row.querySelectorAll('.subject-pill')).map(el => el.textContent.toLowerCase()).join(' ');
+                const tutors = Array.from(row.querySelectorAll('.subject-pill[style*="background: #e0f2fe"]')).map(el => el.textContent.toLowerCase()).join(' ');
+                
+                // Combine all searchable text
+                const searchableText = `${packageName} ${level} ${gradeRange} ${subjects} ${tutors}`;
+                
+                // Show/hide row based on search
+                if (searchTerm === '' || searchableText.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update search results text
+            const resultsText = document.getElementById('searchResults');
+            if (searchTerm === '') {
+                resultsText.textContent = '';
+            } else {
+                resultsText.textContent = `Menampilkan ${visibleCount} dari ${rows.length} paket`;
+            }
+        }
     </script>
 @endpush
 @endsection
