@@ -668,12 +668,6 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Instruksi (Opsional)</label>
-                            <textarea name="instructions" class="form-control" rows="3"
-                                placeholder="Instruksi khusus untuk metode pembayaran ini">{{ old('instructions') }}</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
                             <label>&nbsp;</label>
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" value="1" id="is_active_add" checked>
