@@ -4,13 +4,46 @@
 
 @push('styles')
     <style>
-        /* Form Styles */
+        /* --- MODAL OVERLAY STYLE (FLOATING) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
         .form-card {
             background: #fff;
             border-radius: 16px;
+            width: 100%;
             max-width: 900px;
-            margin: 40px auto;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .form-header {
@@ -19,6 +52,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            flex-shrink: 0;
         }
 
         .form-header h1 {
@@ -32,15 +69,34 @@
             font-size: 1.5rem;
             color: #94a3b8;
             text-decoration: none;
+            line-height: 1;
             cursor: pointer;
+            transition: color 0.2s;
         }
 
         .close-btn:hover {
             color: #ef4444;
         }
 
+        /* Body Form (Scrollable) */
         .form-body {
             padding: 32px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        .form-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .form-body::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
         }
 
         .form-group {
@@ -62,6 +118,8 @@
             border-radius: 10px;
             font-family: inherit;
             font-size: 0.95rem;
+            background-color: #fff;
+            transition: border-color 0.2s;
         }
 
         .form-control:focus {
@@ -161,12 +219,12 @@
             position: relative;
         }
 
-        .package-checkbox:checked + .package-checkbox-label {
+        .package-checkbox:checked+.package-checkbox-label {
             border-color: #3fa67e;
             background: rgba(63, 166, 126, 0.1);
         }
 
-        .package-checkbox:checked + .package-checkbox-label::before {
+        .package-checkbox:checked+.package-checkbox-label::before {
             content: '✓';
             position: absolute;
             right: 14px;
@@ -216,10 +274,12 @@
             color: #64748b;
             background: white;
             border: 1px solid #e2e8f0;
+            transition: all 0.2s;
         }
 
         .btn-cancel:hover {
             background: #f1f5f9;
+            color: #0f172a;
         }
 
         .btn-save {
@@ -231,10 +291,12 @@
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
+            transition: all 0.2s;
         }
 
         .btn-save:hover {
             background: #2f8a67;
+            transform: translateY(-1px);
         }
 
         .error-text {
@@ -242,149 +304,168 @@
             font-size: 0.85rem;
             margin-top: 4px;
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-card {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .form-header {
+                border-radius: 0;
+            }
+        }
     </style>
 @endpush
 
 @section('content')
-    <div class="form-card">
-        <div class="form-header">
-            <h1>Edit Folder</h1>
-            <a href="{{ route('tutor.materials.index') }}" class="close-btn">&times;</a>
-        </div>
+    {{-- WRAPPER OVERLAY --}}
+    <div class="modal-overlay">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>Edit Folder</h1>
+                <a href="{{ route('tutor.materials.index') }}" class="close-btn">&times;</a>
+            </div>
 
-        <div class="form-body">
-            @if ($errors->any())
-                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-                    <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
-                    <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
-                        @foreach ($errors->all() as $error)
-                            <li style="color: #dc2626;">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('tutor.materials.update', $material) }}" id="material-form">
-                @csrf
-                @method('PUT')
-
-                {{-- Hidden Level --}}
-                <input type="hidden" name="level" id="hiddenLevel" value="{{ old('level', $material->level) }}">
-
-                {{-- Package Selection --}}
-                <div class="form-group">
-                    <label class="form-label">Pilih Paket Belajar (bisa lebih dari 1)</label>
-                    <div class="package-selector">
-                        @forelse ($packages as $package)
-                            <div class="package-checkbox-item">
-                                <input type="checkbox" name="package_ids[]" id="package_{{ $package->id }}"
-                                    value="{{ $package->id }}" data-level="{{ $package->level }}" 
-                                    class="package-checkbox"
-                                    onchange="handlePackageSelection()"
-                                    {{ in_array($package->id, $selectedPackageIds) ? 'checked' : '' }}>
-                                <label for="package_{{ $package->id }}" class="package-checkbox-label">
-                                    <span class="package-name">{{ $package->detail_title }}</span>
-                                    <span class="package-level">{{ $package->level }}</span>
-                                </label>
-                            </div>
-                        @empty
-                            <div style="text-align: center; color: #94a3b8; padding: 20px;">Belum ada paket tersedia</div>
-                        @endforelse
+            <div class="form-body">
+                @if ($errors->any())
+                    <div
+                        style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                        <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                            @foreach ($errors->all() as $error)
+                                <li style="color: #dc2626;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    @error('package_ids') <div class="error-text">{{ $message }}</div> @enderror
-                </div>
+                @endif
 
-                {{-- Subject Selection --}}
-                <div class="form-group">
-                    <label class="form-label">Mata Pelajaran</label>
-                    <select name="subject_id" id="subjectSelect" class="form-control" required>
-                        <option value="">Memuat...</option>
-                    </select>
-                    @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
-                </div>
+                <form method="POST" action="{{ route('tutor.materials.update', $material) }}" id="material-form">
+                    @csrf
+                    @method('PUT')
 
-                {{-- Folder Name --}}
-                <div class="form-group">
-                    <label class="form-label">Nama Folder</label>
-                    <input type="text" name="title" class="form-control" 
-                        value="{{ old('title', $material->title) }}" 
-                        placeholder="Contoh: Aljabar Dasar" required>
-                    @error('title') <div class="error-text">{{ $message }}</div> @enderror
-                </div>
+                    {{-- Hidden Level --}}
+                    <input type="hidden" name="level" id="hiddenLevel" value="{{ old('level', $material->level) }}">
 
-                {{-- Folder Description --}}
-                <div class="form-group">
-                    <label class="form-label">Deskripsi Folder</label>
-                    <textarea name="summary" class="form-control" 
-                        placeholder="Deskripsi singkat folder..." required>{{ old('summary', $material->summary) }}</textarea>
-                    @error('summary') <div class="error-text">{{ $message }}</div> @enderror
-                </div>
-
-                {{-- Material Items --}}
-                <div class="dynamic-group">
-                    <div class="dynamic-group__header">
-                        <span>Materi dalam Folder</span>
-                        <button type="button" class="dynamic-add" onclick="addMaterialItem()">+ Tambah Materi</button>
+                    {{-- Package Selection --}}
+                    <div class="form-group">
+                        <label class="form-label">Pilih Paket Belajar (bisa lebih dari 1)</label>
+                        <div class="package-selector">
+                            @forelse ($packages as $package)
+                                <div class="package-checkbox-item">
+                                    <input type="checkbox" name="package_ids[]" id="package_{{ $package->id }}"
+                                        value="{{ $package->id }}" data-level="{{ $package->level }}" class="package-checkbox"
+                                        onchange="handlePackageSelection()" {{ in_array($package->id, $selectedPackageIds) ? 'checked' : '' }}>
+                                    <label for="package_{{ $package->id }}" class="package-checkbox-label">
+                                        <span class="package-name">{{ $package->detail_title }}</span>
+                                        <span class="package-level">{{ $package->level }}</span>
+                                    </label>
+                                </div>
+                            @empty
+                                <div style="text-align: center; color: #94a3b8; padding: 20px;">Belum ada paket tersedia</div>
+                            @endforelse
+                        </div>
+                        @error('package_ids') <div class="error-text">{{ $message }}</div> @enderror
                     </div>
-                    <div class="dynamic-group__items" id="materialItemsList">
-                        @forelse(old('material_items', $material->materialItems->toArray()) as $index => $item)
-                            <div class="dynamic-item">
-                                <div class="dynamic-item__row">
-                                    <div class="form-group" style="margin-bottom: 12px;">
-                                        <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
-                                        <input type="text" name="material_items[{{ $index }}][name]" class="form-control" 
-                                            value="{{ is_array($item) ? ($item['name'] ?? '') : $item->name }}"
-                                            placeholder="Contoh: Pengenalan Variabel" required />
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 12px;">
-                                        <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
-                                        <textarea name="material_items[{{ $index }}][description]" class="form-control" rows="2"
-                                            placeholder="Deskripsi materi..." required>{{ is_array($item) ? ($item['description'] ?? '') : $item->description }}</textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
-                                        <input type="url" name="material_items[{{ $index }}][link]" class="form-control" 
-                                            value="{{ is_array($item) ? ($item['link'] ?? '') : $item->link }}"
-                                            placeholder="https://drive.google.com/..." required />
-                                    </div>
-                                </div>
-                                <div class="dynamic-item__actions">
-                                    <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="dynamic-item">
-                                <div class="dynamic-item__row">
-                                    <div class="form-group" style="margin-bottom: 12px;">
-                                        <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
-                                        <input type="text" name="material_items[0][name]" class="form-control" 
-                                            placeholder="Contoh: Pengenalan Variabel" required />
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 12px;">
-                                        <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
-                                        <textarea name="material_items[0][description]" class="form-control" rows="2"
-                                            placeholder="Deskripsi materi..." required></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
-                                        <input type="url" name="material_items[0][link]" class="form-control" 
-                                            placeholder="https://drive.google.com/..." required />
-                                    </div>
-                                </div>
-                                <div class="dynamic-item__actions">
-                                    <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
-                                </div>
-                            </div>
-                        @endforelse
-                    </div>
-                    @error('material_items') <div class="error-text">{{ $message }}</div> @enderror
-                </div>
 
-                <div class="form-actions">
-                    <a href="{{ route('tutor.materials.index') }}" class="btn-cancel">Batal</a>
-                    <button type="submit" class="btn-save">Simpan Perubahan</button>
-                </div>
-            </form>
+                    {{-- Subject Selection --}}
+                    <div class="form-group">
+                        <label class="form-label">Mata Pelajaran</label>
+                        <select name="subject_id" id="subjectSelect" class="form-control" required>
+                            <option value="">Memuat...</option>
+                        </select>
+                        @error('subject_id') <div class="error-text">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Folder Name --}}
+                    <div class="form-group">
+                        <label class="form-label">Nama Folder</label>
+                        <input type="text" name="title" class="form-control" value="{{ old('title', $material->title) }}"
+                            placeholder="Contoh: Aljabar Dasar" required>
+                        @error('title') <div class="error-text">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Folder Description --}}
+                    <div class="form-group">
+                        <label class="form-label">Deskripsi Folder</label>
+                        <textarea name="summary" class="form-control" placeholder="Deskripsi singkat folder..."
+                            required>{{ old('summary', $material->summary) }}</textarea>
+                        @error('summary') <div class="error-text">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Material Items --}}
+                    <div class="dynamic-group">
+                        <div class="dynamic-group__header">
+                            <span>Materi dalam Folder</span>
+                            <button type="button" class="dynamic-add" onclick="addMaterialItem()">+ Tambah Materi</button>
+                        </div>
+                        <div class="dynamic-group__items" id="materialItemsList">
+                            @forelse(old('material_items', $material->materialItems->toArray()) as $index => $item)
+                                <div class="dynamic-item">
+                                    <div class="dynamic-item__row">
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                                            <input type="text" name="material_items[{{ $index }}][name]" class="form-control"
+                                                value="{{ is_array($item) ? ($item['name'] ?? '') : $item->name }}"
+                                                placeholder="Contoh: Pengenalan Variabel" required />
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                                            <textarea name="material_items[{{ $index }}][description]" class="form-control"
+                                                rows="2" placeholder="Deskripsi materi..."
+                                                required>{{ is_array($item) ? ($item['description'] ?? '') : $item->description }}</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                                            <input type="url" name="material_items[{{ $index }}][link]" class="form-control"
+                                                value="{{ is_array($item) ? ($item['link'] ?? '') : $item->link }}"
+                                                placeholder="https://drive.google.com/..." required />
+                                        </div>
+                                    </div>
+                                    <div class="dynamic-item__actions">
+                                        <button type="button" class="dynamic-item__remove"
+                                            onclick="removeMaterialItem(this)">Hapus
+                                            Materi</button>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="dynamic-item">
+                                    <div class="dynamic-item__row">
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                                            <input type="text" name="material_items[0][name]" class="form-control"
+                                                placeholder="Contoh: Pengenalan Variabel" required />
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                                            <textarea name="material_items[0][description]" class="form-control" rows="2"
+                                                placeholder="Deskripsi materi..." required></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                                            <input type="url" name="material_items[0][link]" class="form-control"
+                                                placeholder="https://drive.google.com/..." required />
+                                        </div>
+                                    </div>
+                                    <div class="dynamic-item__actions">
+                                        <button type="button" class="dynamic-item__remove"
+                                            onclick="removeMaterialItem(this)">Hapus
+                                            Materi</button>
+                                    </div>
+                                </div>
+                            @endforelse
+                        </div>
+                        @error('material_items') <div class="error-text">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ route('tutor.materials.index') }}" class="btn-cancel">Batal</a>
+                        <button type="submit" class="btn-save">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endsection
@@ -395,43 +476,43 @@
         const currentSubjectId = "{{ old('subject_id', $material->subject_id) }}";
 
         // Add Material Item
-        window.addMaterialItem = function() {
+        window.addMaterialItem = function () {
             const list = document.getElementById('materialItemsList');
             if (!list) return;
-            
+
             const div = document.createElement('div');
             div.className = 'dynamic-item';
             div.innerHTML = `
-                <div class="dynamic-item__row">
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
-                        <input type="text" name="material_items[${materialItemIndex}][name]" class="form-control" 
-                            placeholder="Contoh: Pengenalan Variabel" required />
-                    </div>
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
-                        <textarea name="material_items[${materialItemIndex}][description]" class="form-control" rows="2"
-                            placeholder="Deskripsi materi..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
-                        <input type="url" name="material_items[${materialItemIndex}][link]" class="form-control" 
-                            placeholder="https://drive.google.com/..." required />
-                    </div>
-                </div>
-                <div class="dynamic-item__actions">
-                    <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
-                </div>
-            `;
+                        <div class="dynamic-item__row">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
+                                <input type="text" name="material_items[${materialItemIndex}][name]" class="form-control" 
+                                    placeholder="Contoh: Pengenalan Variabel" required />
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label class="form-label" style="font-size: 0.85rem;">Apa yang Dipelajari</label>
+                                <textarea name="material_items[${materialItemIndex}][description]" class="form-control" rows="2"
+                                    placeholder="Deskripsi materi..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 0.85rem;">Link Materi</label>
+                                <input type="url" name="material_items[${materialItemIndex}][link]" class="form-control" 
+                                    placeholder="https://drive.google.com/..." required />
+                            </div>
+                        </div>
+                        <div class="dynamic-item__actions">
+                            <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+                        </div>
+                    `;
             list.appendChild(div);
             materialItemIndex++;
         };
 
         // Remove Material Item
-        window.removeMaterialItem = function(button) {
+        window.removeMaterialItem = function (button) {
             const list = document.getElementById('materialItemsList');
             if (!list) return;
-            
+
             if (list.children.length > 1) {
                 button.closest('.dynamic-item').remove();
             } else {
@@ -440,25 +521,25 @@
         };
 
         // Handle Package Selection
-        window.handlePackageSelection = function() {
+        window.handlePackageSelection = function () {
             const checkboxes = document.querySelectorAll('.package-checkbox:checked');
             const levelInput = document.getElementById('hiddenLevel');
             const subjectSelect = document.getElementById('subjectSelect');
-            
+
             if (checkboxes.length > 0) {
                 const firstPackage = checkboxes[0];
                 const packageId = firstPackage.value;
                 const packageLevel = firstPackage.dataset.level;
-                
+
                 if (levelInput) {
                     levelInput.value = packageLevel;
                 }
-                
+
                 loadSubjects(packageId, currentSubjectId);
             } else {
                 subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
                 subjectSelect.disabled = true;
-                
+
                 if (levelInput) {
                     levelInput.value = '';
                 }
@@ -469,7 +550,7 @@
         function loadSubjects(packageId, selectedId = null) {
             const subjectSelect = document.getElementById('subjectSelect');
             const levelInput = document.getElementById('hiddenLevel');
-            
+
             subjectSelect.innerHTML = '<option value="">Memuat...</option>';
             subjectSelect.disabled = true;
 
@@ -482,12 +563,12 @@
                         option.value = subject.id;
                         option.textContent = subject.name + ' (' + subject.level + ')';
                         option.setAttribute('data-level', subject.level || '');
-                        
+
                         if (selectedId && String(subject.id) === String(selectedId)) {
                             option.selected = true;
                             if (levelInput) levelInput.value = subject.level || '';
                         }
-                        
+
                         subjectSelect.appendChild(option);
                     });
                     subjectSelect.disabled = false;
@@ -499,12 +580,12 @@
         }
 
         // Subject change listener
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const subjectSelect = document.getElementById('subjectSelect');
             const levelInput = document.getElementById('hiddenLevel');
-            
+
             if (subjectSelect) {
-                subjectSelect.addEventListener('change', function() {
+                subjectSelect.addEventListener('change', function () {
                     const selectedOption = this.options[this.selectedIndex];
                     const level = selectedOption.getAttribute('data-level') || '';
                     if (levelInput) {
@@ -512,7 +593,7 @@
                     }
                 });
             }
-            
+
             // Initial load
             const firstCheckedPackage = document.querySelector('.package-checkbox:checked');
             if (firstCheckedPackage) {

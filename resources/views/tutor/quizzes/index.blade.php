@@ -532,7 +532,7 @@
                             Preview
                         </button>
                         <a href="{{ route('tutor.quizzes.edit', $quiz) }}" class="action-btn btn-secondary">
-                            Edit
+                            Edit Folder
                         </a>
                     </div>
                 </div>
@@ -569,7 +569,8 @@
                         <select name="package_id" id="packageSelect" class="form-control" required>
                             <option value="">Pilih paket yang tersedia</option>
                             @foreach($packages ?? [] as $package)
-                                <option value="{{ $package->id }}">{{ $package->detail_title ?? $package->name }} ({{ $package->level }})</option>
+                                <option value="{{ $package->id }}">{{ $package->detail_title ?? $package->name }}
+                                    ({{ $package->level }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -602,170 +603,260 @@
                         <div class="dynamic-item">
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; color: #64748b;">Nama Quiz</label>
-                                <input type="text" name="quiz_items[0][name]" class="form-control" 
+                                <input type="text" name="quiz_items[0][name]" class="form-control"
                                     placeholder="Contoh: Quiz Persamaan Linear" required />
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; color: #64748b;">Deskripsi</label>
-                                <textarea name="quiz_items[0][description]" rows="2" class="form-control" 
+                                <textarea name="quiz_items[0][description]" rows="2" class="form-control"
                                     placeholder="Apa yang diujikan..." required></textarea>
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; color: #64748b;">Link Quiz</label>
-                                <input type="url" name="quiz_items[0][link]" class="form-control" 
+                                <input type="url" name="quiz_items[0][link]" class="form-control"
                                     placeholder="https://forms.google.com/..." required />
                             </div>
                             <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" onclick="removeQuizItem(this)">Hapus Quiz</button>
+                                <button type="button" class="dynamic-item__remove" onclick="removeQuizItem(this)">Hapus
+                                    Quiz</button>
                             </div>
                         </div>
                     </div>
-                    <button type="button" onclick="addQuizItem()" style="margin-top: 12px; padding: 8px 16px; border: 1px dashed #cbd5e1; background: #f8fafc; border-radius: 8px; cursor: pointer; color: #475569; font-weight: 500;">
+                    <button type="button" onclick="addQuizItem()"
+                        style="margin-top: 12px; padding: 8px 16px; border: 1px dashed #cbd5e1; background: #f8fafc; border-radius: 8px; cursor: pointer; color: #475569; font-weight: 500;">
                         + Tambah Quiz
                     </button>
                 </div>
 
                 <button type="submit" class="btn-submit">✓ Simpan Quiz</button>
-        <div class="modal-body" style="padding: 24px;">
-            <div id="previewQuizItems"></div>
-        </div>
+                <div class="modal-body" style="padding: 24px;">
+                    <div id="previewQuizItems"></div>
+                </div>
+            </div>
     </div>
-</div>
 
-@push('scripts')
-    <script>
-        // Modal Logic
-        const modal = document.getElementById('createModal');
+    @push('scripts')
+        <script>
+            // Modal Logic
+            const modal = document.getElementById('createModal');
 
-        function openModal() {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+            function openModal() {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
 
-        function closeModal() {
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
 
-        // Close modal if clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
+            // Close modal if clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
 
-        // Auto open modal if validation error exists
-        @if($errors->any())
-            openModal();
-        @endif
+            // Preview Quiz Function
+            function openQuizPreview(quizId) {
+                console.log('[PREVIEW] Opening quiz preview for ID:', quizId);
 
-        // --- AJAX Fetch Subjects (Global Scope) ---
-        window.fetchSubjects = function(packageId) {
-            console.log('[DEBUG] fetchSubjects called with packageId:', packageId);
-            const subjectSelect = document.getElementById('subjectSelect');
+                // Find quiz data from the page
+                const quizzes = @json($quizzes ?? []);
+                const quiz = quizzes.find(q => q.id === quizId);
 
-            if (!packageId) {
-                console.log('[DEBUG] No packageId provided, resetting dropdown');
-                subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+                if (!quiz) {
+                    alert('Quiz tidak ditemukan');
+                    return;
+                }
+
+                // Create modal overlay
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay active';
+                overlay.style.zIndex = '99999';
+
+                // Build quiz items HTML
+                let quizItemsHTML = '';
+                if (quiz.quiz_items && quiz.quiz_items.length > 0) {
+                    quizItemsHTML = quiz.quiz_items.map((item, index) => `
+                        <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                <strong style="color: #1e293b; font-size: 1rem;">📝 ${item.name}</strong>
+                                <span style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Quiz #${index + 1}</span>
+                            </div>
+                            <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">${item.description}</p>
+                            <a href="${item.link}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: #3fa67e; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-top: 8px;">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                Buka Quiz
+                            </a>
+                        </div>
+                    `).join('');
+                } else {
+                    quizItemsHTML = '<p style="text-align: center; color: #94a3b8; padding: 24px;">Tidak ada quiz di folder ini</p>';
+                }
+
+                overlay.innerHTML = `
+                    <div class="modal-content" style="max-width: 700px;">
+                        <div class="modal-header">
+                            <h2 class="modal-title">📁 ${quiz.title}</h2>
+                            <button type="button" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = 'auto';" class="btn-close">
+                                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="padding: 24px;">
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                                    <span style="background: #f5f3ff; color: #7c3aed; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
+                                        ${quiz.subject?.name || 'Tanpa Mapel'}
+                                    </span>
+                                    <span style="background: #eff6ff; color: #2563eb; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
+                                        ${quiz.class_level || 'Semua Kelas'}
+                                    </span>
+                                </div>
+                                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                    ${quiz.summary || 'Tidak ada deskripsi'}
+                                </p>
+                            </div>
+                            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                            <h3 style="color: #0f172a; font-size: 1rem; font-weight: 600; margin-bottom: 16px;">
+                                Daftar Quiz (${quiz.quiz_items?.length || 0})
+                            </h3>
+                            ${quizItemsHTML}
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(overlay);
+                document.body.style.overflow = 'hidden';
+
+                // Close on background click
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.remove();
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+
+            // Make it global
+            window.openQuizPreview = openQuizPreview;
+
+            // Auto open modal if validation error exists
+            @if($errors->any())
+                openModal();
+            @endif
+
+            // --- AJAX Fetch Subjects (Global Scope) ---
+            window.fetchSubjects = function(packageId) {
+                console.log('[DEBUG] fetchSubjects called with packageId:', packageId);
+                const subjectSelect = document.getElementById('subjectSelect');
+
+                if (!packageId) {
+                    console.log('[DEBUG] No packageId provided, resetting dropdown');
+                    subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+                    subjectSelect.disabled = true;
+                    return;
+                }
+
+                console.log('[DEBUG] Setting loading state');
+                subjectSelect.innerHTML = '<option>Loading...</option>';
                 subjectSelect.disabled = true;
-                return;
-            }
 
-            console.log('[DEBUG] Setting loading state');
-            subjectSelect.innerHTML = '<option>Loading...</option>';
-            subjectSelect.disabled = true;
+                // Use Laravel route helper for correct URL
+                const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
+                console.log('[DEBUG] Fetching from URL:', url);
 
-            // Use Laravel route helper for correct URL
-            const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
-            console.log('[DEBUG] Fetching from URL:', url);
-
-            fetch(url)
-                .then(response => {
-                    console.log('[DEBUG] Response received:', response.status, response.statusText);
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('[DEBUG] Data received:', data);
-                    subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
-                    if (Array.isArray(data) && data.length > 0) {
-                        console.log('[DEBUG] Adding', data.length, 'subjects to dropdown');
-                        data.forEach(subject => {
-                            subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
-                        });
-                        subjectSelect.disabled = false;
-                        console.log('[DEBUG] Dropdown enabled with subjects');
-                    } else {
-                        console.log('[DEBUG] No subjects found in response');
-                        subjectSelect.innerHTML = '<option value="">Tidak ada mapel tersedia</option>';
-                    }
-                })
-                .catch(error => {
-                    console.error('[ERROR] Fetch failed:', error);
-                    subjectSelect.innerHTML = '<option value="">Gagal memuat data</option>';
-                });
-        };
-
-        // --- Dynamic Inputs Logic ---
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('[INIT] DOM Content Loaded');
-            
-            // Attach event listener to packageSelect
-            const packageSelect = document.getElementById('packageSelect');
-            if (packageSelect) {
-                console.log('[INIT] packageSelect found, attaching change listener');
-                packageSelect.addEventListener('change', function(e) {
-                    console.log('[EVENT] Package changed to:', this.value);
-                    fetchSubjects(this.value);
-                });
-            } else {
-                console.error('[INIT] packageSelect NOT FOUND!');
-            }
-            
-            // Logic for dynamic inputs only
-            const linkContainer = document.querySelector('[data-link-urls]');
-            const addLinkBtn = document.querySelector('[data-add-link]');
-
-            // Template for new link row
-            const createLinkRow = () => {
-                const div = document.createElement('div');
-                div.className = 'dynamic-item';
-                div.innerHTML = `
-                        <div class="dynamic-item__row">
-                            <input type="url" name="link_urls[]" placeholder="https://" required />
-                        </div>
-                        <div class="dynamic-item__actions">
-                            <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                        </div>
-                    `;
-                return div;
+                fetch(url)
+                    .then(response => {
+                        console.log('[DEBUG] Response received:', response.status, response.statusText);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('[DEBUG] Data received:', data);
+                        subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+                        if (Array.isArray(data) && data.length > 0) {
+                            console.log('[DEBUG] Adding', data.length, 'subjects to dropdown');
+                            data.forEach(subject => {
+                                subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
+                            });
+                            subjectSelect.disabled = false;
+                            console.log('[DEBUG] Dropdown enabled with subjects');
+                        } else {
+                            console.log('[DEBUG] No subjects found in response');
+                            subjectSelect.innerHTML = '<option value="">Tidak ada mapel tersedia</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('[ERROR] Fetch failed:', error);
+                        subjectSelect.innerHTML = '<option value="">Gagal memuat data</option>';
+                    });
             };
 
-            // Add new row
-            if (addLinkBtn && linkContainer) {
-                addLinkBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const newRow = createLinkRow();
-                    linkContainer.appendChild(newRow);
-                });
-            }
+            // --- Dynamic Inputs Logic ---
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('[INIT] DOM Content Loaded');
 
-            // Remove row (event delegation)
-            if (linkContainer) {
-                linkContainer.addEventListener('click', (e) => {
-                    if (e.target.closest('[data-remove-row]')) {
+                // Attach event listener to packageSelect
+                const packageSelect = document.getElementById('packageSelect');
+                if (packageSelect) {
+                    console.log('[INIT] packageSelect found, attaching change listener');
+                    packageSelect.addEventListener('change', function (e) {
+                        console.log('[EVENT] Package changed to:', this.value);
+                        fetchSubjects(this.value);
+                    });
+                } else {
+                    console.error('[INIT] packageSelect NOT FOUND!');
+                }
+
+                // Logic for dynamic inputs only
+                const linkContainer = document.querySelector('[data-link-urls]');
+                const addLinkBtn = document.querySelector('[data-add-link]');
+
+                // Template for new link row
+                const createLinkRow = () => {
+                    const div = document.createElement('div');
+                    div.className = 'dynamic-item';
+                    div.innerHTML = `
+                            <div class="dynamic-item__row">
+                                <input type="url" name="link_urls[]" placeholder="https://" required />
+                            </div>
+                            <div class="dynamic-item__actions">
+                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                            </div>
+                        `;
+                    return div;
+                };
+
+                // Add new row
+                if (addLinkBtn && linkContainer) {
+                    addLinkBtn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const row = e.target.closest('.dynamic-item');
-                        if (linkContainer.children.length > 1) {
-                            row.remove();
-                        } else {
-                            // If it's the last row, just clear the input
-                            row.querySelector('input').value = '';
+                        const newRow = createLinkRow();
+                        linkContainer.appendChild(newRow);
+                    });
+                }
+
+                // Remove row (event delegation)
+                if (linkContainer) {
+                    linkContainer.addEventListener('click', (e) => {
+                        if (e.target.closest('[data-remove-row]')) {
+                            e.preventDefault();
+                            const row = e.target.closest('.dynamic-item');
+                            if (linkContainer.children.length > 1) {
+                                row.remove();
+                            } else {
+                                // If it's the last row, just clear the input
+                                row.querySelector('input').value = '';
+                            }
                         }
-                    }
-                });
-            }
-        });
-    </script>
-@endpush
-@endsection
+                    });
+                }
+            });
+        </script>
+    @endpush
+    @endsection

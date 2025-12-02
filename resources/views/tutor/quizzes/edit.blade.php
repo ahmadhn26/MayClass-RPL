@@ -228,10 +228,26 @@
 
 @section('content')
     @php
-        // Prepare Link URLs
-        $linkUrls = collect(old('link_urls', $quiz->link_url ?? []));
-        if ($linkUrls->isEmpty())
-            $linkUrls = collect(['']);
+        // Load existing quiz items from database
+        $quizItems = $quiz->quizItems ?? collect();
+
+        // If validation error, use old input
+        if (old('quiz_items')) {
+            $quizItems = collect(old('quiz_items'))->map(function ($item) {
+                return (object) $item;
+            });
+        }
+
+        // Ensure at least one empty item for new entries
+        if ($quizItems->isEmpty()) {
+            $quizItems = collect([
+                (object) [
+                    'name' => '',
+                    'description' => '',
+                    'link' => ''
+                ]
+            ]);
+        }
     @endphp
 
     {{-- WRAPPER OVERLAY --}}
@@ -317,32 +333,60 @@
                             @error('summary') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
 
-                        {{-- Link Quiz Dynamic --}}
-                        <div class="dynamic-group span-full">
-                            <div class="dynamic-group__header"
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                <span style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">Link Quiz (Google Form /
-                                    Lainnya)</span>
-                                <button type="button" class="dynamic-add" data-add-link
-                                    style="background: #3fa67e; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;">+
-                                    Tambah Link</button>
+                        {{-- Quiz Items Section --}}
+                        <div class="span-full" style="margin-top: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <span style="font-weight: 600; font-size: 1rem; color: #1e293b;">Quiz Items</span>
+                                <button type="button" onclick="addQuizItem()"
+                                    style="background: #3fa67e; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; cursor: pointer; font-weight: 500;">
+                                    + Tambah Quiz
+                                </button>
                             </div>
-                            <div class="dynamic-group__items" data-link-urls>
-                                @foreach ($linkUrls as $link)
-                                    <div class="dynamic-item"
-                                        style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
-                                        <div class="dynamic-item__row" style="flex: 1;">
-                                            <input type="url" name="link_urls[]" value="{{ $link }}" placeholder="https://"
-                                                required />
+
+                            <div id="quiz-items-container">
+                                @foreach ($quizItems as $index => $item)
+                                    <div class="quiz-item-row"
+                                        style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e2e8f0;">
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                            <strong style="color: #475569; font-size: 0.9rem;">Quiz #{{ $index + 1 }}</strong>
+                                            <button type="button" onclick="removeQuizItem(this)"
+                                                style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+                                                Hapus
+                                            </button>
                                         </div>
-                                        <div class="dynamic-item__actions">
-                                            <button type="button" class="dynamic-item__remove" data-remove-row
-                                                style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;">Hapus</button>
+
+                                        <div style="display: grid; gap: 12px;">
+                                            <label>
+                                                <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Nama
+                                                    Quiz</span>
+                                                <input type="text" name="quiz_items[{{ $index }}][name]"
+                                                    value="{{ $item->name ?? '' }}" placeholder="Contoh: Quiz Persamaan Linear"
+                                                    required style="margin-top: 4px;" />
+                                            </label>
+
+                                            <label>
+                                                <span
+                                                    style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Deskripsi</span>
+                                                <textarea name="quiz_items[{{ $index }}][description]"
+                                                    placeholder="Deskripsi quiz..." required
+                                                    style="margin-top: 4px; min-height: 80px;">{{ $item->description ?? '' }}</textarea>
+                                            </label>
+
+                                            <label>
+                                                <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Link
+                                                    Quiz</span>
+                                                <input type="url" name="quiz_items[{{ $index }}][link]"
+                                                    value="{{ $item->link ?? '' }}" placeholder="https://forms.google.com/..."
+                                                    required style="margin-top: 4px;" />
+                                            </label>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
-                            @error('link_urls.*') <div class="error-text">{{ $message }}</div> @enderror
+
+                            @error('quiz_items') <div class="error-text">{{ $message }}</div> @enderror
                         </div>
                     </div>
 
@@ -381,7 +425,7 @@
                         // Use Laravel route helper for correct URL
                         const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
                         console.log('[EDIT DEBUG] Fetching from URL:', url);
-                        
+
                         fetch(url)
                             .then(response => {
                                 console.log('[EDIT DEBUG] Response:', response.status, response.statusText);
@@ -426,52 +470,90 @@
 
             // Disable button saat submit
             form?.addEventListener('submit', function () {
+                // Update index sebelum submit
+                updateQuizItemIndices();
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Menyimpan...';
             });
 
-            // --- Dynamic Inputs Logic ---
-            const linkContainer = document.querySelector('[data-link-urls]');
-            const addLinkBtn = document.querySelector('[data-add-link]');
+            // --- Quiz Items Management ---
+            window.addQuizItem = function () {
+                const container = document.getElementById('quiz-items-container');
+                const currentCount = container.children.length;
+                const newIndex = currentCount;
 
-            // Template for new link row
-            const createLinkRow = () => {
-                const div = document.createElement('div');
-                div.className = 'dynamic-item';
-                div.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: center;';
-                div.innerHTML = `
-                        <div class="dynamic-item__row" style="flex: 1;">
-                            <input type="url" name="link_urls[]" placeholder="https://" required />
+                const newItem = document.createElement('div');
+                newItem.className = 'quiz-item-row';
+                newItem.style.cssText = 'background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e2e8f0;';
+                newItem.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <strong style="color: #475569; font-size: 0.9rem;">Quiz #${newIndex + 1}</strong>
+                            <button type="button" onclick="removeQuizItem(this)" 
+                                style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+                                Hapus
+                            </button>
                         </div>
-                        <div class="dynamic-item__actions">
-                            <button type="button" class="dynamic-item__remove" data-remove-row style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;">Hapus</button>
+
+                        <div style="display: grid; gap: 12px;">
+                            <label>
+                                <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Nama Quiz</span>
+                                <input type="text" name="quiz_items[${newIndex}][name]" 
+                                    placeholder="Contoh: Quiz Persamaan Linear" 
+                                    required 
+                                    style="margin-top: 4px; width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 0.95rem; background-color: #fff;" />
+                            </label>
+
+                            <label>
+                                <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Deskripsi</span>
+                                <textarea name="quiz_items[${newIndex}][description]" 
+                                    placeholder="Deskripsi quiz..." 
+                                    required 
+                                    style="margin-top: 4px; min-height: 80px; width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 0.95rem; background-color: #fff; resize: vertical;"></textarea>
+                            </label>
+
+                            <label>
+                                <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Link Quiz</span>
+                                <input type="url" name="quiz_items[${newIndex}][link]" 
+                                    placeholder="https://forms.google.com/..." 
+                                    required 
+                                    style="margin-top: 4px; width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 0.95rem; background-color: #fff;" />
+                            </label>
                         </div>
                     `;
-                return div;
+
+                container.appendChild(newItem);
+                updateQuizItemIndices();
             };
 
-            // Add new row
-            if (addLinkBtn && linkContainer) {
-                addLinkBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const newRow = createLinkRow();
-                    linkContainer.appendChild(newRow);
-                });
-            }
+            window.removeQuizItem = function (button) {
+                const container = document.getElementById('quiz-items-container');
+                if (container.children.length <= 1) {
+                    alert('Minimal harus ada 1 quiz item');
+                    return;
+                }
 
-            // Remove row (event delegation)
-            if (linkContainer) {
-                linkContainer.addEventListener('click', (e) => {
-                    if (e.target.closest('[data-remove-row]')) {
-                        e.preventDefault();
-                        const row = e.target.closest('.dynamic-item');
-                        if (linkContainer.children.length > 1) {
-                            row.remove();
-                        } else {
-                            // If it's the last row, just clear the input
-                            row.querySelector('input').value = '';
-                        }
-                    }
+                const row = button.closest('.quiz-item-row');
+                row.remove();
+                updateQuizItemIndices();
+            };
+
+            function updateQuizItemIndices() {
+                const container = document.getElementById('quiz-items-container');
+                const items = container.querySelectorAll('.quiz-item-row');
+
+                items.forEach((item, index) => {
+                    // Update label
+                    const label = item.querySelector('strong');
+                    if (label) label.textContent = `Quiz #${index + 1}`;
+
+                    // Update input names
+                    const nameInput = item.querySelector('input[name*="[name]"]');
+                    const descInput = item.querySelector('textarea[name*="[description]"]');
+                    const linkInput = item.querySelector('input[name*="[link]"]');
+
+                    if (nameInput) nameInput.name = `quiz_items[${index}][name]`;
+                    if (descInput) descInput.name = `quiz_items[${index}][description]`;
+                    if (linkInput) linkInput.name = `quiz_items[${index}][link]`;
                 });
             }
         });

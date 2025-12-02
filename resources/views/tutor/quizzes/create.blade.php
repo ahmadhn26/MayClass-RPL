@@ -35,8 +35,15 @@
         }
 
         @keyframes popIn {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .form-header {
@@ -66,7 +73,10 @@
             cursor: pointer;
             transition: color 0.2s;
         }
-        .close-btn:hover { color: #ef4444; }
+
+        .close-btn:hover {
+            color: #ef4444;
+        }
 
         .form-body {
             padding: 32px;
@@ -74,10 +84,19 @@
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 transparent;
         }
-        
-        .form-body::-webkit-scrollbar { width: 6px; }
-        .form-body::-webkit-scrollbar-track { background: transparent; }
-        .form-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+        .form-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .form-body::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
 
         /* --- GRID SYSTEM --- */
         .form-grid {
@@ -87,7 +106,9 @@
             align-items: start;
         }
 
-        .span-full { grid-column: 1 / -1; }
+        .span-full {
+            grid-column: 1 / -1;
+        }
 
         /* --- INPUTS --- */
         label span {
@@ -112,7 +133,9 @@
             transition: border-color 0.2s;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: #3fa67e;
             box-shadow: 0 0 0 3px rgba(63, 166, 126, 0.1);
@@ -149,7 +172,11 @@
             border: 1px solid #e2e8f0;
             transition: all 0.2s;
         }
-        .btn-cancel:hover { background: #f1f5f9; color: #0f172a; }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
 
         .btn-save {
             background: #3fa67e;
@@ -162,13 +189,27 @@
             transition: all 0.2s;
             box-shadow: 0 4px 6px -1px rgba(63, 166, 126, 0.3);
         }
-        .btn-save:hover { background: #2f8a67; transform: translateY(-1px); }
-        
+
+        .btn-save:hover {
+            background: #2f8a67;
+            transform: translateY(-1px);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-card { height: 100vh; max-height: 100vh; border-radius: 0; }
-            .form-header { border-radius: 0; }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-card {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .form-header {
+                border-radius: 0;
+            }
         }
     </style>
 @endpush
@@ -177,7 +218,7 @@
     {{-- WRAPPER OVERLAY --}}
     <div class="modal-overlay">
         <div class="form-card">
-            
+
             {{-- HEADER FORM --}}
             <div class="form-header">
                 <h1>Tambah Quiz Baru</h1>
@@ -187,7 +228,8 @@
             {{-- BODY FORM --}}
             <div class="form-body">
                 @if ($errors->any())
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <div
+                        style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
                         <h4 style="color: #dc2626; margin: 0 0 8px 0; font-size: 0.95rem;">Terjadi kesalahan:</h4>
                         <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
                             @foreach ($errors->all() as $error)
@@ -199,10 +241,10 @@
 
                 <form method="POST" action="{{ route('tutor.quizzes.store') }}" id="quiz-form">
                     @csrf
-                    
-                    {{-- 
-                        INPUT HIDDEN (DATA BOHONGAN)
-                        Agar Controller tidak error, kita kirim data default
+
+                    {{--
+                    INPUT HIDDEN (DATA BOHONGAN)
+                    Agar Controller tidak error, kita kirim data default
                     --}}
                     <input type="hidden" name="class_level" value="-">
                     <input type="hidden" name="duration_label" value="-">
@@ -226,7 +268,8 @@
 
                         <label>
                             <span>Judul Quiz</span>
-                            <input type="text" name="title" value="{{ old('title') }}" placeholder="Contoh: Quiz Persamaan Linear" required />
+                            <input type="text" name="title" value="{{ old('title') }}"
+                                placeholder="Contoh: Quiz Persamaan Linear" required />
                             @error('title') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
 
@@ -241,14 +284,21 @@
 
                         <label class="span-full">
                             <span>Deskripsi</span>
-                            <textarea name="summary" placeholder="Tuliskan deskripsi singkat quiz..." required>{{ old('summary') }}</textarea>
+                            <textarea name="summary" placeholder="Tuliskan deskripsi singkat quiz..."
+                                required>{{ old('summary') }}</textarea>
                             @error('summary') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
 
                         <label class="span-full">
                             <span>Link Quiz</span>
-                            <input type="url" name="link_urls[]" value="{{ old('link_urls.0') }}" placeholder="https://forms.google.com/..." required />
-                            @error('link_urls.0') <div class="error-text">{{ $message }}</div> @enderror
+                            <input type="url" name="quiz_items[0][link]" value="{{ old('quiz_items.0.link') }}"
+                                placeholder="https://forms.google.com/..." required />
+                            {{-- Hidden fields for quiz item --}}
+                            <input type="hidden" name="quiz_items[0][name]" id="quiz-item-name"
+                                value="{{ old('quiz_items.0.name') }}" />
+                            <input type="hidden" name="quiz_items[0][description]" id="quiz-item-description"
+                                value="{{ old('quiz_items.0.description') }}" />
+                            @error('quiz_items.0.link') <div class="error-text">{{ $message }}</div> @enderror
                         </label>
                     </div>
 
@@ -267,72 +317,85 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const packageSelect = document.getElementById('package-select');
-    const subjectSelect = document.getElementById('subject-select');
-    const form = document.getElementById('quiz-form');
-    const submitBtn = document.getElementById('submit-btn');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const packageSelect = document.getElementById('package-select');
+            const subjectSelect = document.getElementById('subject-select');
+            const form = document.getElementById('quiz-form');
+            const submitBtn = document.getElementById('submit-btn');
 
-    // AJAX Subject Dropdown
-    if (packageSelect && subjectSelect) {
-        const loadSubjects = (packageId, selectedId = null) => {
-            console.log('[CREATE DEBUG] loadSubjects called with packageId:', packageId);
-            subjectSelect.innerHTML = '<option value="">Memuat...</option>';
-            subjectSelect.disabled = true;
+            // AJAX Subject Dropdown
+            if (packageSelect && subjectSelect) {
+                const loadSubjects = (packageId, selectedId = null) => {
+                    console.log('[CREATE DEBUG] loadSubjects called with packageId:', packageId);
+                    subjectSelect.innerHTML = '<option value="">Memuat...</option>';
+                    subjectSelect.disabled = true;
 
-            if (packageId) {
-                // Use Laravel route helper for correct URL
-                const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
-                console.log('[CREATE DEBUG] Fetching from URL:', url);
-                
-                fetch(url)
-                    .then(response => {
-                        console.log('[CREATE DEBUG] Response:', response.status, response.statusText);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('[CREATE DEBUG] Data received:', data);
-                        subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
-                        data.forEach(subject => {
-                            const option = document.createElement('option');
-                            option.value = subject.id;
-                            option.textContent = subject.name + ' (' + subject.level + ')';
-                            if (selectedId && String(subject.id) === String(selectedId)) {
-                                option.selected = true;
-                            }
-                            subjectSelect.appendChild(option);
-                        });
-                        subjectSelect.disabled = false;
-                        console.log('[CREATE DEBUG] Dropdown populated with', data.length, 'subjects');
-                    })
-                    .catch(error => {
-                        console.error('[CREATE ERROR]', error);
-                        subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
-                    });
-            } else {
-                console.log('[CREATE DEBUG] No packageId, showing placeholder');
-                subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
-                subjectSelect.disabled = true;
+                    if (packageId) {
+                        // Use Laravel route helper for correct URL
+                        const url = "{{ route('tutor.packages.subjects', ':id') }}".replace(':id', packageId);
+                        console.log('[CREATE DEBUG] Fetching from URL:', url);
+
+                        fetch(url)
+                            .then(response => {
+                                console.log('[CREATE DEBUG] Response:', response.status, response.statusText);
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('[CREATE DEBUG] Data received:', data);
+                                subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+                                data.forEach(subject => {
+                                    const option = document.createElement('option');
+                                    option.value = subject.id;
+                                    option.textContent = subject.name + ' (' + subject.level + ')';
+                                    if (selectedId && String(subject.id) === String(selectedId)) {
+                                        option.selected = true;
+                                    }
+                                    subjectSelect.appendChild(option);
+                                });
+                                subjectSelect.disabled = false;
+                                console.log('[CREATE DEBUG] Dropdown populated with', data.length, 'subjects');
+                            })
+                            .catch(error => {
+                                console.error('[CREATE ERROR]', error);
+                                subjectSelect.innerHTML = '<option value="">Gagal memuat mata pelajaran</option>';
+                            });
+                    } else {
+                        console.log('[CREATE DEBUG] No packageId, showing placeholder');
+                        subjectSelect.innerHTML = '<option value="">Pilih paket terlebih dahulu</option>';
+                        subjectSelect.disabled = true;
+                    }
+                };
+
+                packageSelect.addEventListener('change', function () {
+                    loadSubjects(this.value);
+                });
+
+                // Jika package sudah dipilih (setelah validation error), load subjects
+                if (packageSelect.value) {
+                    const oldSubjectId = subjectSelect.getAttribute('data-old');
+                    loadSubjects(packageSelect.value, oldSubjectId);
+                }
             }
-        };
 
-        packageSelect.addEventListener('change', function() {
-            loadSubjects(this.value);
+            // Disable button saat submit dan auto-fill quiz items
+            form?.addEventListener('submit', function (e) {
+                // Auto-fill quiz item name and description from form data
+                const titleInput = document.querySelector('input[name="title"]');
+                const summaryInput = document.querySelector('textarea[name="summary"]');
+                const quizNameInput = document.getElementById('quiz-item-name');
+                const quizDescInput = document.getElementById('quiz-item-description');
+
+                if (quizNameInput && titleInput) {
+                    quizNameInput.value = titleInput.value || 'Quiz';
+                }
+                if (quizDescInput && summaryInput) {
+                    quizDescInput.value = summaryInput.value || 'Deskripsi quiz';
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Menyimpan...';
+            });
         });
-
-        // Jika package sudah dipilih (setelah validation error), load subjects
-        if (packageSelect.value) {
-            const oldSubjectId = subjectSelect.getAttribute('data-old');
-            loadSubjects(packageSelect.value, oldSubjectId);
-        }
-    }
-
-    // Disable button saat submit
-    form?.addEventListener('submit', function() {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Menyimpan...';
-    });
-});
-</script>
+    </script>
 @endpush
