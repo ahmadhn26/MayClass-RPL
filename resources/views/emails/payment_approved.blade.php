@@ -43,33 +43,17 @@
 
         .header {
             background: linear-gradient(135deg, #3fa67e 0%, #1b6d4f 100%);
-            padding: 48px 24px;
+            padding: 60px 24px;
+            /* Increased padding since icon is gone */
             text-align: center;
-        }
-
-        .success-icon {
-            width: 72px;
-            height: 72px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            backdrop-filter: blur(4px);
-        }
-
-        .success-checkmark {
-            color: #ffffff;
-            font-size: 36px;
-            line-height: 1;
         }
 
         .title {
             color: #ffffff;
-            font-size: 26px;
+            font-size: 32px;
+            /* Increased font size */
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             letter-spacing: -0.5px;
         }
 
@@ -86,24 +70,29 @@
             color: #4d5660;
             font-size: 16px;
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
+            /* Increased margin */
             line-height: 1.6;
         }
 
         .info-card {
             background-color: #f8faf9;
             border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 32px;
+            padding: 32px;
+            /* Increased padding */
+            margin-bottom: 40px;
             border: 1px solid rgba(63, 166, 126, 0.15);
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
+            align-items: flex-start;
+            /* Align to top for multi-line values */
+            margin-bottom: 20px;
+            /* Increased spacing */
+            padding-bottom: 20px;
+            /* Increased spacing */
             border-bottom: 1px dashed rgba(63, 166, 126, 0.2);
         }
 
@@ -117,6 +106,8 @@
             color: #6b7280;
             font-size: 14px;
             font-weight: 500;
+            min-width: 120px;
+            /* Ensure consistent label width */
         }
 
         .info-value {
@@ -124,11 +115,13 @@
             font-size: 15px;
             font-weight: 600;
             text-align: right;
+            flex: 1;
+            /* Allow value to take remaining space */
         }
 
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 14px;
             background-color: rgba(63, 166, 126, 0.1);
             color: #1b6d4f;
             border-radius: 99px;
@@ -146,7 +139,8 @@
         .btn {
             display: inline-block;
             background: linear-gradient(120deg, #3fa67e 0%, #1b6d4f 100%);
-            color: #ffffff;
+            color: #ffffff !important;
+            /* Force white color */
             font-weight: 600;
             padding: 16px 40px;
             border-radius: 99px;
@@ -179,11 +173,8 @@
 <body>
     <div class="wrapper">
         <div class="container">
-            <!-- Header with Success Icon -->
+            <!-- Header without Icon -->
             <div class="header">
-                <div class="success-icon">
-                    <span class="success-checkmark">✓</span>
-                </div>
                 <h1 class="title">Pembayaran Berhasil</h1>
                 <p class="subtitle">Terima kasih, pembayaran Anda telah dikonfirmasi.</p>
             </div>
@@ -222,7 +213,7 @@
 
                 <!-- CTA Button -->
                 <div class="btn-container">
-                    <a href="{{ route('login') }}" class="btn">Masuk ke Akun</a>
+                    <a href="{{ route('login') }}" class="btn">Masuk ke Akun Belajar</a>
                 </div>
             </div>
 
