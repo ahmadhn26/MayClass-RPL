@@ -21,7 +21,6 @@ class PaymentMethodController extends BaseAdminController
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'slug' => ['required', 'string', 'alpha_dash', 'max:50', 'unique:payment_methods,slug'],
             'name' => ['required', 'string', 'max:100'],
             'type' => ['required', Rule::in(['bank', 'ewallet'])],
             'account_number' => ['required', 'string', 'max:100'],
@@ -29,11 +28,24 @@ class PaymentMethodController extends BaseAdminController
             'bank_name' => ['nullable', 'required_if:type,bank', 'string', 'max:100'],
             'instructions' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
-            'display_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // Auto-generate slug from name
+        $baseSlug = \Illuminate\Support\Str::slug($data['name']);
+        $slug = $baseSlug;
+        $counter = 1;
+        
+        // Handle duplicate slugs by adding suffix
+        while (PaymentMethod::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        $data['slug'] = $slug;
+
+        // Auto-generate display_order
+        $data['display_order'] = (PaymentMethod::max('display_order') ?? 0) + 1;
+
         $data['is_active'] = $request->has('is_active') ? (bool) $request->is_active : true;
-        $data['display_order'] = $data['display_order'] ?? 999;
 
         PaymentMethod::create($data);
 
@@ -45,7 +57,6 @@ class PaymentMethodController extends BaseAdminController
     public function update(Request $request, PaymentMethod $paymentMethod): RedirectResponse
     {
         $data = $request->validate([
-            'slug' => ['required', 'string', 'alpha_dash', 'max:50', Rule::unique('payment_methods', 'slug')->ignore($paymentMethod->id)],
             'name' => ['required', 'string', 'max:100'],
             'type' => ['required', Rule::in(['bank', 'ewallet'])],
             'account_number' => ['required', 'string', 'max:100'],
@@ -53,11 +64,12 @@ class PaymentMethodController extends BaseAdminController
             'bank_name' => ['nullable', 'required_if:type,bank', 'string', 'max:100'],
             'instructions' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
-            'display_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $data['is_active'] = $request->has('is_active') ? (bool) $request->is_active : $paymentMethod->is_active;
-        $data['display_order'] = $data['display_order'] ?? $paymentMethod->display_order;
+        
+        // Slug and display_order are immutable - keep existing values
+        // (not included in $data, so they won't be updated)
 
         $paymentMethod->update($data);
 

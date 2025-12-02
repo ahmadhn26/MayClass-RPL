@@ -579,7 +579,7 @@
                                 <td>
                                     <div class="action-group">
                                         <button type="button" class="btn-action btn-edit"
-                                            onclick="openEditModal({{ $method->id }}, '{{ $method->slug }}', '{{ $method->name }}', '{{ $method->type }}', '{{ $method->bank_name }}', '{{ $method->account_number }}', '{{ $method->account_holder }}', {{ $method->is_active ? 'true' : 'false' }}, {{ $method->display_order }})">
+                                            onclick="openEditModal({{ $method->id }}, '{{ $method->name }}', '{{ $method->type }}', '{{ $method->bank_name }}', '{{ $method->account_number }}', '{{ $method->account_holder }}', {{ $method->is_active ? 'true' : 'false' }})">
                                             Edit
                                         </button>
                                         <button type="button" class="btn-delete" data-id="{{ $method->id }}"
@@ -634,13 +634,6 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Slug (Kode Unik) <span style="color: #ef4444;">*</span></label>
-                            <input type="text" name="slug" class="form-control" value="{{ old('slug') }}"
-                                placeholder="Contoh: shopeepay" required>
-                            <p class="helper-text">Gunakan huruf kecil dan underscore. Contoh: shopeepay, transfer_bank</p>
-                        </div>
-
-                        <div class="form-group full-width">
                             <label>Tipe Metode <span style="color: #ef4444;">*</span></label>
                             <div class="radio-group">
                                 <label class="radio-option">
@@ -680,14 +673,7 @@
                                 placeholder="Instruksi khusus untuk metode pembayaran ini">{{ old('instructions') }}</textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label>Urutan Tampilan</label>
-                            <input type="number" name="display_order" class="form-control"
-                                value="{{ old('display_order', 999) }}" min="0">
-                            <p class="helper-text">Semakin kecil angka, semakin atas urutannya</p>
-                        </div>
-
-                        <div class="form-group">
+                        <div class="form-group full-width">
                             <label>&nbsp;</label>
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" value="1" id="is_active_add" checked>
@@ -727,11 +713,6 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Slug (Kode Unik) <span style="color: #ef4444;">*</span></label>
-                            <input type="text" name="slug" id="edit_slug" class="form-control" required>
-                        </div>
-
-                        <div class="form-group full-width">
                             <label>Tipe Metode <span style="color: #ef4444;">*</span></label>
                             <div class="radio-group">
                                 <label class="radio-option">
@@ -762,12 +743,7 @@
                             <input type="text" name="account_holder" id="edit_account_holder" class="form-control" required>
                         </div>
 
-                        <div class="form-group">
-                            <label>Urutan Tampilan</label>
-                            <input type="number" name="display_order" id="edit_display_order" class="form-control" min="0">
-                        </div>
-
-                        <div class="form-group">
+                        <div class="form-group full-width">
                             <label>&nbsp;</label>
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" value="1" id="edit_is_active">
@@ -808,16 +784,14 @@
             }
         }
 
-        function openEditModal(id, slug, name, type, bankName, accountNumber, accountHolder, isActive, displayOrder) {
+        function openEditModal(id, name, type, bankName, accountNumber, accountHolder, isActive) {
             const form = document.getElementById('editForm');
             form.action = `/admin/payment-methods/${id}`;
 
-            document.getElementById('edit_slug').value = slug;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_account_number').value = accountNumber;
             document.getElementById('edit_account_holder').value = accountHolder;
             document.getElementById('edit_bank_name').value = bankName || '';
-            document.getElementById('edit_display_order').value = displayOrder;
             document.getElementById('edit_is_active').checked = isActive;
 
             if (type === 'bank') {
