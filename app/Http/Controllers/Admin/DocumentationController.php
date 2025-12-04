@@ -63,7 +63,7 @@ class DocumentationController extends BaseAdminController
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.documentations.index')
+        return redirect()->back()
             ->with('status', 'Dokumentasi berhasil ditambahkan.');
     }
 
@@ -99,7 +99,7 @@ class DocumentationController extends BaseAdminController
             'year' => $year,
         ]);
 
-        return redirect()->route('admin.documentations.index')
+        return redirect()->back()
             ->with('status', 'Dokumentasi berhasil diperbarui.');
     }
 
@@ -112,7 +112,7 @@ class DocumentationController extends BaseAdminController
 
         $documentation->delete();
 
-        return redirect()->route('admin.documentations.index')
+        return redirect()->back()
             ->with('status', 'Dokumentasi berhasil dihapus.');
     }
 }

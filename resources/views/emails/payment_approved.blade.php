@@ -82,7 +82,7 @@
         /* Content Section */
         .content {
             padding: 40px; 
-            text-align: center;
+            text-align: center; 
         }
 
         .greeting {

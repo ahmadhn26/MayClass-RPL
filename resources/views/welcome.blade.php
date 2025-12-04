@@ -2126,7 +2126,7 @@
         <section class="section" id="dokumentasi" style="background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);">
             <div class="container">
                 <div class="section-header" data-reveal>
-                    <h2 class="section-title">📸 Dokumentasi Kegiatan MayClass</h2>
+                    <h2 class="section-title">Dokumentasi Kegiatan MayClass</h2>
                     <p class="section-subtitle">
                         Intip momen seru dan kebersamaan selama belajar bersama MayClass minggu ini!
                     </p>
@@ -2145,7 +2145,7 @@
                                     style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
                                 <div
                                     style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                    📅 {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
+                                    {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
                                 </div>
                             </div>
                             <div style="padding: 16px;">
@@ -2159,7 +2159,7 @@
 
                 <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
                     <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
-                        💡 <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
+                        <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
                         minggu!
                     </p>
                 </div>

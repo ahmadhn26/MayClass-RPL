@@ -516,6 +516,9 @@
             }
 
             @if(session('status'))
+                closeAddModal();
+                closeEditModal();
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil!',
@@ -523,6 +526,13 @@
                     timer: 2000,
                     showConfirmButton: false
                 });
+
+                setTimeout(function () {
+                    const addForm = document.querySelector('#addModal form');
+                    if (addForm) addForm.reset();
+                    document.getElementById('addPreview').style.display = 'none';
+                    document.getElementById('editPreview').style.display = 'none';
+                }, 100);
             @endif
         </script>
     @endpush

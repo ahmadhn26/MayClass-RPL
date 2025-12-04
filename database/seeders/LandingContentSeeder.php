@@ -12,19 +12,7 @@ class LandingContentSeeder extends Seeder
         // Clear existing landing contents to avoid duplicates during development
         LandingContent::truncate();
 
-        // Hero section
-        LandingContent::create([
-            'section' => 'hero',
-            'title' => 'Hero Section',
-            'content' => [
-                'title' => 'Bimbel MayClass',
-                'subtitle' => 'Langkah Pasti Menuju Prestasi',
-                'description' => 'MayClass membantu kamu belajar dengan sistem yang rapi, mentor yang suportif, dan materi yang dirancang khusus untuk mengejar kampus dan sekolah kedinasan impian.',
-            ],
-            'image' => null, // gunakan default di blade jika null
-            'order' => 0,
-            'is_active' => true,
-        ]);
+
 
         // Articles - DISABLED (akan dikelola manual via admin panel)
         // Uncomment lines below if you want to seed articles
