@@ -6,166 +6,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran Berhasil</title>
     <style>
-        /* Reset styles */
-        body,
-        p,
-        h1,
-        h2,
-        h3,
-        div,
-        span {
+        /* Base Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        
+        /* General Styles */
+        body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f6f7f8;
-            -webkit-font-smoothing: antialiased;
+            background-color: #f3f4f6;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
             line-height: 1.6;
-            color: #14352c;
+            width: 100% !important;
+            height: 100% !important;
         }
 
+        /* Layout Helpers */
         .wrapper {
             width: 100%;
-            background-color: #f6f7f8;
+            background-color: #f3f4f6;
             padding: 40px 0;
         }
 
         .container {
+            display: block;
+            margin: 0 auto !important;
             max-width: 600px;
-            margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 18px 40px rgba(31, 107, 79, 0.08);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
         }
 
+        /* HEADER SECTION */
         .header {
-            background: linear-gradient(135deg, #3fa67e 0%, #1b6d4f 100%);
-            padding: 60px 24px;
-            /* Increased padding since icon is gone */
-            text-align: center;
+            background-color: #1b6d4f;
+            padding: 25px 20px;
+            text-align: center; /* Kunci 1: Container rata tengah */
         }
 
-        .title {
+        .logo-img {
+            max-width: 250px; 
+            filter: brightness(0) invert(1);
+            
+            /* Kunci 2: Image block + Margin Auto Kiri Kanan (Pasti Center) */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 0px; 
+            border: none;
+        }
+
+        .header-title {
             color: #ffffff;
-            font-size: 32px;
-            /* Increased font size */
-            font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: rgba(255, 255, 255, 0.92);
-            font-size: 16px;
-        }
-
-        .content {
-            padding: 40px 32px;
-        }
-
-        .message {
-            color: #4d5660;
-            font-size: 16px;
+            font-size: 24px;
+            font-weight: 800; 
+            line-height: 1.2;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            
+            /* Kunci 3: Reset margin bawaan browser dulu */
+            margin: 0;
+            
+            /* Kunci 4: Pastikan lebar 100% container dan text align center */
+            display: block;
+            width: 100%;
             text-align: center;
-            margin-bottom: 40px;
-            /* Increased margin */
+            
+            /* Tarik ke atas (setelah di-reset marginnya) */
+            margin-top: -10px; 
+        }
+
+        /* Content Section */
+        .content {
+            padding: 40px; 
+            text-align: center;
+        }
+
+        .greeting {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 30px;
             line-height: 1.6;
         }
 
-        .info-card {
-            background-color: #f8faf9;
-            border-radius: 16px;
-            padding: 32px;
-            /* Increased padding */
-            margin-bottom: 40px;
-            border: 1px solid rgba(63, 166, 126, 0.15);
+        /* Receipt Box */
+        .receipt-box {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 0 24px;
+            margin-bottom: 30px;
+            text-align: left;
         }
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            /* Align to top for multi-line values */
-            margin-bottom: 20px;
-            /* Increased spacing */
-            padding-bottom: 20px;
-            /* Increased spacing */
-            border-bottom: 1px dashed rgba(63, 166, 126, 0.2);
+        .receipt-row {
+            padding: 16px 0;
+            border-bottom: 1px solid #f3f4f6;
         }
 
-        .info-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
+        .receipt-row:last-child {
             border-bottom: none;
         }
 
-        .info-label {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 500;
-            min-width: 120px;
-            /* Ensure consistent label width */
+        .label {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
         }
 
-        .info-value {
-            color: #14352c;
+        .value {
             font-size: 15px;
+            color: #111827;
             font-weight: 600;
-            text-align: right;
-            flex: 1;
-            /* Allow value to take remaining space */
+            float: right;
         }
 
         .status-badge {
-            display: inline-block;
-            padding: 6px 14px;
-            background-color: rgba(63, 166, 126, 0.1);
-            color: #1b6d4f;
-            border-radius: 99px;
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 100px;
             font-size: 12px;
             font-weight: 700;
-            text-transform: uppercase;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
-        .btn-container {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
+        /* Button */
         .btn {
             display: inline-block;
-            background: linear-gradient(120deg, #3fa67e 0%, #1b6d4f 100%);
+            background-color: #1b6d4f;
             color: #ffffff !important;
-            /* Force white color */
-            font-weight: 600;
-            padding: 16px 40px;
-            border-radius: 99px;
-            text-decoration: none;
-            transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(63, 166, 126, 0.25);
             font-size: 16px;
+            font-weight: 600;
+            padding: 14px 36px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
         }
-
+        
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(63, 166, 126, 0.35);
+            opacity: 0.9;
         }
 
+        /* Footer */
         .footer {
-            background-color: #f8faf9;
+            background-color: #f9fafb;
             padding: 24px;
             text-align: center;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-top: 1px solid #f3f4f6;
         }
 
         .footer-text {
-            color: #9ca3af;
             font-size: 12px;
-            margin-bottom: 8px;
+            color: #9ca3af;
+            margin: 4px 0;
         }
     </style>
 </head>
@@ -173,57 +174,60 @@
 <body>
     <div class="wrapper">
         <div class="container">
-            <!-- Header without Icon -->
+            
             <div class="header">
-                <h1 class="title">Pembayaran Berhasil</h1>
-                <p class="subtitle">Terima kasih, pembayaran Anda telah dikonfirmasi.</p>
+                <img src="{{ $message->embed(public_path('images/Logo_MayClass.png')) }}" 
+                     alt="MayClass" 
+                     class="logo-img">
+                
+                <h1 class="header-title">PEMBAYARAN BERHASIL</h1>
             </div>
 
-            <!-- Main Content -->
             <div class="content">
-                <p class="message">
-                    Halo <strong>{{ $order->user->name }}</strong>, pembayaran Anda telah kami terima. Sekarang Anda
-                    dapat mengakses materi pembelajaran yang Anda pilih.
+                <p class="greeting">
+                    Halo <strong>{{ $order->user->name }}</strong>,<br>
+                    Pembayaran diterima. Selamat belajar.
                 </p>
 
-                <!-- Order Details Card -->
-                <div class="info-card">
-                    <div class="info-row">
-                        <span class="info-label">Status</span>
-                        <span class="status-badge">Lunas / Verified</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Username</span>
-                        <span class="info-value">{{ $order->user->name }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Paket</span>
-                        <span class="info-value">{{ $order->package->detail_title }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Total Pembayaran</span>
-                        <span class="info-value">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Tanggal</span>
-                        <span
-                            class="info-value">{{ $order->paid_at ? $order->paid_at->format('d M Y H:i') : date('d M Y') }}</span>
-                    </div>
+                <div class="receipt-box">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td class="receipt-row">
+                                <span class="label">Status</span>
+                                <span style="float: right;" class="status-badge">Lunas</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="receipt-row">
+                                <span class="label">Paket</span>
+                                <span class="value">{{ $order->package->detail_title }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="receipt-row">
+                                <span class="label">Total</span>
+                                <span class="value">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="receipt-row">
+                                <span class="label">Tanggal</span>
+                                <span class="value">
+                                    {{ $order->paid_at ? $order->paid_at->format('d M Y') : date('d M Y') }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
-                <!-- CTA Button -->
-                <div class="btn-container">
-                    <a href="{{ route('login') }}" class="btn">Masuk ke Akun Belajar</a>
-                </div>
+                <a href="{{ route('login') }}" class="btn">Mulai Belajar</a>
             </div>
 
-            <!-- Footer -->
             <div class="footer">
-                <p class="footer-text">Email ini dikirim secara otomatis, mohon tidak membalas email ini.</p>
                 <p class="footer-text">&copy; {{ date('Y') }} MayClass. All rights reserved.</p>
+                <p class="footer-text">Email otomatis, mohon tidak membalas.</p>
             </div>
         </div>
     </div>
 </body>
-
 </html>
