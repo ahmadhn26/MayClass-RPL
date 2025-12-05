@@ -8,7 +8,7 @@
  * - Shows countdown timer when session hasn't started yet
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const BUFFER_MINUTES = 10; // Enable button 10 minutes before class starts
     const UPDATE_INTERVAL = 30000; // Update every 30 seconds
 
@@ -74,10 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Calculate time until button becomes available
         const minutesUntilStart = Math.ceil((startTimeWithBuffer - now) / 1000 / 60);
         const countdownText = button.querySelector('.countdown-text');
-        
+
         if (countdownText) {
             countdownText.style.display = 'inline';
-            
+
             if (minutesUntilStart > 60) {
                 const hours = Math.floor(minutesUntilStart / 60);
                 const mins = minutesUntilStart % 60;
@@ -85,12 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 countdownText.textContent = `(${minutesUntilStart} menit lagi)`;
             }
-        }
-
-        // Optional: Add lock icon
-        const buttonText = button.querySelector('.button-text');
-        if (buttonText && !buttonText.textContent.includes('🔒')) {
-            buttonText.textContent = '🔒 ' + buttonText.textContent;
         }
     }
 
@@ -136,12 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (countdownText) {
             countdownText.style.display = 'none';
         }
-
-        // Remove lock icon from button text
-        const buttonText = button.querySelector('.button-text');
-        if (buttonText && buttonText.textContent.includes('🔒')) {
-            buttonText.textContent = buttonText.textContent.replace('🔒 ', '');
-        }
     }
 
     // Initial update
@@ -151,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateButtonStates, UPDATE_INTERVAL);
 
     // Also update when page becomes visible again (user switches back to tab)
-    document.addEventListener('visibilitychange', function() {
+    document.addEventListener('visibilitychange', function () {
         if (!document.hidden) {
             updateButtonStates();
         }
