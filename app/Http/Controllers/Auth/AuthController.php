@@ -95,7 +95,7 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique(User::class)],
             'phone' => ['nullable', 'string', 'max:30'],
             'parent_phone' => ['required', 'string', 'max:30', 'regex:/^08[0-9]{8,13}$/'],
-            'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
+            'gender' => ['required', Rule::in(['male', 'female', 'other'])],
         ]);
 
         unset($data['captcha_answer']);

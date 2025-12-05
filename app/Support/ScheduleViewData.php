@@ -186,7 +186,9 @@ class ScheduleViewData
             'zoom_link' => $session->zoom_link,
             'start_time' => $startAt->format('H.i'),
             'start_at_iso' => $startAt->toIso8601String(),
+            'start_at' => $startAt, // Add Carbon object for time comparison
         ];
+
 
     }
 

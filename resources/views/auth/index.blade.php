@@ -601,12 +601,13 @@
                     @error('parent_phone') <span class="error-msg">{{ $message }}</span> @enderror
                 </div>
                 <div class="input-group">
-                    <label class="label">Jenis Kelamin</label>
-                    <select class="input-field" name="gender">
+                    <label class="label">Jenis Kelamin *</label>
+                    <select class="input-field" name="gender" required>
                         <option value="" disabled selected>Pilih opsi...</option>
                         <option value="male" @selected(old('gender') == 'male')>Laki-laki</option>
                         <option value="female" @selected(old('gender') == 'female')>Perempuan</option>
                     </select>
+                    @error('gender') <span class="error-msg">{{ $message }}</span> @enderror
                 </div>
             </div>
 

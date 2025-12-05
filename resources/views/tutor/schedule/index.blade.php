@@ -607,18 +607,36 @@
                                         </div>
 
                                         @if(str_contains($session['location'], 'Online') && !empty($session['zoom_link']))
+                                            @php
+                                                $now = \Carbon\Carbon::now();
+                                                $hasStarted = $session['start_at'] && $session['start_at']->lte($now);
+                                            @endphp
                                             <div style="margin-top: 12px;">
-                                                <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round">
-                                                        <path
-                                                            d="M15.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5m-11-4v-8a2 2 0 0 1 2-2H11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z">
-                                                        </path>
-                                                        <polyline points="15 10 20 7 20 17 15 14"></polyline>
-                                                    </svg>
-                                                    Join Zoom
-                                                </a>
+                                                @if($hasStarted)
+                                                    <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <path
+                                                                d="M15.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5m-11-4v-8a2 2 0 0 1 2-2H11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z">
+                                                            </path>
+                                                            <polyline points="15 10 20 7 20 17 15 14"></polyline>
+                                                        </svg>
+                                                        Join Zoom
+                                                    </a>
+                                                @else
+                                                    <button disabled class="zoom-btn"
+                                                        style="background: #cbd5e1; color: #64748b; cursor: not-allowed; opacity: 0.6;"
+                                                        title="Sesi belum dimulai">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                                        </svg>
+                                                        Dimulai {{ $session['start_at']->locale('id')->diffForHumans() }}
+                                                    </button>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
@@ -708,18 +726,36 @@
                                         </div>
 
                                         @if(str_contains($session['location'], 'Online') && !empty($session['zoom_link']))
+                                            @php
+                                                $now = \Carbon\Carbon::now();
+                                                $hasStarted = $session['start_at'] && $session['start_at']->lte($now);
+                                            @endphp
                                             <div style="margin-top: 12px;">
-                                                <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round">
-                                                        <path
-                                                            d="M15.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5m-11-4v-8a2 2 0 0 1 2-2H11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z">
-                                                        </path>
-                                                        <polyline points="15 10 20 7 20 17 15 14"></polyline>
-                                                    </svg>
-                                                    Join Zoom
-                                                </a>
+                                                @if($hasStarted)
+                                                    <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <path
+                                                                d="M15.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3.5m-11-4v-8a2 2 0 0 1 2-2H11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z">
+                                                            </path>
+                                                            <polyline points="15 10 20 7 20 17 15 14"></polyline>
+                                                        </svg>
+                                                        Join Zoom
+                                                    </a>
+                                                @else
+                                                    <button disabled class="zoom-btn"
+                                                        style="background: #cbd5e1; color: #64748b; cursor: not-allowed; opacity: 0.6;"
+                                                        title="Sesi belum dimulai">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                                        </svg>
+                                                        Dimulai {{ $session['start_at']->locale('id')->diffForHumans() }}
+                                                    </button>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
