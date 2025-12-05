@@ -187,7 +187,9 @@ class ScheduleViewData
             'start_time' => $startAt->format('H.i'),
             'start_at_iso' => $startAt->toIso8601String(),
             'start_at' => $startAt, // Add Carbon object for time comparison
+            'duration_minutes' => $duration, // Add duration for frontend
         ];
+
 
 
     }

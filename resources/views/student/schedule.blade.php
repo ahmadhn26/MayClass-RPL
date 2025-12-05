@@ -796,9 +796,14 @@
             </div>
             @if (!empty($schedule['highlight']['zoom_link']))
                 <div style="margin-top: 16px;">
-                    <a href="{{ $schedule['highlight']['zoom_link'] }}" target="_blank" class="btn-primary"
-                        style="background: #2d8cff;">
-                        Join Zoom Meeting
+                    <a href="{{ $schedule['highlight']['zoom_link'] }}" 
+                       target="_blank" 
+                       class="btn-primary zoom-button time-restricted"
+                       data-start-time="{{ $schedule['highlight']['start_at_iso'] ?? '' }}"
+                       data-duration="{{ $schedule['highlight']['duration_minutes'] ?? 90 }}"
+                       style="background: #2d8cff; display: inline-flex; align-items: center; gap: 8px;">
+                        <span class="button-text">Join Zoom Meeting</span>
+                        <span class="countdown-text" style="display: none; font-size: 0.85rem; opacity: 0.9;"></span>
                     </a>
                 </div>
             @endif
@@ -821,10 +826,16 @@
                             <div class="session-cat">{{ $session['category'] }}</div>
                             <h3 class="session-title">{{ $session['title'] }}</h3>
                             @if (!empty($session['zoom_link']))
-                                <a href="{{ $session['zoom_link'] }}" target="_blank"
-                                    style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 16px; background: #2d8cff; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;"
-                                    onmouseover="this.style.background='#1a73e8'" onmouseout="this.style.background='#2d8cff'">
-                                    Join Online
+                                <a href="{{ $session['zoom_link'] }}" 
+                                   target="_blank"
+                                   class="zoom-button time-restricted"
+                                   data-start-time="{{ $session['start_at_iso'] ?? '' }}"
+                                   data-duration="{{ $session['duration_minutes'] ?? 90 }}"
+                                   style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 16px; background: #2d8cff; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;"
+                                   onmouseover="if(!this.classList.contains('disabled')) this.style.background='#1a73e8'" 
+                                   onmouseout="if(!this.classList.contains('disabled')) this.style.background='#2d8cff'">
+                                    <span class="button-text">Join Online</span>
+                                    <span class="countdown-text" style="display: none; font-size: 0.8rem;"></span>
                                 </a>
                             @endif
 
@@ -938,3 +949,7 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/zoom-button-control.js') }}"></script>
+@endpush
