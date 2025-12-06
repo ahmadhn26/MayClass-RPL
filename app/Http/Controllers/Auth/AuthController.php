@@ -155,14 +155,25 @@ class AuthController extends Controller
         $passwordData = $request->validate([
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'g-recaptcha-response' => [
-                'required',
                 function ($attribute, $value, $fail) use ($request) {
                     $secret = config('services.recaptcha.secret');
 
+                    // 🔧 BYPASS: Skip validation di development jika reCAPTCHA tidak dikonfigurasi
                     if (!$secret) {
+                        if (app()->environment('local', 'development')) {
+                            Log::info('reCAPTCHA validation skipped (development mode, no credentials configured).');
+                            return; // Skip validation
+                        }
+
                         Log::warning('Google reCAPTCHA secret key tidak dikonfigurasi.');
                         $fail(__('Konfigurasi reCAPTCHA belum benar. Hubungi admin.'));
 
+                        return;
+                    }
+
+                    // Jika kredensial ada, validasi harus required
+                    if (empty($value)) {
+                        $fail(__('Silakan selesaikan verifikasi reCAPTCHA.'));
                         return;
                     }
 

@@ -382,13 +382,23 @@
             </div>
 
             {{-- reCAPTCHA --}}
-            <div class="input-group" style="margin-top: 20px;">
-                <div class="recaptcha-wrapper">
-                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+            @if(config('services.recaptcha.key'))
+                <div class="input-group" style="margin-top: 20px;">
+                    <div class="recaptcha-wrapper">
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+                    </div>
+                    @error('g-recaptcha-response') <p class="error-msg" style="text-align:center">{{ $message }}</p>
+                    @enderror
                 </div>
-                @error('g-recaptcha-response') <p class="error-msg" style="text-align:center">{{ $message }}</p>
-                @enderror
-            </div>
+            @else
+                @if(app()->environment('local', 'development'))
+                    <div class="input-group" style="margin-top: 12px;">
+                        <p class="form-helper" style="color: #f59e0b; font-size: 0.85rem; text-align: center; margin: 0;">
+                            ⚠️ Development Mode: reCAPTCHA tidak dikonfigurasi (validasi di-skip)
+                        </p>
+                    </div>
+                @endif
+            @endif
 
             <button class="btn-primary" type="submit">Simpan &amp; Daftar</button>
 

@@ -558,7 +558,7 @@
                         @foreach($paymentMethods as $method)
                             <option value="{{ $method->slug }}" data-type="{{ $method->type }}"
                                 data-bank="{{ $method->bank_name }}" data-number="{{ $method->account_number }}"
-                                data-holder="{{ $method->account_holder }}" {{ old('payment_method') == $method->slug ? 'selected' : '' }}>
+                                data-holder="{{ $method->account_holder }}" data-instructions="{{ $method->instructions ?? '' }}" {{ old('payment_method') == $method->slug ? 'selected' : '' }}>
                                 {{ $method->name }}
                             </option>
                         @endforeach
@@ -586,6 +586,12 @@
                         <div class="bank-row">
                             <span class="bank-label">Atas Nama</span>
                             <span class="bank-value" id="payment-holder">-</span>
+                        </div>
+                        <div id="payment-instructions-row" class="bank-row" style="display: none; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 12px; flex-direction: column; align-items: flex-start;">
+                            <span class="bank-label" style="display: block; margin-bottom: 8px; font-weight: 600;">📋 Instruksi:</span>
+                            <div id="payment-instructions" style="color: var(--text-main); font-size: 0.9rem; line-height: 1.6; background: #fffbeb; padding: 12px; border-radius: 8px; border: 1px dashed #fbbf24; width: 100%; white-space: pre-wrap;">
+                                -
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -802,6 +808,7 @@
                     const bank = option.dataset.bank;
                     const number = option.dataset.number;
                     const holder = option.dataset.holder;
+                    const instructions = option.dataset.instructions || '';
 
                     // Show info box
                     paymentInfo.style.display = 'block';
@@ -819,6 +826,17 @@
 
                     document.getElementById('payment-number').textContent = number || '-';
                     document.getElementById('payment-holder').textContent = holder || '-';
+
+                    // Handle instructions display
+                    const instructionsRow = document.getElementById('payment-instructions-row');
+                    const instructionsContent = document.getElementById('payment-instructions');
+                    
+                    if (instructions && instructions.trim() !== '') {
+                        instructionsRow.style.display = 'flex';
+                        instructionsContent.textContent = instructions;
+                    } else {
+                        instructionsRow.style.display = 'none';
+                    }
                 });
             }
 

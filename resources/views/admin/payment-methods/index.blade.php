@@ -579,7 +579,7 @@
                                 <td>
                                     <div class="action-group">
                                         <button type="button" class="btn-action btn-edit"
-                                            onclick="openEditModal({{ $method->id }}, '{{ $method->name }}', '{{ $method->type }}', '{{ $method->bank_name }}', '{{ $method->account_number }}', '{{ $method->account_holder }}', {{ $method->is_active ? 'true' : 'false' }})">
+                                            onclick="openEditModal({{ $method->id }}, '{{ $method->name }}', '{{ $method->type }}', '{{ $method->bank_name }}', '{{ $method->account_number }}', '{{ $method->account_holder }}', {{ $method->is_active ? 'true' : 'false' }}, '{{ addslashes($method->instructions ?? '') }}')">
                                             Edit
                                         </button>
                                         <button type="button" class="btn-delete" data-id="{{ $method->id }}"
@@ -668,6 +668,13 @@
                         </div>
 
                         <div class="form-group full-width">
+                            <label>Instruksi Pembayaran (Opsional)</label>
+                            <textarea name="instructions" class="form-control" rows="4" 
+                                placeholder="Contoh: Transfer sebelum pukul 20:00 WIB untuk diproses hari yang sama">{{ old('instructions') }}</textarea>
+                            <p class="helper-text">Instruksi akan ditampilkan di halaman checkout jika diisi</p>
+                        </div>
+
+                        <div class="form-group full-width">
                             <label>&nbsp;</label>
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" value="1" id="is_active_add" checked>
@@ -738,6 +745,13 @@
                         </div>
 
                         <div class="form-group full-width">
+                            <label>Instruksi Pembayaran (Opsional)</label>
+                            <textarea name="instructions" id="edit_instructions" class="form-control" rows="4" 
+                                placeholder="Contoh: Transfer sebelum pukul 20:00 WIB untuk diproses hari yang sama"></textarea>
+                            <p class="helper-text">Instruksi akan ditampilkan di halaman checkout jika diisi</p>
+                        </div>
+
+                        <div class="form-group full-width">
                             <label>&nbsp;</label>
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" value="1" id="edit_is_active">
@@ -778,7 +792,7 @@
             }
         }
 
-        function openEditModal(id, name, type, bankName, accountNumber, accountHolder, isActive) {
+        function openEditModal(id, name, type, bankName, accountNumber, accountHolder, isActive, instructions) {
             const form = document.getElementById('editForm');
             form.action = `/admin/payment-methods/${id}`;
 
@@ -786,6 +800,7 @@
             document.getElementById('edit_account_number').value = accountNumber;
             document.getElementById('edit_account_holder').value = accountHolder;
             document.getElementById('edit_bank_name').value = bankName || '';
+            document.getElementById('edit_instructions').value = instructions || '';
             document.getElementById('edit_is_active').checked = isActive;
 
             if (type === 'bank') {
