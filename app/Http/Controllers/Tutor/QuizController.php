@@ -281,6 +281,35 @@ class QuizController extends BaseTutorController
         }
     }
 
+    public function destroy(Quiz $quiz): RedirectResponse
+    {
+        // Check ownership via package
+        $userPackageIds = \Illuminate\Support\Facades\Auth::user()->packages()->pluck('packages.id');
+        
+        if (!$userPackageIds->contains($quiz->package_id)) {
+             return redirect()
+                ->route('tutor.quizzes.index')
+                ->with('error', __('Anda tidak memiliki akses untuk menghapus quiz ini.'));
+        }
+
+        try {
+            DB::transaction(function () use ($quiz) {
+                $quiz->quizItems()->delete();
+                $quiz->levels()->delete();
+                $quiz->takeaways()->delete();
+                $quiz->delete();
+            });
+
+            return redirect()
+                ->route('tutor.quizzes.index')
+                ->with('status', __('Quiz berhasil dihapus.'));
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('tutor.quizzes.index')
+                ->with('error', __('Gagal menghapus quiz: ' . $e->getMessage()));
+        }
+    }
+
     private function syncLevels(Quiz $quiz, array $levels): void
     {
         // Hapus levels lama

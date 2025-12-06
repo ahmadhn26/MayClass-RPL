@@ -267,6 +267,53 @@ class MaterialController extends BaseTutorController
         $payloads->each(fn($attributes) => $material->chapters()->create($attributes));
     }
 
+    public function destroy(Material $material): RedirectResponse
+    {
+        // Security check: ensure material belongs to one of user's packages
+        $userPackageIds = Auth::user()->packages()->pluck('packages.id');
+        
+        $hasAccess = DB::table('material_package')
+            ->where('material_id', $material->id)
+            ->whereIn('package_id', $userPackageIds)
+            ->exists();
+
+        // Alternative check: if the material has no packages, maybe we should check if created by user? 
+        // But current schema revolves around packages. 
+        // If strict ownership is needed:
+        // if (!$hasAccess) abort(403); 
+        
+        // For now, allow delete if connected to user packages, or just proceed if we trust the route model binding + middleware.
+        // Let's implement a basic check.
+        if (!$hasAccess) {
+             return redirect()
+                ->route('tutor.materials.index')
+                ->with('error', __('Anda tidak memiliki akses untuk menghapus materi ini.'));
+        }
+
+        try {
+            DB::transaction(function () use ($material) {
+                // Detach packages
+                $material->packages()->detach();
+                // Delete items
+                $material->materialItems()->delete();
+                // Delete objectives/chapters if any (though currently unused in folder mode, best to clean up)
+                $material->objectives()->delete();
+                $material->chapters()->delete();
+                
+                // Delete material
+                $material->delete();
+            });
+
+            return redirect()
+                ->route('tutor.materials.index')
+                ->with('status', __('Materi berhasil dihapus.'));
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('tutor.materials.index')
+                ->with('error', __('Gagal menghapus materi: ' . $e->getMessage()));
+        }
+    }
+
 
 
     public function getPackageSubjects(Package $package): \Illuminate\Http\JsonResponse

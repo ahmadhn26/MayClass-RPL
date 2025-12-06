@@ -173,6 +173,7 @@ Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->grou
     Route::get('/materi/{material:slug}/download', [TutorMaterialController::class, 'download'])->name('materials.download');
     Route::get('/materi/{material:slug}/edit', [TutorMaterialController::class, 'edit'])->name('materials.edit');
     Route::put('/materi/{material:slug}', [TutorMaterialController::class, 'update'])->name('materials.update');
+    Route::delete('/materi/{material}', [TutorMaterialController::class, 'destroy'])->name('materials.destroy');
 
     Route::get('/quiz', [TutorQuizController::class, 'index'])->name('quizzes.index');
     Route::get('/quiz/tambah', [TutorQuizController::class, 'create'])->name('quizzes.create');

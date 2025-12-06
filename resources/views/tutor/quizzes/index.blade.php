@@ -256,6 +256,16 @@
             background: #ecfdf5;
         }
 
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .btn-danger:hover {
+            background: #fecaca;
+            color: #b91c1c;
+        }
+
         /* --- Alerts & States --- */
         .system-alert {
             background: #fffbeb;
@@ -534,6 +544,14 @@
                         <a href="{{ route('tutor.quizzes.edit', $quiz) }}" class="action-btn btn-secondary">
                             Edit Folder
                         </a>
+                        <form action="{{ route('tutor.quizzes.destroy', $quiz) }}" method="POST" style="display: inline-block;"
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus quiz ini? Tindakan ini tidak dapat dibatalkan.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="action-btn btn-danger" style="width: 100%; border: none; cursor: pointer;">
+                                Hapus
+                            </button>
+                        </form>
                     </div>
                 </div>
             </article>
