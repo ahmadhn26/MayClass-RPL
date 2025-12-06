@@ -1,4 +1,4 @@
-# MayClass: Sistem Informasi Bimbingan Belajar
+# Website MayClass: Sistem Informasi Bimbingan Belajar
 
 MayClass adalah sistem informasi bimbingan belajar (e-learning) berbasis website yang dirancang untuk mendigitalkan dan mengelola proses bisnis di Bimbel MayClass.
 
