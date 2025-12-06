@@ -50,9 +50,19 @@ class Material extends Model
 
     public function getResourceUrlAttribute(): array
     {
-        return $this->attributes['resource_path']
-            ? json_decode($this->attributes['resource_path'], true)
-            : [];
+        // If resource_path is already cast to array by Laravel, return it directly
+        // Otherwise, decode it from JSON string
+        $resourcePath = $this->resource_path;
+        
+        if (is_array($resourcePath)) {
+            return $resourcePath;
+        }
+        
+        if (is_string($resourcePath)) {
+            return json_decode($resourcePath, true) ?? [];
+        }
+        
+        return [];
     }
 
     public function packages(): BelongsToMany
