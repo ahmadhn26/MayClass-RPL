@@ -85,17 +85,51 @@ Route::get('/', function () {
         $pendingOrder = \App\Models\Order::where('user_id', $user->id)
             ->whereIn('status', [
                 // Status untuk tombol "Lanjut Bayar"
-                'initiated', 
-                'pending', 
-                'awaiting_payment', 
-                
+                'initiated',
+                'pending',
+                'awaiting_payment',
+
                 // Status untuk tombol "Lihat Status"
-                'awaiting_verification' 
+                'awaiting_verification'
             ])
             ->with('package')
             ->latest('id')
             ->first();
     }
+
+    // Get statistics for hero section
+    $totalActiveStudents = \App\Models\User::where('role', 'student')
+        ->where('is_active', true)
+        ->count();
+
+    $totalActiveTutors = \App\Models\User::where('role', 'tutor')
+        ->where('is_active', true)
+        ->count();
+
+    // Get active students and tutors with their avatars for carousel
+    $activeStudents = \App\Models\User::where('role', 'student')
+        ->where('is_active', true)
+        ->select('id', 'name', 'avatar_path')
+        ->limit(10)
+        ->get()
+        ->map(function ($student) {
+            return [
+                'name' => $student->name,
+                'avatar' => ProfileAvatar::forUser($student)
+            ];
+        });
+
+    $activeTutors = \App\Models\User::where('role', 'tutor')
+        ->where('is_active', true)
+        ->select('id', 'name', 'avatar_path')
+        ->limit(10)
+        ->get()
+        ->map(function ($tutor) {
+            return [
+                'name' => $tutor->name,
+                'avatar' => ProfileAvatar::forUser($tutor)
+            ];
+        });
 
     return view('welcome', [
         'landingPackages' => $catalog,
@@ -106,6 +140,10 @@ Route::get('/', function () {
         'documentations' => $documentations,
         'hasActivePackage' => $hasActivePackage,
         'pendingOrder' => $pendingOrder,
+        'totalActiveStudents' => $totalActiveStudents,
+        'totalActiveTutors' => $totalActiveTutors,
+        'activeStudents' => $activeStudents,
+        'activeTutors' => $activeTutors,
     ]);
 })->name('home');
 
