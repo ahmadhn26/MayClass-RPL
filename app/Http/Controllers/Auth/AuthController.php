@@ -301,6 +301,7 @@ class AuthController extends Controller
         // 1. Priority: Pending Payment Verification (Redirect to "Lihat Status")
         // "jika siswa login dan sedang menunggu notifikasi pembayaran"
         if (in_array($user->role, ['student', 'visitor'])) {
+            // 1. Priority: Pending Payment Verification (Redirect to "Lihat Status")
             $pendingVerification = $user->orders()
                 ->where('status', 'awaiting_verification')
                 ->whereHas('package')
@@ -315,9 +316,22 @@ class AuthController extends Controller
                 ]);
             }
 
-            // 2. Priority: First Time Login / Incomplete Profile
+            // 2. Priority: Active Package -> Student Dashboard (Bypass Profile)
+            // "kalo dia sudah mempunyai paket yang aktif, maka pas setelah login dia langsung terhubung ke dashboard siswanya"
+            $hasActivePackage = $user->enrollments()
+                ->where('is_active', true)
+                ->where(function ($query) {
+                     $query->whereNull('ends_at')
+                           ->orWhere('ends_at', '>', now());
+                })
+                ->exists();
+
+            if ($hasActivePackage) {
+                return route('student.dashboard');
+            }
+
+            // 3. Priority: First Time Login / Incomplete Profile
             // "siswa yang pertama kali login ... maka halaman yang muncul pertama kali adalah halaman profil"
-            // We use empty address as a proxy for incomplete profile since fresh registers don't have it.
             if (empty($user->address)) {
                 return route('student.profile');
             }
