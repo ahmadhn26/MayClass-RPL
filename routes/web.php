@@ -98,17 +98,17 @@ Route::get('/', function () {
     }
 
     // Get statistics for hero section
-    $totalActiveStudents = \App\Models\User::where('role', 'student')
-        ->where('is_active', true)
+    // Total students who have ever joined (all students regardless of status)
+    $totalStudents = \App\Models\User::where('role', 'student')
         ->count();
 
+    // Total active tutors only
     $totalActiveTutors = \App\Models\User::where('role', 'tutor')
         ->where('is_active', true)
         ->count();
 
-    // Get active students and tutors with their avatars for carousel
-    $activeStudents = \App\Models\User::where('role', 'student')
-        ->where('is_active', true)
+    // Get all students with their avatars for carousel (students who have joined)
+    $studentsJoined = \App\Models\User::where('role', 'student')
         ->select('id', 'name', 'avatar_path')
         ->limit(10)
         ->get()
@@ -119,6 +119,7 @@ Route::get('/', function () {
             ];
         });
 
+    // Get active tutors with their avatars for carousel
     $activeTutors = \App\Models\User::where('role', 'tutor')
         ->where('is_active', true)
         ->select('id', 'name', 'avatar_path')
@@ -140,9 +141,9 @@ Route::get('/', function () {
         'documentations' => $documentations,
         'hasActivePackage' => $hasActivePackage,
         'pendingOrder' => $pendingOrder,
-        'totalActiveStudents' => $totalActiveStudents,
+        'totalStudents' => $totalStudents,
         'totalActiveTutors' => $totalActiveTutors,
-        'activeStudents' => $activeStudents,
+        'studentsJoined' => $studentsJoined,
         'activeTutors' => $activeTutors,
     ]);
 })->name('home');

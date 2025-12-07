@@ -2336,9 +2336,59 @@
                                 </a>
                             </div>
 
-                        {{-- LOGIKA TOMBOL MOBILE --}}
+                            {{-- LOGIKA TOMBOL MOBILE --}}
+                            @if($hasActivePackage)
+                                {{-- 1. SUDAH LUNAS / AKTIF --}}
+                                <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
+                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    Ayo Belajar
+                                </a>
+                            @elseif($pendingOrder && $pendingOrder->package)
+                                {{-- 2. ADA TRANSAKSI BERJALAN --}}
+                                @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
+                                    {{-- Sudah upload bukti, menunggu admin --}}
+                                    <a class="btn btn-primary"
+                                        href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                        style="background: #3b82f6; border-color: #3b82f6; color: white;">
+                                        Lihat Status
+                                    </a>
+                                @else
+                                    {{-- Belum bayar / Belum upload bukti --}}
+                                    <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}"
+                                        style="background: #f59e0b; border-color: #f59e0b; color: white;">
+                                        Lanjut Bayar
+                                    </a>
+                                @endif
+                            @else
+                                <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                                    Beli Paket Belajar
+                                </a>
+                            @endif
+
+                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline"
+                                    style="color: #000; border-color: #ccc;">Keluar</button>
+                            </form>
+                        @else
+                            <a class="btn btn-primary" href="{{ $joinLink }}">
+                                Gabung Sekarang
+                            </a>
+                        @endauth
+                    </div>
+                </div>
+
+                {{-- Desktop Nav Actions --}}
+                <div class="nav-actions nav-actions-desktop">
+                    @auth
+                        {{-- LOGIKA TOMBOL DESKTOP --}}
+
+                        {{-- 1. SUDAH LUNAS / AKTIF --}}
                         @if($hasActivePackage)
-                            {{-- 1. SUDAH LUNAS / AKTIF --}}
                             <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
                                 style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2347,70 +2397,24 @@
                                 </svg>
                                 Ayo Belajar
                             </a>
-                        @elseif($pendingOrder && $pendingOrder->package)
+
                             {{-- 2. ADA TRANSAKSI BERJALAN --}}
+                        @elseif($pendingOrder && $pendingOrder->package)
+
                             @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
-                                {{-- Sudah upload bukti, menunggu admin --}}
-                                <a class="btn btn-primary" href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}" style="background: #3b82f6; border-color: #3b82f6; color: white;">
+                                {{-- Case: Sudah Upload Bukti (Lihat Status) --}}
+                                <a class="btn btn-primary"
+                                    href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                    style="background: #3b82f6; border-color: #3b82f6; color: white; font-weight: 600;">
                                     Lihat Status
                                 </a>
                             @else
-                                {{-- Belum bayar / Belum upload bukti --}}
-                                <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}" style="background: #f59e0b; border-color: #f59e0b; color: white;">
+                                {{-- Case: Belum Upload Bukti (Lanjut Bayar) --}}
+                                <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}"
+                                    style="background: #f59e0b; border-color: #f59e0b; color: white; font-weight: 600;">
                                     Lanjut Bayar
                                 </a>
                             @endif
-                        @else
-                            <a class="btn btn-primary" href="{{ route('packages.index') }}">
-                                Beli Paket Belajar
-                            </a>
-                        @endif
-                        
-                        <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                            @csrf
-                            <button type="submit" class="btn btn-outline"
-                                style="color: #000; border-color: #ccc;">Keluar</button>
-                        </form>
-                    @else
-                        <a class="btn btn-primary" href="{{ $joinLink }}">
-                            Gabung Sekarang
-                        </a>
-                    @endauth
-                </div>
-            </div>
-
-            {{-- Desktop Nav Actions --}}
-            <div class="nav-actions nav-actions-desktop">
-                @auth
-                    {{-- LOGIKA TOMBOL DESKTOP --}}
-                    
-                    {{-- 1. SUDAH LUNAS / AKTIF --}}
-                    @if($hasActivePackage)
-                        <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
-                            style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
-                            Ayo Belajar
-                        </a>
-
-                    {{-- 2. ADA TRANSAKSI BERJALAN --}}
-                    @elseif($pendingOrder && $pendingOrder->package)
-                        
-                        @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
-                            {{-- Case: Sudah Upload Bukti (Lihat Status) --}}
-                            <a class="btn btn-primary" href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}" 
-                               style="background: #3b82f6; border-color: #3b82f6; color: white; font-weight: 600;">
-                                Lihat Status
-                            </a>
-                        @else
-                            {{-- Case: Belum Upload Bukti (Lanjut Bayar) --}}
-                            <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}" 
-                               style="background: #f59e0b; border-color: #f59e0b; color: white; font-weight: 600;">
-                                Lanjut Bayar
-                            </a>
-                        @endif
 
                             {{-- 3. BELUM ADA TRANSAKSI (Default) --}}
                         @else
@@ -2424,16 +2428,17 @@
                             <img src="{{ $profileAvatar }}" alt="Foto profil" />
                         </a>
 
-                    <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="btn btn-outline" style="color: #000; border-color: #ccc;">Keluar</button>
-                    </form>
-                @else
-                    {{-- GUEST --}}
-                    <a class="btn btn-primary" href="{{ route('join') }}">
-                        Gabung Sekarang
-                    </a>
-                @endauth
+                        <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                            @csrf
+                            <button type="submit" class="btn btn-outline"
+                                style="color: #000; border-color: #ccc;">Keluar</button>
+                        </form>
+                    @else
+                        {{-- GUEST --}}
+                        <a class="btn btn-primary" href="{{ route('join') }}">
+                            Gabung Sekarang
+                        </a>
+                    @endauth
 
                 </div>
             </div>
@@ -2455,15 +2460,15 @@
                 <div class="hero-stats" data-reveal data-reveal-delay="100">
                     <div class="stat-card">
                         <div class="stat-icon" data-carousel="students">
-                            @forelse($activeStudents as $index => $student)
+                            @forelse($studentsJoined as $index => $student)
                                 <img src="{{ $student['avatar'] }}" alt="{{ $student['name'] }}"
                                     class="stat-icon-photo {{ $index === 0 ? 'active' : '' }}" loading="lazy">
                             @empty
                                 <span>👨‍🎓</span>
                             @endforelse
                         </div>
-                        <div class="stat-number" data-target="{{ $totalActiveStudents }}">0</div>
-                        <div class="stat-label">Siswa Aktif</div>
+                        <div class="stat-number" data-target="{{ $totalStudents }}">0</div>
+                        <div class="stat-label">Siswa Bergabung</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon" data-carousel="tutors">
@@ -3491,6 +3496,111 @@
             </div>
         </div>
     </div>
+
+    {{-- ========================================
+    SIMPLE CLEAN GREETING POPUP
+    Pop-up sapaan minimalis ramah anak
+    ======================================== --}}
+    <style>
+        /* Simple popup */
+        .simple-greeting {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1b6d4f;
+            color: white;
+            padding: 48px 64px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(27, 109, 79, 0.4);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            text-align: center;
+            min-width: 400px;
+        }
+
+        .simple-greeting.show {
+            opacity: 1;
+        }
+
+        .simple-greeting h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 12px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .simple-greeting p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.95);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 640px) {
+            .simple-greeting {
+                padding: 36px 40px;
+                width: 88%;
+                min-width: auto;
+                max-width: 380px;
+            }
+
+            .simple-greeting h2 {
+                font-size: 26px;
+            }
+
+            .simple-greeting p {
+                font-size: 16px;
+            }
+        }
+    </style>
+
+    {{-- Popup --}}
+    <div class="simple-greeting" id="simpleGreeting">
+        <h2 id="greetingTitle">Selamat Datang!</h2>
+        <p>Mari explore keseruan di MayClass! ✨</p>
+    </div>
+
+    <script>
+        // Simple greeting popup
+        (function() {
+            const popup = document.getElementById('simpleGreeting');
+            const titleEl = document.getElementById('greetingTitle');
+
+            function getTimeBasedGreeting() {
+                const hour = new Date().getHours();
+                if (hour >= 5 && hour < 11) return 'Selamat Pagi!';
+                if (hour >= 11 && hour < 15) return 'Selamat Siang!';
+                if (hour >= 15 && hour < 18) return 'Selamat Sore!';
+                return 'Selamat Malam!';
+            }
+
+            function showGreeting() {
+                titleEl.textContent = getTimeBasedGreeting();
+
+                // Show after 300ms delay
+                setTimeout(() => {
+                    popup.classList.add('show');
+                }, 500);
+
+                // Hide after 3.5 seconds (500ms delay + 3000ms display)
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 3000);
+            }
+
+            window.addEventListener('load', () => {
+                showGreeting();
+            });
+        })();
+    </script>
+
+    {{-- End of Greeting Popup --}}
+
+
 </body>
 
 </html>
