@@ -1922,9 +1922,90 @@
             }
         }
     </style>
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @media (max-width: 768px) {
+            .modal-container {
+                max-width: 100%;
+                border-radius: 16px 16px 0 0;
+                height: auto;
+                max-height: 85vh;
+                position: absolute;
+                bottom: 0;
+                margin: 0;
+            }
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: var(--danger);
+        }
+    </style>
 </head>
 
-<body>
+<body x-data="{ 
+    selectedLevel: 'Semua Jenjang', 
+    openDropdown: false,
+    modalOpen: false, 
+    pkg: {}, 
+    openModal(packageData) { 
+        this.pkg = packageData; 
+        this.modalOpen = true; 
+        document.body.style.overflow = 'hidden';
+    },
+    closeModal() {
+        this.modalOpen = false;
+        document.body.style.overflow = 'auto';
+    }
+}">
     @php
         $joinLink = route('join');
         $profileLink = $profileLink ?? null;
@@ -1935,17 +2016,25 @@
         // Check for active/approved package
         $hasActivePackage = false;
 
-        if (Auth::check() && Auth::user()->role === 'student') {
-            // Check for pending order
+        if (Auth::check() && in_array(Auth::user()->role, ['student', 'visitor'])) {
+            // Check for pending order (initiated, pending, awaiting_payment, awaiting_verification)
             $pendingOrder = Auth::user()->orders()
-                ->where('status', 'pending')
+                ->whereIn('status', ['initiated', 'pending', 'awaiting_payment', 'awaiting_verification'])
+                ->where(function ($query) {
+                    $query->whereNull('expires_at')
+                          ->orWhere('expires_at', '>', now());
+                })
                 ->with('package')
                 ->latest()
                 ->first();
 
-            // Check for active/approved package
-            $hasActivePackage = Auth::user()->orders()
-                ->where('status', 'paid')
+            // Check for active/approved package (Enrollment is the source of truth for active access)
+            $hasActivePackage = Auth::user()->enrollments()
+                ->where('is_active', true)
+                ->where(function ($query) {
+                     $query->whereNull('ends_at')
+                           ->orWhere('ends_at', '>', now());
+                })
                 ->exists();
         }
     @endphp
@@ -1968,56 +2057,17 @@
                     <a href="#testimoni">Testimoni</a>
                     <a href="#faq">FAQ</a>
                     <div class="nav-actions">
-                        @auth
-                            @if($hasActivePackage)
-                                {{-- Tombol Ayo Belajar untuk siswa dengan paket aktif --}}
-                                <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
-                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                    Ayo Belajar
-                                </a>
-                            @else
-                                @if($pendingOrder && $pendingOrder->package)
-                                    {{-- Notifikasi untuk pending order --}}
-                                    <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
-                                        class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                                        </svg>
-                                        <span class="notification-dot"></span>
-                                    </a>
-                                @endif
-
-                                <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                    aria-label="Buka profil">
-                                    <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
-                                    <span class="sr-only">Menuju profil</span>
-                                </a>
-                            @endif
-
-                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                                @csrf
-                                <button type="submit" class="btn btn-outline"
-                                    style="color: #000; border-color: #ccc;">Keluar</button>
-                            </form>
-                        @else
-                            <a class="btn btn-primary" href="{{ $joinLink }}">
-                                Gabung Sekarang
-                            </a>
-                        @endauth
-                    </div>
-                </div>
-                {{-- Desktop nav-actions (visible on ≥769px) --}}
-                <div class="nav-actions nav-actions-desktop">
+                        {{-- Mobile Nav Actions --}}
                     @auth
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 12px;">
+                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}" aria-label="Buka profil">
+                                <img src="{{ $profileAvatar }}" alt="Foto profil" />
+                            </a>
+                        </div>
+
+                        {{-- LOGIKA TOMBOL MOBILE --}}
                         @if($hasActivePackage)
-                            {{-- Tombol Ayo Belajar untuk siswa dengan paket aktif (Desktop) --}}
+                            {{-- 1. SUDAH LUNAS / AKTIF --}}
                             <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
                                 style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2026,26 +2076,25 @@
                                 </svg>
                                 Ayo Belajar
                             </a>
-                        @else
-                            @if($pendingOrder && $pendingOrder->package)
-                                <a href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
-                                    class="nav-icon-btn" title="Menunggu Verifikasi Pembayaran">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                                    </svg>
-                                    <span class="notification-dot"></span>
+                        @elseif($pendingOrder && $pendingOrder->package)
+                            {{-- 2. ADA TRANSAKSI BERJALAN --}}
+                            @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
+                                {{-- Sudah upload bukti, menunggu admin --}}
+                                <a class="btn btn-primary" href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}" style="background: #3b82f6; border-color: #3b82f6; color: white;">
+                                    Lihat Status
+                                </a>
+                            @else
+                                {{-- Belum bayar / Belum upload bukti --}}
+                                <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}" style="background: #f59e0b; border-color: #f59e0b; color: white;">
+                                    Lanjut Bayar
                                 </a>
                             @endif
-
-                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                aria-label="Buka profil">
-                                <img src="{{ $profileAvatar }}" alt="Foto profil MayClass" />
-                                <span class="sr-only">Menuju profil</span>
+                        @else
+                            <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                                Beli Paket Belajar
                             </a>
                         @endif
-
+                        
                         <form method="post" action="{{ route('logout') }}" style="margin: 0;">
                             @csrf
                             <button type="submit" class="btn btn-outline"
@@ -2056,6 +2105,64 @@
                             Gabung Sekarang
                         </a>
                     @endauth
+                </div>
+            </div>
+
+            {{-- Desktop Nav Actions --}}
+            <div class="nav-actions nav-actions-desktop">
+                @auth
+                    {{-- LOGIKA TOMBOL DESKTOP --}}
+                    
+                    {{-- 1. SUDAH LUNAS / AKTIF --}}
+                    @if($hasActivePackage)
+                        <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
+                            style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            Ayo Belajar
+                        </a>
+
+                    {{-- 2. ADA TRANSAKSI BERJALAN --}}
+                    @elseif($pendingOrder && $pendingOrder->package)
+                        
+                        @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
+                            {{-- Case: Sudah Upload Bukti (Lihat Status) --}}
+                            <a class="btn btn-primary" href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}" 
+                               style="background: #3b82f6; border-color: #3b82f6; color: white; font-weight: 600;">
+                                Lihat Status
+                            </a>
+                        @else
+                            {{-- Case: Belum Upload Bukti (Lanjut Bayar) --}}
+                            <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}" 
+                               style="background: #f59e0b; border-color: #f59e0b; color: white; font-weight: 600;">
+                                Lanjut Bayar
+                            </a>
+                        @endif
+
+                    {{-- 3. BELUM ADA TRANSAKSI (Default) --}}
+                    @else
+                        <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                            Beli Paket Belajar
+                        </a>
+                    @endif
+
+                    <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}" aria-label="Buka profil">
+                        <img src="{{ $profileAvatar }}" alt="Foto profil" />
+                    </a>
+
+                    <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="btn btn-outline" style="color: #000; border-color: #ccc;">Keluar</button>
+                    </form>
+                @else
+                    {{-- GUEST --}}
+                    <a class="btn btn-primary" href="{{ route('join') }}">
+                        Gabung Sekarang
+                    </a>
+                @endauth
+
                 </div>
             </div>
         </nav>
@@ -2167,7 +2274,7 @@
         </section>
     @endif
 
-    <section class="pricing-section" id="paket" x-data="{ selectedLevel: 'Semua Jenjang', openDropdown: false }">
+    <section class="pricing-section" id="paket">
         <div class="container">
             <div class="section-header" data-reveal>
                 <h2 class="section-title">Pilih Paket Favoritmu</h2>
@@ -2292,8 +2399,10 @@
                         </ul>
                     @endif
                     <div class="pricing-actions">
-                        <a class="btn btn-primary" href="{{ route('packages.show', $package['slug']) }}">Detail
-                            Paket</a>
+                        <button type="button" class="btn btn-primary" 
+                                @click="openModal({{ json_encode($package) }})">
+                            Detail Paket
+                        </button>
                     </div>
                 </article>
                 @endforeach
@@ -2886,6 +2995,105 @@
         });
     </script>
 
+    <!-- Package Detail Modal -->
+    <div class="modal-overlay" x-show="modalOpen" x-transition.opacity x-cloak @click.self="closeModal()">
+        <div class="modal-container">
+            <button @click="closeModal()" class="modal-close">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <div style="padding: 32px; max-width: 900px; width: 100%;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: start;">
+                    <!-- LEFT COLUMN -->
+                    <div>
+                        <!-- Badge Program -->
+                        <span class="badge-tag" style="position: static; display: inline-block; margin-bottom: 16px; background: #ccfbf1; color: #0f766e; font-size: 0.8rem; padding: 6px 12px; border-radius: 99px; font-weight: 700;" 
+                            x-show="pkg.tag" x-text="pkg.tag ?? 'PROGRAM'"></span>
+                        
+                        <!-- Title -->
+                        <h2 style="font-size: 2.2rem; margin: 0 0 12px; line-height: 1.2; font-weight: 800; color: var(--text-main);" x-text="pkg.detail_title"></h2>
+                        
+                        <!-- Description -->
+                        <div style="margin-bottom: 24px; color: var(--text-muted); line-height: 1.6; font-size: 1rem;" x-text="pkg.description"></div>
+
+                        <!-- Badges Row -->
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px;">
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                <span x-text="pkg.stage_label || pkg.stage"></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f0f9ff; color: #0369a1; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600;" x-show="pkg.grade_range">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                <span x-text="pkg.grade_range"></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f0fdf4; color: #15803d; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <span x-text="'Kuota ' + (pkg.quota_limit || '∞') + ' siswa'"></span>
+                            </div>
+                        </div>
+
+                        <!-- Subjects Section -->
+                        <div style="border-top: 1px solid var(--border); padding-top: 24px;">
+                            <h4 style="margin: 0 0 16px; font-size: 1.1rem; color: var(--text-main);">Mata Pelajaran</h4>
+                            
+                            <div style="display: grid; gap: 12px;">
+                                <template x-for="subject in (pkg.subjects || [])">
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                        <div style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                            📚
+                                        </div>
+                                        <div style="font-weight: 600; color: var(--text-main);" x-text="subject.name"></div>
+                                    </div>
+                                </template>
+                                <div x-show="!pkg.subjects || pkg.subjects.length === 0" style="color: var(--text-muted); font-style: italic;">
+                                    Tidak ada data mata pelajaran.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Features Section (Moved to Left) -->
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+                            <h4 style="margin: 0 0 16px; font-size: 1.1rem; color: var(--text-main);">Fasilitas Termasuk:</h4>
+                            <ul style="font-size: 0.95rem; color: var(--text-muted); padding: 0; list-style: none; display: grid; gap: 10px;">
+                                <template x-for="feature in (pkg.features || [])">
+                                    <li style="display: flex; gap: 10px; align-items: start;">
+                                        <div style="color: var(--primary); margin-top: 2px;">
+                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                        <span x-text="feature" style="line-height: 1.5;"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN (Sticky Price Card) -->
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-md);">
+                        <div style="background: #ecfdf5; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px;">
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Harga</div>
+                            <div style="font-size: 1.75rem; font-weight: 800; color: #065f46; line-height: 1;" x-text="pkg.card_price"></div>
+                            <div style="font-size: 0.9rem; color: #047857; margin-top: 4px;">per bulan</div>
+                        </div>
+
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span x-text="'Slot Tersedia (' + (pkg.quota_remaining !== undefined ? Math.max(0, pkg.quota_remaining) : '-') + '/' + (pkg.quota_limit || '-') + ')'"></span>
+                        </div>
+
+                        <a :href="'/checkout/' + pkg.slug" class="btn btn-primary btn-block" style="padding: 14px; font-size: 1rem; border-radius: 10px; width: 100%; display: flex; justify-content: center;">
+                            Checkout Sekarang
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

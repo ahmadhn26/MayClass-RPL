@@ -29,7 +29,7 @@ class PackageController extends Controller
             ]);
         }
 
-        $query = Package::query()->withQuotaUsage()->orderBy('level')->orderBy('price');
+        $query = Package::query()->withQuotaUsage()->with('subjects')->orderBy('level')->orderBy('price');
 
         if (Schema::hasTable('package_features')) {
             $query->with(['cardFeatures' => fn ($features) => $features->orderBy('position')]);

@@ -20,6 +20,10 @@ class PackagePresenter
 
         $data['card_features'] = $data['features'];
 
+        $data['subjects'] = $package->relationLoaded('subjects')
+            ? $package->subjects->map(fn($s) => ['name' => $s->name, 'image' => $s->image])->values()->all()
+            : [];
+
         return $data;
     }
 

@@ -298,6 +298,31 @@ class AuthController extends Controller
             return route('login');
         }
 
+        // 1. Priority: Pending Payment Verification (Redirect to "Lihat Status")
+        // "jika siswa login dan sedang menunggu notifikasi pembayaran"
+        if (in_array($user->role, ['student', 'visitor'])) {
+            $pendingVerification = $user->orders()
+                ->where('status', 'awaiting_verification')
+                ->whereHas('package')
+                ->with('package')
+                ->latest()
+                ->first();
+
+            if ($pendingVerification && $pendingVerification->package) {
+                return route('checkout.success', [
+                    'slug' => $pendingVerification->package->slug,
+                    'order' => $pendingVerification->id
+                ]);
+            }
+
+            // 2. Priority: First Time Login / Incomplete Profile
+            // "siswa yang pertama kali login ... maka halaman yang muncul pertama kali adalah halaman profil"
+            // We use empty address as a proxy for incomplete profile since fresh registers don't have it.
+            if (empty($user->address)) {
+                return route('student.profile');
+            }
+        }
+
         return match ($user->role) {
             'tutor' => route('tutor.dashboard'),
             'student' => route('student.dashboard'),

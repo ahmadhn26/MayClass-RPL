@@ -41,7 +41,7 @@ Route::get('/', function () {
     $stageDefinitions = config('mayclass.package_stages', []);
 
     if (Schema::hasTable('packages')) {
-        $query = Package::query()->withQuotaUsage()->orderBy('level')->orderBy('price');
+        $query = Package::query()->withQuotaUsage()->with('subjects')->orderBy('level')->orderBy('price');
 
         if (Schema::hasTable('package_features')) {
             $query->with(['cardFeatures' => fn($features) => $features->orderBy('position')]);
@@ -74,6 +74,29 @@ Route::get('/', function () {
             ->get();
     }
 
+    // Check User Status
+    $hasActivePackage = false;
+    $pendingOrder = null;
+
+    if ($user) {
+        $hasActivePackage = \App\Support\StudentAccess::hasActivePackage($user);
+
+        // Cari order yang belum selesai (pending/waiting) ATAU yang sedang diverifikasi admin
+        $pendingOrder = \App\Models\Order::where('user_id', $user->id)
+            ->whereIn('status', [
+                // Status untuk tombol "Lanjut Bayar"
+                'initiated', 
+                'pending', 
+                'awaiting_payment', 
+                
+                // Status untuk tombol "Lihat Status"
+                'awaiting_verification' 
+            ])
+            ->with('package')
+            ->latest('id')
+            ->first();
+    }
+
     return view('welcome', [
         'landingPackages' => $catalog,
         'stageDefinitions' => $stageDefinitions,
@@ -81,6 +104,8 @@ Route::get('/', function () {
         'profileAvatar' => ProfileAvatar::forUser($user),
         'landingContents' => $landingContents,
         'documentations' => $documentations,
+        'hasActivePackage' => $hasActivePackage,
+        'pendingOrder' => $pendingOrder,
     ]);
 })->name('home');
 

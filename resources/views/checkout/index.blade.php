@@ -505,12 +505,12 @@
 
     <div class="checkout-container">
         <div class="nav-header">
-            <a href="{{ $pkgSlug ? route('packages.show', $pkgSlug) : '#' }}" class="back-link">
+            <a href="{{ route('home') }}" class="back-link">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                Kembali ke Detail Paket
+                Kembali ke Beranda
             </a>
         </div>
 
