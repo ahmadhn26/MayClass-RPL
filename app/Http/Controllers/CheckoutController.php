@@ -52,11 +52,11 @@ class CheckoutController extends Controller
         }
 
         if (!$order->expires_at) {
-            $order->forceFill(['expires_at' => now()->addMinutes(30)])->save();
+            $order->forceFill(['expires_at' => now()->addMinutes(90)])->save();
             $order->refresh();
         }
 
-        $expiresAt = $order->expires_at ?? now()->addMinutes(30);
+        $expiresAt = $order->expires_at ?? now()->addMinutes(90);
         $remainingSeconds = max(0, now()->diffInSeconds($expiresAt, false));
 
         // Load active payment methods from database
@@ -378,7 +378,7 @@ class CheckoutController extends Controller
         $subtotal = $package->price;
         $tax = 0; // Tax removed - price is exactly as shown in package
         $total = $subtotal; // Total = Package price (no additional fees)
-        $expiresAt = now()->addMinutes(30);
+        $expiresAt = now()->addMinutes(90);
 
         $draftQuery = Order::where('user_id', $userId)
             ->where('package_id', $package->id)

@@ -492,7 +492,16 @@
 
         // Countdown default 24 jam jika tidak ada data
         $seconds = $countdownSeconds ?? (24 * 60 * 60);
-        $countdownLabel = sprintf('%02d:%02d', floor($seconds / 60), $seconds % 60);
+        
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        $secs = $seconds % 60;
+
+        if ($hours > 0) {
+            $countdownLabel = sprintf('%02d:%02d:%02d', $hours, $minutes, $secs);
+        } else {
+            $countdownLabel = sprintf('%02d:%02d', $minutes, $secs);
+        }
 
         // Expire Route
         $expireRoute = ($pkgSlug && $ordId) ? route('checkout.expire', [$pkgSlug, $ordId]) : '';
@@ -866,9 +875,16 @@
                         return;
                     }
                     remaining--;
-                    const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+                    
+                    const h = Math.floor(remaining / 3600);
+                    const m = Math.floor((remaining % 3600) / 60).toString().padStart(2, '0');
                     const s = (remaining % 60).toString().padStart(2, '0');
-                    display.textContent = `${m}:${s}`;
+                    
+                    if (h > 0) {
+                        display.textContent = `${h}:${m}:${s}`;
+                    } else {
+                        display.textContent = `${m}:${s}`;
+                    }
                 }, 1000);
             }
         })();
