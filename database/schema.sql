@@ -586,5 +586,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (43,'2025_11_29_003
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (44,'2025_11_29_011751_add_cancellation_reason_to_orders_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (45,'2025_11_29_create_payment_methods_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (46,'2025_12_01_114317_make_image_url_nullable_in_packages_table',1);
+
+INSERT INTO `users` (`name`, `username`, `email`, `password`, `role`, `phone`, `gender`, `address`, `created_at`, `updated_at`)
+VALUES ('Admin Utama MayClass', 'admin_utama', 'admin@gmail.com', '$2y$12$ajEXHoFqlo3.bQwmTNOHouVfJGPNQecChoG0WwSsJulcbSoiWaXVK', 'admin', '0812-7777-1234', 'other', 'Jl. Pengelola Pendidikan No. 1, Bandung', NOW(), NOW());
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (47,'2025_12_01_120804_create_material_items_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (48,'2025_12_01_125817_create_quiz_items_table',1);
