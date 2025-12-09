@@ -1,7 +1,4 @@
 
-CREATE DATABASE IF NOT EXISTS mayclass_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE mayclass_db;
-
 -- --------------------------------------------------------
 -- Tabel inti aplikasi yang mengikuti struktur migrasi Laravel
 -- --------------------------------------------------------
