@@ -292,7 +292,7 @@
                 <p style="margin: 0 0 12px; font-size: 0.9rem; color: var(--text-main); font-weight: 600;">
                     Verifikasi memakan waktu lama?
                 </p>
-                <a href="https://wa.me/6281234567890?text={{ urlencode('Halo Admin MayClass, saya ingin menanyakan status verifikasi pembayaran saya untuk paket: ' . $pkgTitle . '. ID Pesanan: ' . $orderIdDisplay) }}"
+                <a href="https://wa.me/6283194085776?text={{ urlencode('Halo Admin MayClass, saya ingin menanyakan status verifikasi pembayaran saya untuk paket: ' . $pkgTitle . '. ID Pesanan: ' . $orderIdDisplay) }}"
                     target="_blank" rel="noopener"
                     style="display: inline-flex; align-items: center; gap: 8px; background: #25D366; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);">
                     <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -301,18 +301,6 @@
                     </svg>
                     Hubungi Admin via WhatsApp
                 </a>
-
-                {{-- TOMBOL BATALKAN PESANAN --}}
-                <div style="margin-top: 12px;">
-                    <button type="button" onclick="openCancelModal()"
-                        style="display: inline-flex; align-items: center; gap: 8px; color: white; font-weight: 600; font-size: 0.9rem; text-decoration: none; background: #ef4444; padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center;">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                            </path>
-                        </svg>
-                        Batalkan Pesanan
-                    </button>
-                </div>
             </div>
         @endif
 
