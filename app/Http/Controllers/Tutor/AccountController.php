@@ -36,64 +36,73 @@ class AccountController extends BaseTutorController
             : null;
 
         return $this->render('tutor.account.index', [
-            'tutor' => $tutor,
+            'tutor'        => $tutor,
             'tutorProfile' => $tutorProfile,
-            'avatarUrl' => $avatarUrl,
+            'avatarUrl'    => $avatarUrl,
         ]);
     }
 
     public function update(Request $request): RedirectResponse
     {
-        /** @var \App\Models\User $tutor */
         $tutor = Auth::user();
-        $tutor->load('tutorProfile'); // Pastikan relasi terload
 
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($tutor->id)],
-            'phone' => ['nullable', 'string', 'max:40'],
-            'specializations' => ['required', 'string', 'max:255'],
-            'experience_years' => ['required', 'integer', 'min:0', 'max:60'],
-            'education' => ['nullable', 'string', 'max:255'],
-            'avatar' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:10240'],
+            'name'              => ['required', 'string', 'max:255'],
+            'email'             => ['required', 'email', 'max:255', Rule::unique('users')->ignore($tutor?->id)],
+            'phone'             => ['nullable', 'string', 'max:40'],
+            'specializations'   => ['required', 'string', 'max:255'],
+            'experience_years'  => ['required', 'integer', 'min:0', 'max:60'],
+            'education'         => ['nullable', 'string', 'max:255'],
+            'avatar'            => ['nullable', 'image', 'max:5000'],
         ]);
 
-        // 1. Tentukan path avatar saat ini (Fallback ke profile jika di user null)
-        $currentAvatarPath = $tutor->avatar_path ?? optional($tutor->tutorProfile)->avatar_path;
-        $avatarPath = $currentAvatarPath;
+        if ($tutor) {
+            // default: pakai avatar lama
+            $avatarPath = $tutor->avatar_path ?? optional($tutor->tutorProfile)->avatar_path;
 
-        // 2. Jika ada upload baru, proses upload & hapus yang lama
-        if ($request->hasFile('avatar')) {
-            $avatarPath = AvatarUploader::store($request->file('avatar'), [
-                $tutor->avatar_path,
-                optional($tutor->tutorProfile)->avatar_path,
+            // kalau ada upload baru
+            if ($request->hasFile('avatar')) {
+                try {
+                    $avatarPath = AvatarUploader::store(
+                        $request->file('avatar'),
+                        [
+                            $tutor->avatar_path,
+                            optional($tutor->tutorProfile)->avatar_path,
+                        ]
+                    );
+                } catch (\Throwable $exception) {
+                    report($exception);
+
+                    return back()
+                        ->withInput($request->except('avatar'))
+                        ->withErrors(['avatar' => __('Gagal mengunggah foto profil. Silakan coba lagi.')]);
+                }
+            }
+
+            // update data user
+            $tutor->update([
+                'name'        => $data['name'],
+                'email'       => $data['email'],
+                'phone'       => $data['phone'] ?? null,
+                'avatar_path' => $avatarPath,
             ]);
+
+            // siapkan profil tutor
+            $profile = $tutor->tutorProfile;
+            $slug = optional($profile)->slug ?? (Str::slug($tutor->name) ?: 'tutor-' . $tutor->id);
+
+            // update / buat profil tutor
+            $tutor->tutorProfile()->updateOrCreate(
+                ['user_id' => $tutor->id],
+                [
+                    'slug'             => $slug,
+                    'specializations'  => $data['specializations'],
+                    'experience_years' => $data['experience_years'],
+                    'education'        => $data['education'] ?? null,
+                    'avatar_path'      => $avatarPath,
+                ]
+            );
         }
-
-        // 3. Update User Table
-        $tutor->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'avatar_path' => $avatarPath, // Simpan path di user juga
-        ]);
-
-        // 4. Update Tutor Profile Table
-        $profile = $tutor->tutorProfile;
-        // Slug logic: Kalau belum punya slug, bikin baru. Kalau sudah, pertahankan (atau mau regenerate?)
-        // Kita pertahankan logic lama: existing slug ?? generate new
-        $slug = optional($profile)->slug ?? (Str::slug($tutor->name) ?: 'tutor-' . $tutor->id);
-
-        $tutor->tutorProfile()->updateOrCreate(
-            ['user_id' => $tutor->id],
-            [
-                'slug' => $slug,
-                'specializations' => $data['specializations'],
-                'experience_years' => $data['experience_years'],
-                'education' => $data['education'] ?? null,
-                'avatar_path' => $avatarPath, // Simpan path di profile juga
-            ]
-        );
 
         return redirect()
             ->route('tutor.account.edit')

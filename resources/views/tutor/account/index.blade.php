@@ -345,8 +345,7 @@
                     <div>
                         <label for="avatar" class="upload-btn">Ubah Foto</label>
                         <input type="file" id="avatar" name="avatar" accept="image/*" hidden>
-                        <p class="error-msg" style="color: #64748b; margin-top: 6px;">JPG, PNG. Disarankan maks 10MB
-                            (Limit Hosting).
+                        <p class="error-msg" style="color: #64748b; margin-top: 6px;">JPG, GIF, atau PNG. Maksimal 2MB.
                         </p>
                         @error('avatar') <p class="error-msg">{{ $message }}</p> @enderror
                     </div>

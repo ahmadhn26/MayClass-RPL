@@ -7,29 +7,10 @@
     <title>Pembayaran Berhasil</title>
     <style>
         /* Base Reset */
-        body,
-        table,
-        td,
-        a {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-        }
-
-        table,
-        td {
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-        }
-
-        img {
-            -ms-interpolation-mode: bicubic;
-            border: 0;
-            height: auto;
-            line-height: 100%;
-            outline: none;
-            text-decoration: none;
-        }
-
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        
         /* General Styles */
         body {
             margin: 0;
@@ -59,54 +40,49 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
         }
 
-        /* HEADER SECTION (REDESIGNED) */
+        /* HEADER SECTION */
         .header {
             background-color: #1b6d4f;
-            padding: 40px 20px 30px 20px; /* Padding ditambah agar lebih lega */
-            text-align: center;
+            padding: 25px 20px;
+            text-align: center; /* Kunci 1: Container rata tengah */
         }
 
-        .icon-circle {
-            display: inline-block;
-            width: 64px;
-            height: 64px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            margin-bottom: 20px;
-            text-align: center;
-            line-height: 64px;
-        }
-
-        .check-icon {
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: bold;
+        .logo-img {
+            max-width: 250px; 
+            filter: brightness(0) invert(1);
+            
+            /* Kunci 2: Image block + Margin Auto Kiri Kanan (Pasti Center) */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 0px; 
+            border: none;
         }
 
         .header-title {
             color: #ffffff;
-            font-size: 26px; /* Sedikit diperbesar */
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: 800; 
             line-height: 1.2;
             letter-spacing: 1px;
             text-transform: uppercase;
+            
+            /* Kunci 3: Reset margin bawaan browser dulu */
             margin: 0;
+            
+            /* Kunci 4: Pastikan lebar 100% container dan text align center */
             display: block;
             width: 100%;
             text-align: center;
-        }
-
-        .header-subtitle {
-            color: #d1fae5;
-            font-size: 14px;
-            margin-top: 8px;
-            font-weight: 500;
+            
+            /* Tarik ke atas (setelah di-reset marginnya) */
+            margin-top: -10px; 
         }
 
         /* Content Section */
         .content {
-            padding: 40px;
-            text-align: center;
+            padding: 40px; 
+            text-align: center; 
         }
 
         .greeting {
@@ -173,9 +149,8 @@
             border-radius: 8px;
             text-decoration: none;
             transition: opacity 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(27, 109, 79, 0.2); /* Sedikit bayangan pada tombol */
         }
-
+        
         .btn:hover {
             opacity: 0.9;
         }
@@ -199,20 +174,19 @@
 <body>
     <div class="wrapper">
         <div class="container">
-
+            
             <div class="header">
-                <div class="icon-circle">
-                    <span class="check-icon">&#10003;</span>
-                </div>
+                <img src="{{ $message->embed(public_path('images/Logo_MayClass.png')) }}" 
+                     alt="MayClass" 
+                     class="logo-img">
                 
                 <h1 class="header-title">PEMBAYARAN BERHASIL</h1>
-                <p class="header-subtitle">Terima kasih, transaksi Anda telah dikonfirmasi.</p>
             </div>
 
             <div class="content">
                 <p class="greeting">
                     Halo <strong>{{ $order->user->name }}</strong>,<br>
-                    Hore! Pembayaran Anda berhasil kami terima. Paket belajar Anda sudah aktif dan siap digunakan sekarang juga.
+                    Pembayaran diterima. Selamat belajar.
                 </p>
 
                 <div class="receipt-box">
@@ -246,15 +220,14 @@
                     </table>
                 </div>
 
-                <a href="{{ route('login') }}" class="btn">Mulai Belajar Sekarang</a>
+                <a href="{{ route('login') }}" class="btn">Mulai Belajar</a>
             </div>
 
             <div class="footer">
                 <p class="footer-text">&copy; {{ date('Y') }} MayClass. All rights reserved.</p>
-                <p class="footer-text">Email ini dikirim secara otomatis, mohon tidak membalas.</p>
+                <p class="footer-text">Email otomatis, mohon tidak membalas.</p>
             </div>
         </div>
     </div>
 </body>
-
 </html>

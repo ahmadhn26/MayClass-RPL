@@ -953,8 +953,7 @@
                                 <label for="avatarInput" class="btn-upload">Pilih Foto</label>
                                 <input type="file" id="avatarInput" name="avatar" accept="image/*" hidden
                                     onchange="previewImage(this)">
-                                <p class="helper-text" style="margin-top: 8px;">Format JPG/PNG. Disarankan maks 10MB (Limit
-                                    Hosting).</p>
+                                <p class="helper-text" style="margin-top: 8px;">Format JPG/PNG, maks 5MB.</p>
                             </div>
                         </div>
                     </div>
@@ -1261,7 +1260,7 @@
                         document.getElementById('edit_education').value = data.education || '';
                         document.getElementById('edit_bio').value = data.bio || '';
                         document.getElementById('edit_is_active').checked = data.is_active || false;
-
+                        
                         // Bank information
                         document.getElementById('edit_bank_name').value = data.bank_name || '';
                         document.getElementById('edit_account_number').value = data.account_number || '';

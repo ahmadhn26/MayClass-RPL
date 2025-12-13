@@ -25,8 +25,12 @@ class ProfileController extends Controller
 
         $avatarUrl = null;
 
-        // Fix: Use AvatarResolver to handle Base64 embedding for hosting compatibility
-        $avatarUrl = \App\Support\AvatarResolver::resolve([$user->avatar_path]);
+        if ($user->avatar_path && Storage::disk('public')->exists($user->avatar_path)) {
+            // Use current request URL instead of APP_URL to avoid localhost vs 127.0.0.1 mismatch
+            $avatarUrl = url('storage/' . $user->avatar_path);
+            // Add cache busting timestamp
+            $avatarUrl .= '?t=' . time();
+        }
 
         // Debug logging
         \Log::info('Profile show', [
@@ -99,7 +103,7 @@ class ProfileController extends Controller
 
         // Force refresh user data from database
         $user->fresh();
-
+        
         \Log::info('Profile updated', ['user_id' => $user->id, 'avatar_path' => $user->avatar_path]);
 
         return redirect()

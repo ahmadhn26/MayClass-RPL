@@ -238,7 +238,7 @@ class TentorController extends BaseAdminController
             'experience_years' => ['nullable', 'integer', 'min:0', 'max:60'],
             'education' => ['nullable', 'string', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
-            'avatar' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:10240'],
+            'avatar' => ['nullable', 'image', 'max:5000'],
             'subjects' => ['required', 'array', 'min:1'],
             'subjects.*' => ['exists:subjects,id'],
             'bank_name' => ['nullable', 'string', 'max:100'],

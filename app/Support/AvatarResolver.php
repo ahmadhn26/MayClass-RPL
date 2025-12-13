@@ -18,26 +18,19 @@ class AvatarResolver
         foreach ($candidates as $candidate) {
             $normalized = self::normalize($candidate);
 
-            if (!$normalized) {
+            if (! $normalized) {
                 continue;
             }
 
             if ($disk->exists($normalized)) {
-                // JURUS NUKLIR: Base64 Embed
-                // Kita baca filenya, ubah jadi teks, dan kirim langsung ke browser
-                try {
-                    $mime = $disk->mimeType($normalized);
-                    $content = base64_encode($disk->get($normalized));
-                    return 'data:' . $mime . ';base64,' . $content;
-                } catch (\Exception $e) {
-                    // Jika gagal baca file, biarkan lanjut ke null/placeholder
-                }
+                // KUNCI: pakai asset('storage/...'), bukan $disk->url()
+                return asset('storage/' . $normalized);
             }
         }
 
         // 2. Fallback: kalau ternyata kandidat sudah berupa URL penuh / storage/...
         foreach ($candidates as $candidate) {
-            if (!$candidate) {
+            if (! $candidate) {
                 continue;
             }
 
@@ -46,10 +39,9 @@ class AvatarResolver
                 return $candidate;
             }
 
-            // Fallback terakhir: biarkan apa adanya (mungkin URL eksternal atau relative path lain)
-            // Tapi untuk kasus ini kita abaikan storage/ prefix karena sudah pasti gagal di hosting ini
+            // sudah dalam bentuk "storage/avatars/xxx.jpg"
             if (Str::startsWith($candidate, 'storage/')) {
-                return null; // Force null supaya pakai placeholder daripada error
+                return asset($candidate);
             }
         }
 
@@ -58,7 +50,7 @@ class AvatarResolver
 
     private static function normalize(?string $path): ?string
     {
-        if (!$path) {
+        if (! $path) {
             return null;
         }
 

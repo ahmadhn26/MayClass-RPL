@@ -2445,9 +2445,7 @@
         </nav>
         @php
             $heroContent = $landingContents->get('hero')?->first();
-            // Gunakan Resolver agar gambar di-embed Base64 (anti-blokir hosting)
-            $resolvedHeroBg = \App\Support\AvatarResolver::resolve([$heroContent->image ?? null]);
-            $heroBg = $resolvedHeroBg ?? '/images/stis_contoh.jpeg';
+            $heroBg = $heroContent && $heroContent->image ? asset($heroContent->image) : '/images/stis_contoh.jpeg';
         @endphp
         <div class="hero" id="beranda"
             style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65)), url('{{ $heroBg }}');">
@@ -2503,7 +2501,7 @@
                     <article class="article-card" data-reveal data-reveal-delay="{{ $loop->index * 100 }}">
                         <div class="article-image-wrapper">
                             <span class="article-badge">Tips & Trik</span>
-                            <img src="{{ \App\Support\AvatarResolver::resolve([$article->image ?? null]) ?? asset('images/placeholder-article.jpg') }}"
+                            <img src="{{ Str::startsWith($article->image ?? '', 'http') ? $article->image : asset($article->image ?? 'images/placeholder-article.jpg') }}"
                                 alt="{{ $article->content['title'] }}"
                                 onerror="this.src='https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80'" />
                         </div>
@@ -2554,7 +2552,7 @@
                             onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
                             <div style="position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f8fafc;">
-                                <img src="{{ \App\Support\AvatarResolver::resolve([$doc->photo_path]) ?? asset('storage/' . $doc->photo_path) }}"
+                                <img src="{{ asset('storage/' . $doc->photo_path) }}"
                                     alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
                                     style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
                                 <div
@@ -2782,7 +2780,7 @@
                                 </p>
                                 <div class="testimonial-author">
                                     <div class="testimonial-avatar">
-                                        <img src="{{ \App\Support\AvatarResolver::resolve([$testimonial->image ?? null]) ?? asset('images/avatar-placeholder.svg') }}"
+                                        <img src="{{ asset($testimonial->image ?? 'images/avatar-placeholder.svg') }}"
                                             alt="{{ $testimonial->content['name'] }}"
                                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($testimonial->content['name']) }}&background=random'" />
                                     </div>
@@ -2825,7 +2823,7 @@
                         <div class="swiper-slide">
                             <article class="mentor-profile">
                                 <div class="mentor-avatar">
-                                    <img src="{{ \App\Support\AvatarResolver::resolve([$mentor->image ?? null]) ?? asset('images/avatar-placeholder.svg') }}"
+                                    <img src="{{ asset($mentor->image ?? 'images/avatar-placeholder.svg') }}"
                                         alt="{{ $mentor->content['name'] }}"
                                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor->content['name']) }}&background=random'" />
                                 </div>
@@ -3568,7 +3566,7 @@
 
     <script>
         // Simple greeting popup
-        (function () {
+        (function() {
             const popup = document.getElementById('simpleGreeting');
             const titleEl = document.getElementById('greetingTitle');
 

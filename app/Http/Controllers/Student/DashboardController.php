@@ -34,21 +34,21 @@ class DashboardController extends Controller
         $activeEnrollment = StudentAccess::activeEnrollment($user);
         $hasActivePackage = StudentAccess::hasActivePackage($user);
 
-        if (!$hasActivePackage) {
+        if (! $hasActivePackage) {
             // Check if user has deactivated enrollment
             $lastEnrollment = null;
             $isDeactivated = false;
-
+            
             if ($hasEnrollmentsTable && $user->enrollments()->exists()) {
                 $lastEnrollment = $user->enrollments()
                     ->with('package')
                     ->orderByDesc('ends_at')
                     ->first();
-
+                
                 // If has enrollment but is_active = false → deactivated
                 $isDeactivated = $lastEnrollment && !$lastEnrollment->is_active;
             }
-
+            
             // Generate WhatsApp admin link
             $whatsappAdminNumber = config('services.whatsapp.admin_general', '6281234567890');
             $whatsappMessage = urlencode('Halo Admin MayClass, saya ingin menanyakan status akun saya.');
@@ -93,22 +93,9 @@ class DashboardController extends Controller
                         });
                     }
                 )
-                // Filter sessions within enrollment period (max 1 month)
-                ->when(
-                    $activeEnrollment && Schema::hasColumn('enrollments', 'starts_at'),
-                    function ($query) use ($activeEnrollment) {
-                        if ($activeEnrollment->starts_at) {
-                            $query->where('start_at', '>=', $activeEnrollment->starts_at);
-                        }
-
-                        if ($activeEnrollment->ends_at) {
-                            $query->where('start_at', '<', $activeEnrollment->ends_at);
-                        }
-                    }
-                )
                 ->when(
                     Schema::hasColumn('schedule_sessions', 'status'),
-                    fn($query) => $query->whereNotIn('status', ['cancelled'])
+                    fn ($query) => $query->whereNotIn('status', ['cancelled'])
                 )
                 ->orderBy('start_at')
                 ->get()
@@ -121,7 +108,7 @@ class DashboardController extends Controller
 
         $recentMaterials = $materialsAvailable
             ? Material::query()
-                ->whereHas('packages', function ($query) use ($packageId) {
+                ->whereHas('packages', function($query) use ($packageId) {
                     $query->where('packages.id', $packageId);
                 })
                 ->with(['subject', 'materialItems'])
@@ -147,7 +134,7 @@ class DashboardController extends Controller
             ? Quiz::query()
                 ->where('package_id', $packageId)
                 ->with('subject')
-                ->when($quizLevelsReady, fn($query) => $query->with(['levels' => fn($levels) => $levels->orderBy('position')]))
+                ->when($quizLevelsReady, fn ($query) => $query->with(['levels' => fn ($levels) => $levels->orderBy('position')]))
                 ->orderByDesc('created_at')
                 ->take(4)
                 ->get()
@@ -166,24 +153,24 @@ class DashboardController extends Controller
             : collect();
 
         $materialsTotal = $materialsAvailable
-            ? Material::whereHas('packages', function ($query) use ($packageId) {
+            ? Material::whereHas('packages', function($query) use ($packageId) {
                 $query->where('packages.id', $packageId);
             })->count()
             : 0;
         $recentMaterialsCount = $materialsAvailable
-            ? Material::whereHas('packages', function ($query) use ($packageId) {
+            ? Material::whereHas('packages', function($query) use ($packageId) {
                 $query->where('packages.id', $packageId);
             })
                 ->where('created_at', '>=', now()->subDays(14))
                 ->count()
             : 0;
         $subjectsTotal = $materialsAvailable
-            ? Material::whereHas('packages', function ($query) use ($packageId) {
+            ? Material::whereHas('packages', function($query) use ($packageId) {
                 $query->where('packages.id', $packageId);
             })->distinct('subject_id')->count('subject_id')
             : 0;
         $materialLevels = $materialsAvailable
-            ? Material::whereHas('packages', function ($query) use ($packageId) {
+            ? Material::whereHas('packages', function($query) use ($packageId) {
                 $query->where('packages.id', $packageId);
             })->select('level')->distinct()->pluck('level')->filter()->values()->all()
             : [];
@@ -206,9 +193,9 @@ class DashboardController extends Controller
             $levelSet = $levelSet->merge(
                 Quiz::query()
                     ->where('package_id', $packageId)
-                    ->with(['levels' => fn($levels) => $levels->orderBy('position')])
+                    ->with(['levels' => fn ($levels) => $levels->orderBy('position')])
                     ->get()
-                    ->flatMap(fn($quiz) => $quiz->levels->pluck('label'))
+                    ->flatMap(fn ($quiz) => $quiz->levels->pluck('label'))
             );
         }
 
@@ -255,7 +242,7 @@ class DashboardController extends Controller
 
     private function formatActivePackage(?Enrollment $enrollment): array
     {
-        if (!$enrollment || !$enrollment->package) {
+        if (! $enrollment || ! $enrollment->package) {
             return [
                 'title' => 'Belum ada paket aktif',
                 'period' => 'Silakan pilih paket belajar untuk mulai.',
@@ -279,7 +266,7 @@ class DashboardController extends Controller
 
     private function packagesForUpsell()
     {
-        if (!Schema::hasTable('packages')) {
+        if (! Schema::hasTable('packages')) {
             return collect();
         }
 
@@ -287,10 +274,10 @@ class DashboardController extends Controller
             $query = Package::query()->orderBy('price');
 
             if (Schema::hasTable('package_features')) {
-                $query->with(['cardFeatures' => fn($features) => $features->orderBy('position')]);
+                $query->with(['cardFeatures' => fn ($features) => $features->orderBy('position')]);
             }
 
-            return $query->get()->map(fn(Package $package) => PackagePresenter::card($package))->values();
+            return $query->get()->map(fn (Package $package) => PackagePresenter::card($package))->values();
         } catch (Throwable $exception) {
             return collect();
         }
@@ -298,7 +285,7 @@ class DashboardController extends Controller
 
     private function parseDate($value): ?CarbonImmutable
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 

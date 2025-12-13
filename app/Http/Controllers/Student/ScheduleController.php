@@ -23,17 +23,17 @@ class ScheduleController extends Controller
         $student = Auth::user();
         $hasEnrollmentsTable = Schema::hasTable('enrollments');
 
-        $enrollments = (!$student || !$hasEnrollmentsTable)
+        $enrollments = (! $student || ! $hasEnrollmentsTable)
             ? collect()
             : $student->enrollments()
                 ->with('package')
                 ->when(
                     Schema::hasColumn('enrollments', 'is_active'),
-                    fn($query) => $query->where('is_active', true)
+                    fn ($query) => $query->where('is_active', true)
                 )
                 ->when(
                     Schema::hasColumn('enrollments', 'ends_at'),
-                    fn($query) => $query->where(function ($subQuery) {
+                    fn ($query) => $query->where(function ($subQuery) {
                         $subQuery
                             ->whereNull('ends_at')
                             ->orWhere('ends_at', '>=', now());
@@ -46,7 +46,7 @@ class ScheduleController extends Controller
         $packages = $enrollments->pluck('package')->filter();
         $primaryPackage = $packages->count() === 1 ? $packages->first() : null;
 
-        $sessions = ($packageIds->isEmpty() || !Schema::hasTable('schedule_sessions'))
+        $sessions = ($packageIds->isEmpty() || ! Schema::hasTable('schedule_sessions'))
             ? collect()
             : ScheduleSession::query()
                 ->with(['package:id,detail_title'])
@@ -71,30 +71,9 @@ class ScheduleController extends Controller
                         });
                     }
                 )
-                // Filter sessions within enrollment period (max 1 month)
-                ->when(
-                    $enrollments->isNotEmpty() && Schema::hasColumn('enrollments', 'starts_at'),
-                    function ($query) use ($enrollments) {
-                        $query->where(function ($dateQuery) use ($enrollments) {
-                            foreach ($enrollments as $enrollment) {
-                                $dateQuery->orWhere(function ($subQuery) use ($enrollment) {
-                                    $subQuery->where('package_id', $enrollment->package_id);
-
-                                    if ($enrollment->starts_at) {
-                                        $subQuery->where('start_at', '>=', $enrollment->starts_at);
-                                    }
-
-                                    if ($enrollment->ends_at) {
-                                        $subQuery->where('start_at', '<', $enrollment->ends_at);
-                                    }
-                                });
-                            }
-                        });
-                    }
-                )
                 ->when(
                     Schema::hasColumn('schedule_sessions', 'status'),
-                    fn($query) => $query->whereNotIn('status', ['cancelled'])
+                    fn ($query) => $query->whereNotIn('status', ['cancelled'])
                 )
                 ->orderBy('start_at')
                 ->get();
@@ -137,7 +116,7 @@ class ScheduleController extends Controller
 
     private function parseDate($value): ?CarbonImmutable
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 
