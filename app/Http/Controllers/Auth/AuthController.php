@@ -134,7 +134,7 @@ class AuthController extends Controller
             return redirect()->route('register')->with('status', __('Silakan lengkapi data diri terlebih dahulu.'));
         }
 
-        // ✅ Validasi data profile yang ada di session (tanpa recaptcha)
+        // âœ… Validasi data profile yang ada di session (tanpa recaptcha)
         $profileValidator = Validator::make($profile, [
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'alpha_dash', 'min:4', 'max:50', Rule::unique(User::class, 'username')],
@@ -151,14 +151,14 @@ class AuthController extends Controller
                 ->withInput($profile);
         }
 
-        // ✅ Validasi password + reCAPTCHA dari form password step
+        // âœ… Validasi password + reCAPTCHA dari form password step
         $passwordData = $request->validate([
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'g-recaptcha-response' => [
                 function ($attribute, $value, $fail) use ($request) {
                     $secret = config('services.recaptcha.secret');
 
-                    // 🔧 BYPASS: Skip validation di development jika reCAPTCHA tidak dikonfigurasi
+                    // ðŸ”§ BYPASS: Skip validation di development jika reCAPTCHA tidak dikonfigurasi
                     if (!$secret) {
                         if (app()->environment('local', 'development')) {
                             Log::info('reCAPTCHA validation skipped (development mode, no credentials configured).');
@@ -203,7 +203,7 @@ class AuthController extends Controller
             ],
         ]);
 
-        // ✅ Buat user baru
+        // âœ… Buat user baru
         User::create([
             'name' => $profile['name'],
             'username' => $profile['username'],
@@ -350,10 +350,10 @@ class AuthController extends Controller
     {
         $first = random_int(2, 9);
         $second = random_int(1, 8);
-        $operators = ['+', '−'];
+        $operators = ['+', 'âˆ’'];
         $operator = $operators[array_rand($operators)];
 
-        if ($operator === '−' && $second > $first) {
+        if ($operator === 'âˆ’' && $second > $first) {
             [$first, $second] = [$second, $first];
         }
 

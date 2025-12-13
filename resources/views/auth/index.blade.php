@@ -292,27 +292,71 @@
             margin-bottom: 20px;
         }
 
-        /* Links */
-        .forgot-pass-wrapper {
+        /* Login Options Row (Remember Me + Forgot Password) */
+        .login-options {
             display: flex;
-            justify-content: flex-end;
-            margin-top: -12px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -8px;
+            gap: 12px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Modern Custom Checkbox */
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--neutral-400);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .remember-me input[type="checkbox"]:hover {
+            border-color: var(--primary-600);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .remember-me input[type="checkbox"]:checked {
+            background: var(--primary-600);
+            border-color: var(--primary-600);
+        }
+
+        .remember-me input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
         }
 
         .forgot-link {
-            font-size: 0.85rem;
-            color: var(--neutral-500);
-            font-weight: 500;
-        }
-
-        .forgot-link span {
+            font-size: 0.875rem;
             color: var(--primary-600);
             font-weight: 600;
+            transition: all 0.2s ease;
         }
 
         .forgot-link:hover {
-            color: var(--primary-600);
-            text-decoration: underline;
+            color: var(--primary-700);
+            transform: translateX(2px);
         }
 
         .auth-footer {
@@ -665,10 +709,12 @@
                 @error('password') <span class="error-msg">{{ $message }}</span> @enderror
             </div>
 
-            <div class="forgot-pass-wrapper">
-                <a href="{{ route('password.request') }}" class="forgot-link">
-                    Lupa password? <span>Hubungi admin</span>
-                </a>
+            <div class="login-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    <span>Ingat Saya</span>
+                </label>
+                <a href="{{ route('password.request') }}" class="forgot-link">Lupa Password?</a>
             </div>
 
             <button class="btn-primary" type="submit">Masuk</button>

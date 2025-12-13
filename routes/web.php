@@ -181,6 +181,47 @@ Route::get('/test-mail', function () {
     return new \App\Mail\PaymentApproved($order);
 });
 
+// FIX CONFLICT ROUTE - Run this once if images are 403/404!
+Route::get('/fix-conflict', function () {
+    $log = [];
+
+    // 1. Clear Route Cache (Crucial for new routes to work)
+    try {
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        $log[] = 'Route cache cleared.';
+    } catch (\Exception $e) {
+        $log[] = 'Failed to clear route cache: ' . $e->getMessage();
+    }
+
+    // 2. Remove "public/storage" if it exists (It blocks our bypass route)
+    $linkPath = public_path('storage');
+    if (file_exists($linkPath) || is_link($linkPath)) {
+        try {
+            // Rename instead of delete for safety
+            $backupName = 'storage_backup_' . time(); // e.g., storage_backup_123456
+            rename($linkPath, public_path($backupName));
+            $log[] = "BLOCKING FOLDER REMOVED! Renamed 'public/storage' to 'public/{$backupName}'.";
+        } catch (\Exception $e) {
+            $log[] = "Failed to remove blocking folder: " . $e->getMessage() . " (Please delete 'public/storage' manually via File Manager)";
+        }
+    } else {
+        $log[] = "Good news: No blocking 'public/storage' folder found.";
+    }
+
+    return implode('<br>', $log) . '<br><br><b>Now try refreshing your website!</b>';
+});
+
+// Symlink Bypass Route - Serves storage files directly via Laravel
+Route::get('storage/{path}', function ($path) {
+    // Check if file exists in storage/app/public
+    if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+        abort(404);
+    }
+
+    $filePath = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+    return response()->file($filePath);
+})->where('path', '.*');
+
 Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/packages/{slug}', [PackageController::class, 'show'])->name('packages.show');
 
