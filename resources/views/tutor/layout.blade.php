@@ -81,9 +81,28 @@
             gap: 12px;
             padding: 12px 16px;
             border-radius: 14px;
-            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
-            transition: background 0.2s ease, color 0.2s ease;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+            transition:
+                transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                color 0.2s ease,
+                background 0.3s ease;
+        }
+
+        /* Animated background layer */
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #0f766e;
+            border-radius: 14px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: -1;
         }
 
         .nav-icon {
@@ -93,6 +112,11 @@
             background: rgba(255, 255, 255, 0.08);
             display: grid;
             place-items: center;
+            flex-shrink: 0;
+            transition:
+                transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background 0.3s ease,
+                box-shadow 0.3s ease;
         }
 
         .nav-icon svg {
@@ -100,14 +124,46 @@
             height: 22px;
         }
 
+        /* ACTIVE STATE - Solid MayClass Green with animation */
         .nav-link[data-active='true'] {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+            color: #ffffff;
+            font-weight: 600;
+            transform: scale(1.02);
         }
 
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.18);
+        .nav-link[data-active='true']::before {
+            transform: scaleX(1);
+        }
+
+        /* Pulse animation on active */
+        @keyframes menuPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(15, 118, 110, 0);
+            }
+        }
+
+        .nav-link[data-active='true'] {
+            animation: menuPulse 2s ease-in-out infinite;
+        }
+
+        /* Active icon styling */
+        .nav-link[data-active='true'] .nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(-5deg) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hover effect for non-active */
+        .nav-link:hover:not([data-active='true']) {
+            background: rgba(255, 255, 255, 0.12);
             color: #fff;
+            transform: translateX(6px);
         }
 
         .nav-footer {
@@ -484,6 +540,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -730,7 +787,7 @@
 
             // Show modal when logout button is clicked
             logoutButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
                     activeLogoutForm = this.closest('form');
                     logoutModal.classList.add('active');
@@ -738,20 +795,20 @@
             });
 
             // Cancel logout
-            cancelLogoutBtn.addEventListener('click', function() {
+            cancelLogoutBtn.addEventListener('click', function () {
                 logoutModal.classList.remove('active');
                 activeLogoutForm = null;
             });
 
             // Confirm logout
-            confirmLogoutBtn.addEventListener('click', function() {
+            confirmLogoutBtn.addEventListener('click', function () {
                 if (activeLogoutForm) {
                     activeLogoutForm.submit();
                 }
             });
 
             // Close modal when clicking outside
-            logoutModal.addEventListener('click', function(e) {
+            logoutModal.addEventListener('click', function (e) {
                 if (e.target === logoutModal) {
                     logoutModal.classList.remove('active');
                     activeLogoutForm = null;
@@ -765,16 +822,20 @@
         <div class="logout-modal__content">
             <div class="logout-modal__header">
                 <div class="logout-modal__icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                 </div>
                 <h3 class="logout-modal__title">Konfirmasi Logout</h3>
                 <p class="logout-modal__message">Apakah Anda yakin ingin log out?</p>
             </div>
             <div class="logout-modal__actions">
-                <button type="button" class="logout-modal__button logout-modal__button--cancel" id="cancelLogout">Batal</button>
-                <button type="button" class="logout-modal__button logout-modal__button--confirm" id="confirmLogout">Ya, Log Out</button>
+                <button type="button" class="logout-modal__button logout-modal__button--cancel"
+                    id="cancelLogout">Batal</button>
+                <button type="button" class="logout-modal__button logout-modal__button--confirm" id="confirmLogout">Ya,
+                    Log Out</button>
             </div>
         </div>
     </div>
