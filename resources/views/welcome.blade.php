@@ -2445,7 +2445,18 @@
         </nav>
         @php
             $heroContent = $landingContents->get('hero')?->first();
-            $heroBg = $heroContent && $heroContent->image ? asset($heroContent->image) : '/images/stis_contoh.jpeg';
+            $heroImage = $heroContent?->image ?? null;
+
+            // Gunakan AvatarResolver untuk Base64 embedding (bypass hosting URL issues)
+            if ($heroImage) {
+                $heroBg = \App\Support\AvatarResolver::resolve([$heroImage]);
+                // Fallback ke asset jika AvatarResolver gagal
+                if (!$heroBg) {
+                    $heroBg = asset($heroImage);
+                }
+            } else {
+                $heroBg = asset('images/stis_contoh.jpeg');
+            }
         @endphp
         <div class="hero" id="beranda"
             style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65)), url('{{ $heroBg }}');">

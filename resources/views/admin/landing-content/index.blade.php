@@ -689,8 +689,12 @@
             </div>
             <div class="content-grid" style="grid-template-columns: 1fr;">
                 @forelse($contents['hero'] ?? [] as $item)
-                    <div class="preview-card-hero"
-                        style="background-image: url('{{ $item->image ? asset($item->image) : '/images/stis_contoh.jpeg' }}');">
+                    @php
+                        $heroImg = $item->image
+                            ? \App\Support\AvatarResolver::resolve([$item->image])
+                            : asset('images/stis_contoh.jpeg');
+                    @endphp
+                    <div class="preview-card-hero" style="background-image: url('{{ $heroImg }}');">
                         <div class="preview-hero-content">
                             <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700;">
                                 {{ $item->content['subtitle'] ?? 'No Title' }}
@@ -729,8 +733,11 @@
                 @forelse($contents['article'] ?? [] as $item)
                     <div class="content-card">
                         @if($item->image)
+                            @php
+                                $articleImg = \App\Support\AvatarResolver::resolve([$item->image]) ?? asset($item->image);
+                            @endphp
                             <div class="card-img-wrapper">
-                                <img src="{{ asset($item->image) }}" alt="Thumbnail" class="card-img">
+                                <img src="{{ $articleImg }}" alt="Thumbnail" class="card-img">
                             </div>
                         @endif
                         <div class="card-body">
@@ -780,9 +787,12 @@
                         ->get();
                 @endphp
                 @forelse($recentDocs as $doc)
+                    @php
+                        $docImg = \App\Support\AvatarResolver::resolve([$doc->photo_path]) ?? asset('storage/' . $doc->photo_path);
+                    @endphp
                     <div class="content-card">
                         <div class="card-img-wrapper">
-                            <img src="{{ asset('storage/' . $doc->photo_path) }}" alt="Dokumentasi" class="card-img">
+                            <img src="{{ $docImg }}" alt="Dokumentasi" class="card-img">
                         </div>
                         <div class="card-body">
                             <h4 class="card-title" style="color: var(--primary); font-size: 0.85rem;">
@@ -860,137 +870,143 @@
             </div>
             <div class="content-grid">
                 @forelse($contents['testimonial'] ?? [] as $item)
-                    <div class="preview-card-compact">
-                        @if($item->image)
-                            <img src="{{ asset($item->image) }}" alt="Avatar" class="preview-avatar">
-                        @else
-                            <div class="preview-avatar" style="background: #e2e8f0;"></div>
-                        @endif
-                        <div class="preview-info">
-                            <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
-                            <p class="preview-subtitle" style="font-style: italic;">"{{ $item->content['quote'] ?? '' }}"</p>
-                        </div>
-                        <div class="preview-actions">
-                            <button onclick="openModal('edit', 'testimonial', {{ $item }})" class="btn-icon">Edit</button>
-                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
-                                data-name="{{ $item->content['name'] ?? 'Testimoni' }}"
-                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
-                                Hapus
-                            </button>
-                        </div>
-                    </div>
+                    @php
+                        $testiImg = $item->image ? \App\Support\AvatarResolver::resolve([$item->image]) : null;
+                    @endphp
+                            <div class="preview-card-compact">
+                                @if($testiImg)
+                                    <img src="{{ $testiImg }}" alt="Avatar" class="preview-avatar">
+                                @else
+                                    <div class="preview-avatar" style="background: #e2e8f0;"></div>
+                                @endif
+                                <div class="preview-info">
+                                    <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
+                                    <p class="preview-subtitle" style="font-style: italic;">"{{ $item->content['quote'] ?? '' }}"</p>
+                                </div>
+                                <div class="preview-actions">
+                                    <button onclick="openModal('edit', 'testimonial', {{ $item }})" class="btn-icon">Edit</button>
+                                    <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                        data-name="{{ $item->content['name'] ?? 'Testimoni' }}"
+                                        data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
                 @empty
-                    <div class="empty-state">Belum ada testimoni.</div>
-                @endforelse
+                        <div class="empty-state">Belum ada testimoni.</div>
+                    @endforelse
+                </div>
             </div>
-        </div>
 
-        {{-- Mentors Section --}}
-        <div class="section-block">
-            <div class="section-header">
-                <h3 class="section-title">Mentor</h3>
-                <button onclick="openModal('create', 'mentor')" class="btn-add">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Tambah
-                </button>
-            </div>
-            <div class="content-grid">
-                @forelse($contents['mentor'] ?? [] as $item)
-                    <div class="preview-card-compact">
-                        @if($item->image)
-                            <img src="{{ asset($item->image) }}" alt="Mentor" class="preview-img-square">
-                        @else
-                            <div class="preview-img-square" style="background: #e2e8f0;"></div>
-                        @endif
-                        <div class="preview-info">
-                            <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
-                            <p class="preview-subtitle" style="color: var(--primary); font-weight: 500;">
-                                {{ $item->content['role'] ?? '' }}
-                            </p>
-                            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
-                                @foreach($item->content['meta'] ?? [] as $meta)
-                                    <span
-                                        style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
-                                @endforeach
+            {{-- Mentors Section --}}
+            <div class="section-block">
+                <div class="section-header">
+                    <h3 class="section-title">Mentor</h3>
+                    <button onclick="openModal('create', 'mentor')" class="btn-add">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah
+                    </button>
+                </div>
+                <div class="content-grid">
+                    @forelse($contents['mentor'] ?? [] as $item)
+                        @php
+                            $mentorImg = $item->image ? \App\Support\AvatarResolver::resolve([$item->image]) : null;
+                        @endphp
+                        <div class="preview-card-compact">
+                            @if($mentorImg)
+                                <img src="{{ $mentorImg }}" alt="Mentor" class="preview-img-square">
+                            @else
+                                <div class="preview-img-square" style="background: #e2e8f0;"></div>
+                            @endif
+                            <div class="preview-info">
+                                <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
+                                <p class="preview-subtitle" style="color: var(--primary); font-weight: 500;">
+                                    {{ $item->content['role'] ?? '' }}
+                                </p>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+                                    @foreach($item->content['meta'] ?? [] as $meta)
+                                        <span
+                                            style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="preview-actions">
+                                <button onclick="openModal('edit', 'mentor', {{ $item }})" class="btn-icon">Edit</button>
+                                <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                    data-name="{{ $item->content['name'] ?? 'Mentor' }}"
+                                    data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                    Hapus
+                                </button>
                             </div>
                         </div>
-                        <div class="preview-actions">
-                            <button onclick="openModal('edit', 'mentor', {{ $item }})" class="btn-icon">Edit</button>
-                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
-                                data-name="{{ $item->content['name'] ?? 'Mentor' }}"
-                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
-                                Hapus
-                            </button>
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-state">Belum ada mentor.</div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- FAQ Section --}}
-        <div class="section-block">
-            <div class="section-header">
-                <h3 class="section-title">FAQ</h3>
-                <button onclick="openModal('create', 'faq')" class="btn-add">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Tambah
-                </button>
-            </div>
-            <div class="content-grid" style="grid-template-columns: 1fr;">
-                @forelse($contents['faq'] ?? [] as $item)
-                    <div class="content-card" style="flex-direction: row; align-items: center;">
-                        <div class="card-body">
-                            <h4 class="card-title" style="color: var(--primary); font-size: 0.9rem;">Q:
-                                {{ $item->content['question'] ?? '' }}
-                            </h4>
-                            <p class="card-desc" style="margin-top: 2px;">A: {{ $item->content['answer'] ?? '' }}</p>
-                        </div>
-                        <div class="card-actions"
-                            style="border-top: none; background: transparent; border-left: 1px solid var(--border-color);">
-                            <button onclick="openModal('edit', 'faq', {{ $item }})" class="btn-icon">Edit</button>
-                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
-                                data-name="FAQ" data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
-                                Hapus
-                            </button>
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-state">Belum ada FAQ.</div>
-                @endforelse
-            </div>
-        </div>
-
-    </div>
-
-    {{-- Glassmorphism Modal --}}
-    <div id="contentModal" class="modal-backdrop">
-        <div class="modal-glass">
-            <div class="modal-header">
-                <h2 id="modalTitle" class="modal-title">Tambah Konten</h2>
-                <button type="button" onclick="closeModal()" class="btn-close">&times;</button>
-            </div>
-            <form id="contentForm" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div id="methodField"></div>
-                <input type="hidden" name="section" id="sectionInput">
-
-                <div id="dynamicFields">
-                    <!-- Fields injected via JS -->
+                    @empty
+                        <div class="empty-state">Belum ada mentor.</div>
+                    @endforelse
                 </div>
+            </div>
 
-                <div class="modal-footer">
-                    <button type="button" onclick="closeModal()" class="btn-cancel">Batal</button>
-                    <button type="submit" class="btn-submit">Simpan</button>
+            {{-- FAQ Section --}}
+            <div class="section-block">
+                <div class="section-header">
+                    <h3 class="section-title">FAQ</h3>
+                    <button onclick="openModal('create', 'faq')" class="btn-add">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah
+                    </button>
                 </div>
-            </form>
+                <div class="content-grid" style="grid-template-columns: 1fr;">
+                    @forelse($contents['faq'] ?? [] as $item)
+                        <div class="content-card" style="flex-direction: row; align-items: center;">
+                            <div class="card-body">
+                                <h4 class="card-title" style="color: var(--primary); font-size: 0.9rem;">Q:
+                                    {{ $item->content['question'] ?? '' }}
+                                </h4>
+                                <p class="card-desc" style="margin-top: 2px;">A: {{ $item->content['answer'] ?? '' }}</p>
+                            </div>
+                            <div class="card-actions"
+                                style="border-top: none; background: transparent; border-left: 1px solid var(--border-color);">
+                                <button onclick="openModal('edit', 'faq', {{ $item }})" class="btn-icon">Edit</button>
+                                <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                    data-name="FAQ" data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                    Hapus
+                                </button>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state">Belum ada FAQ.</div>
+                    @endforelse
+                </div>
+            </div>
+
         </div>
-    </div>
+
+        {{-- Glassmorphism Modal --}}
+        <div id="contentModal" class="modal-backdrop">
+            <div class="modal-glass">
+                <div class="modal-header">
+                    <h2 id="modalTitle" class="modal-title">Tambah Konten</h2>
+                    <button type="button" onclick="closeModal()" class="btn-close">&times;</button>
+                </div>
+                <form id="contentForm" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div id="methodField"></div>
+                    <input type="hidden" name="section" id="sectionInput">
+
+                    <div id="dynamicFields">
+                        <!-- Fields injected via JS -->
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeModal()" class="btn-cancel">Batal</button>
+                        <button type="submit" class="btn-submit">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 @endsection
 
 @push('scripts')
