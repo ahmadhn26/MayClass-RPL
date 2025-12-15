@@ -366,7 +366,7 @@
 
         @media (max-width: 768px) {
             .brand img {
-                height: 36px;
+                height: 52px;
             }
         }
 
@@ -3566,7 +3566,7 @@
 
     <script>
         // Simple greeting popup
-        (function() {
+        (function () {
             const popup = document.getElementById('simpleGreeting');
             const titleEl = document.getElementById('greetingTitle');
 
