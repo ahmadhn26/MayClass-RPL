@@ -59,16 +59,12 @@ Route::get('/', function () {
         ->get()
         ->groupBy('section');
 
-    // Fetch Documentation - 20 latest from this week
+    // Fetch Documentation - 20 latest (up to 30 days old)
     $documentations = collect();
     if (Schema::hasTable('documentations')) {
-        $weekNumber = now()->weekOfYear;
-        $year = now()->year;
-
         $documentations = \App\Models\Documentation::where('is_active', true)
-            ->where('year', $year)
-            ->where('week_number', $weekNumber)
-            ->orderBy('order', 'desc')
+            ->where('activity_date', '>=', now()->subDays(30))
+            ->orderBy('activity_date', 'desc')
             ->orderBy('created_at', 'desc')
             ->limit(20)
             ->get();

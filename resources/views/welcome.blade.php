@@ -368,6 +368,31 @@
             .brand img {
                 height: 52px;
             }
+
+            /* Mobile sidebar profile photo - circular style */
+            .nav-links .nav-profile {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                border: 3px solid var(--primary-main);
+                overflow: hidden;
+                flex-shrink: 0;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(63, 166, 126, 0.25);
+                display: block;
+                margin: 0 auto;
+            }
+
+            .nav-links .nav-actions {
+                align-items: center;
+            }
+
+            .nav-links .nav-profile img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            }
         }
 
         .btn {
@@ -640,28 +665,42 @@
 
         @media (max-width: 768px) {
             .hero-stats {
-                gap: 16px;
-                margin-top: 32px;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 12px;
+                margin-top: 24px;
+                width: 100%;
+                justify-content: center;
             }
 
             .stat-card {
-                padding: 24px 32px;
-                min-width: 160px;
+                flex: 1;
+                max-width: 160px;
+                min-width: auto;
+                padding: 16px 12px;
+                border-radius: 14px;
             }
 
             .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 24px;
-                margin-bottom: 12px;
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+
+            .stat-icon-photo {
+                width: 36px;
+                height: 36px;
             }
 
             .stat-number {
-                font-size: 2rem;
+                font-size: 1.5rem;
+                margin-bottom: 2px;
             }
 
             .stat-label {
-                font-size: 0.85rem;
+                font-size: 0.7rem;
             }
         }
 
@@ -841,9 +880,44 @@
 
         @media (max-width: 768px) {
             .article-card {
-                min-width: 280px;
-                max-width: 280px;
+                min-width: 160px !important;
+                max-width: 160px !important;
+                width: 160px !important;
                 scroll-snap-align: center;
+                border-radius: 12px !important;
+                flex-shrink: 0;
+            }
+
+            .article-image-wrapper {
+                height: 100px !important;
+            }
+
+            .article-content {
+                padding: 10px !important;
+            }
+
+            .article-content h3 {
+                font-size: 0.75rem !important;
+                line-height: 1.2 !important;
+                margin: 0 0 4px !important;
+            }
+
+            .article-content p {
+                display: none !important;
+            }
+
+            .article-footer {
+                padding-top: 6px !important;
+            }
+
+            .btn-read-more {
+                font-size: 0.65rem !important;
+                padding: 4px 0 !important;
+            }
+
+            .article-badge {
+                font-size: 0.6rem !important;
+                padding: 4px 8px !important;
             }
         }
 
@@ -1031,14 +1105,49 @@
 
         @media (max-width: 768px) {
             .pricing-card {
-                padding: 20px;
-                gap: 12px;
-                width: 280px;
-                min-width: 280px;
-                max-width: 280px;
+                padding: 16px !important;
+                gap: 10px !important;
+                width: 220px !important;
+                min-width: 220px !important;
+                max-width: 220px !important;
                 flex-shrink: 0;
                 box-sizing: border-box;
                 scroll-snap-align: start;
+                border-radius: 14px !important;
+            }
+
+            .pricing-card .badge {
+                padding: 5px 10px !important;
+                font-size: 0.7rem !important;
+            }
+
+            .pricing-card strong {
+                font-size: 0.9rem !important;
+            }
+
+            .pricing-price {
+                font-size: 1.2rem !important;
+                margin: 4px 0 !important;
+            }
+
+            .pricing-meta {
+                font-size: 0.75rem !important;
+                padding: 3px 8px !important;
+            }
+
+            .pricing-features {
+                font-size: 0.8rem !important;
+                gap: 8px !important;
+            }
+
+            .pricing-actions {
+                padding-top: 12px !important;
+            }
+
+            .pricing-actions .btn {
+                font-size: 0.85rem !important;
+                padding: 10px !important;
+                border-radius: 10px !important;
             }
         }
 
@@ -1186,7 +1295,25 @@
 
         @media (max-width: 768px) {
             .highlight-grid {
-                gap: 16px;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+
+            .highlight-card {
+                padding: 14px !important;
+                border-radius: 12px !important;
+                gap: 6px !important;
+            }
+
+            .highlight-card strong {
+                font-size: 0.8rem !important;
+                line-height: 1.3 !important;
+            }
+
+            .highlight-card p {
+                font-size: 0.7rem !important;
+                line-height: 1.4 !important;
+                margin: 0 !important;
             }
         }
 
@@ -1198,12 +1325,6 @@
             display: grid;
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.16);
-        }
-
-        @media (max-width: 768px) {
-            .highlight-card {
-                padding: 20px;
-            }
         }
 
         .highlight-card strong {
@@ -1365,7 +1486,33 @@
 
         @media (max-width: 768px) {
             .mentor-profile {
-                padding: 20px;
+                padding: 14px !important;
+                gap: 10px !important;
+                border-radius: 16px !important;
+            }
+
+            .mentor-avatar {
+                width: 60px !important;
+                height: 60px !important;
+                border-radius: 18px !important;
+            }
+
+            .mentor-info strong {
+                font-size: 0.85rem !important;
+            }
+
+            .mentor-role {
+                font-size: 0.7rem !important;
+            }
+
+            .mentor-saying {
+                font-size: 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+
+            .mentor-meta span {
+                font-size: 0.65rem !important;
+                padding: 3px 8px !important;
             }
         }
 
@@ -1555,9 +1702,15 @@
         }
 
         @media (max-width: 768px) {
+            .footer-brand-col {
+                align-items: center;
+                text-align: center;
+            }
+
             .footer-logo {
                 width: 120px;
                 height: 80px;
+                margin: 0 auto;
             }
         }
 
@@ -1894,11 +2047,32 @@
 
         @media (max-width: 768px) {
             .testimonial-card {
-                padding: 24px;
+                padding: 16px !important;
+                gap: 12px !important;
+                border-radius: 16px !important;
+                min-height: auto !important;
+            }
+
+            .testimonial-rating {
+                font-size: 0.9rem !important;
             }
 
             .testimonial-quote {
-                font-size: 1rem;
+                font-size: 0.85rem !important;
+                line-height: 1.5 !important;
+            }
+
+            .testimonial-avatar {
+                width: 50px !important;
+                height: 50px !important;
+            }
+
+            .testimonial-meta strong {
+                font-size: 0.85rem !important;
+            }
+
+            .testimonial-meta span {
+                font-size: 0.75rem !important;
             }
 
             .swiper-button-next,
@@ -2134,14 +2308,29 @@
             .faq-grid {
                 display: grid !important;
                 grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+
+            .faq-grid details {
+                padding: 8px 12px !important;
+                border-radius: 10px !important;
             }
 
             .faq-grid summary {
-                font-size: 0.9rem !important;
+                font-size: 0.8rem !important;
+                padding: 2px 0 !important;
+            }
+
+            .faq-grid summary::after {
+                width: 18px !important;
+                height: 18px !important;
+                font-size: 0.7rem !important;
             }
 
             .faq-grid p {
-                font-size: 0.85rem !important;
+                font-size: 0.75rem !important;
+                margin: 6px 0 4px !important;
+                line-height: 1.5 !important;
             }
         }
 
@@ -2261,7 +2450,7 @@
 </head>
 
 <body x-data="{ 
-    selectedLevel: 'Semua Jenjang', 
+    selectedLevel: 'SD', 
     openDropdown: false,
     modalOpen: false, 
     pkg: {}, 
@@ -2329,51 +2518,51 @@
                         {{-- Mobile Nav Actions --}}
                         @auth
                             <div
-                                style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 12px;">
-                                <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                    aria-label="Buka profil">
-                                    <img src="{{ $profileAvatar }}" alt="Foto profil" />
-                                </a>
-                            </div>
-
-                            {{-- LOGIKA TOMBOL MOBILE --}}
-                            @if($hasActivePackage)
-                                {{-- 1. SUDAH LUNAS / AKTIF --}}
-                                <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
-                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                    Ayo Belajar
-                                </a>
-                            @elseif($pendingOrder && $pendingOrder->package)
-                                {{-- 2. ADA TRANSAKSI BERJALAN --}}
-                                @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
-                                    {{-- Sudah upload bukti, menunggu admin --}}
-                                    <a class="btn btn-primary"
-                                        href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
-                                        style="background: #3b82f6; border-color: #3b82f6; color: white;">
-                                        Lihat Status
+                                style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px;">
+                                    <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                        aria-label="Buka profil" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; aspect-ratio: 1/1;">
+                                        <img src="{{ $profileAvatar }}" alt="Foto profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
                                     </a>
+                                </div>
+
+                                {{-- LOGIKA TOMBOL MOBILE --}}
+                                @if($hasActivePackage)
+                                    {{-- 1. SUDAH LUNAS / AKTIF --}}
+                                    <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
+                                        style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                        Ayo Belajar
+                                    </a>
+                                @elseif($pendingOrder && $pendingOrder->package)
+                                    {{-- 2. ADA TRANSAKSI BERJALAN --}}
+                                    @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
+                                        {{-- Sudah upload bukti, menunggu admin --}}
+                                        <a class="btn btn-primary"
+                                            href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                            style="background: #3b82f6; border-color: #3b82f6; color: white;">
+                                            Lihat Status
+                                        </a>
+                                    @else
+                                        {{-- Belum bayar / Belum upload bukti --}}
+                                        <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}"
+                                            style="background: #f59e0b; border-color: #f59e0b; color: white;">
+                                            Lanjut Bayar
+                                        </a>
+                                    @endif
                                 @else
-                                    {{-- Belum bayar / Belum upload bukti --}}
-                                    <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}"
-                                        style="background: #f59e0b; border-color: #f59e0b; color: white;">
-                                        Lanjut Bayar
+                                    <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                                        Beli Paket Belajar
                                     </a>
                                 @endif
-                            @else
-                                <a class="btn btn-primary" href="{{ route('packages.index') }}">
-                                    Beli Paket Belajar
-                                </a>
-                            @endif
 
-                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                                @csrf
-                                <button type="submit" class="btn btn-outline"
-                                    style="color: #000; border-color: #ccc;">Keluar</button>
-                            </form>
+                                <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline"
+                                        style="color: #000; border-color: #ccc;">Keluar</button>
+                                </form>
                         @else
                             <a class="btn btn-primary" href="{{ $joinLink }}">
                                 Gabung Sekarang
@@ -2555,10 +2744,54 @@
                     </p>
                 </div>
 
-                <div
-                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 40px;">
+                <style>
+                    .doc-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                        gap: 24px;
+                        margin-top: 40px;
+                    }
+
+                    @media (max-width: 768px) {
+                        .doc-grid {
+                            display: flex;
+                            overflow-x: auto;
+                            scroll-snap-type: x mandatory;
+                            gap: 12px;
+                            padding-bottom: 16px;
+                            margin-top: 20px;
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;
+                        }
+
+                        .doc-grid::-webkit-scrollbar {
+                            display: none;
+                        }
+
+                        .doc-card {
+                            min-width: 160px !important;
+                            max-width: 160px !important;
+                            scroll-snap-align: start;
+                        }
+
+                        .doc-card img {
+                            aspect-ratio: 1/1 !important;
+                        }
+
+                        .doc-card .doc-desc {
+                            font-size: 0.7rem !important;
+                            padding: 10px !important;
+                        }
+
+                        .doc-card .doc-badge {
+                            font-size: 0.6rem !important;
+                            padding: 4px 8px !important;
+                        }
+                    }
+                </style>
+                <div class="doc-grid">
                     @foreach($documentations as $doc)
-                        <div data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
+                        <div class="doc-card" data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
                             style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;"
                             onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
@@ -2566,12 +2799,12 @@
                                 <img src="{{ asset('storage/' . $doc->photo_path) }}"
                                     alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
                                     style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
-                                <div
+                                <div class="doc-badge"
                                     style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
                                     {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
                                 </div>
                             </div>
-                            <div style="padding: 16px;">
+                            <div class="doc-desc" style="padding: 16px;">
                                 <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
                                     {{ Str::limit($doc->description, 100) }}
                                 </p>
@@ -2616,8 +2849,6 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                     style="display: none;">
-                    <div class="filter-option" :class="{ 'active': selectedLevel === 'Semua Jenjang' }"
-                        @click="selectedLevel = 'Semua Jenjang'; openDropdown = false">Semua Jenjang</div>
                     <div class="filter-option" :class="{ 'active': selectedLevel === 'SD' }"
                         @click="selectedLevel = 'SD'; openDropdown = false">Jenjang SD</div>
                     <div class="filter-option" :class="{ 'active': selectedLevel === 'SMP' }"
@@ -2680,8 +2911,7 @@
                 @php($hasAnyPackage = true)
                 @foreach ($levelGroup['items'] as $package)
                 @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
-                <article class="pricing-card"
-                    x-show="selectedLevel === 'Semua Jenjang' || selectedLevel === '{{ $key }}'"
+                <article class="pricing-card" x-show="selectedLevel === '{{ $key }}'"
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 transform scale-95"
                     x-transition:enter-end="opacity-100 transform scale-100" data-reveal>
@@ -2924,8 +3154,7 @@
         <div class="container">
             <div class="footer-top">
                 <div class="footer-brand-col">
-                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" class="footer-logo"
-                        style="margin-left: 80px;" />
+                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" class="footer-logo" />
                     <p class="footer-desc">
                         MayClass adalah platform bimbingan belajar premium yang menggabungkan materi berkualitas, mentor
                         berpengalaman, dan teknologi terkini untuk mengantarkan siswa menuju prestasi akademik terbaik.
@@ -3363,7 +3592,7 @@
 
                         // Show next photo
                         photos[currentIndex].classList.add('active');
-                    }, 3000); // Switch every 3 seconds
+                    }, 3000); // Switchevery 3 seconds
                 }
             });
         });

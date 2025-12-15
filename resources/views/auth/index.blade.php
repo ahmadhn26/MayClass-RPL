@@ -528,39 +528,114 @@
             border-color: #16a34a;
         }
 
-        @media (max-width: 600px) { 
-            .auth-container { 
-                padding: 24px 20px; 
-            } 
-            
-            .input-row { 
-                grid-template-columns: 1fr; 
-                gap: 12px;
-            }
-            
-            .header-text {
-                margin-bottom: 24px;
-            }
-            
-            .header-text h2 {
-                font-size: 1.5rem;
-            }
-            
-            .btn-primary {
+        @media (max-width: 600px) {
+            body {
                 padding: 12px;
             }
-            
-            .terms-dialog {
-                max-height: 90vh;
-            }
-        }
-        @media (max-width: 600px) {
+
             .auth-container {
-                padding: 32px 24px;
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .back-button {
+                top: 12px;
+                left: 12px;
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+
+            .header-text {
+                margin-top: 16px;
+                margin-bottom: 16px;
+            }
+
+            .header-text h2 {
+                font-size: 1.3rem;
+            }
+
+            .header-text p {
+                font-size: 0.85rem;
+            }
+
+            .auth-form {
+                gap: 12px;
             }
 
             .input-row {
                 grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .input-group {
+                gap: 4px;
+            }
+
+            .label {
+                font-size: 0.8rem;
+            }
+
+            .input-field {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+            }
+
+            .btn-primary {
+                padding: 10px;
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+
+            .btn-google {
+                padding: 10px;
+                font-size: 0.85rem;
+                margin-top: 10px;
+            }
+
+            .divider {
+                margin: 6px 0 0;
+            }
+
+            .divider span {
+                font-size: 0.75rem;
+            }
+
+            .auth-footer {
+                margin-top: 12px;
+                padding-top: 16px;
+                font-size: 0.8rem;
+            }
+
+            .login-options {
+                margin-top: -4px;
+            }
+
+            .remember-me {
+                font-size: 0.8rem;
+            }
+
+            .forgot-link {
+                font-size: 0.8rem;
+            }
+
+            .terms-trigger-wrapper {
+                margin-top: 2px;
+            }
+
+            .terms-trigger-wrapper label {
+                font-size: 0.8rem !important;
+            }
+
+            .terms-dialog {
+                max-height: 90vh;
+            }
+
+            .alert-success,
+            .alert-error {
+                padding: 10px;
+                font-size: 0.8rem;
+                margin-bottom: 12px;
             }
         }
     </style>
@@ -578,7 +653,8 @@
                     ✓</div>
                 <h3 style="margin:0 0 8px; color: var(--neutral-900);">Berhasil!</h3>
                 <p style="margin:0; color:var(--neutral-500); font-size:0.9rem;">
-                    {{ session('status') ?? 'Akun berhasil dibuat.' }}</p>
+                    {{ session('status') ?? 'Akun berhasil dibuat.' }}
+                </p>
             </div>
         </div>
         <script>setTimeout(() => document.querySelector('.terms-modal.is-visible').classList.remove('is-visible'), 2000);</script>
@@ -640,7 +716,7 @@
                 <div class="input-group">
                     <label class="label">Nomor WhatsApp Orang Tua/Wali *</label>
                     <input class="input-field" type="tel" name="parent_phone"
-                        value="{{ old('parent_phone', $profileData['parent_phone'] ?? '') }}" 
+                        value="{{ old('parent_phone', $profileData['parent_phone'] ?? '') }}"
                         placeholder="Contoh: 08123456789" required>
                     @error('parent_phone') <span class="error-msg">{{ $message }}</span> @enderror
                 </div>
@@ -760,7 +836,8 @@
 
                 <h4>2. Langganan & Pembayaran</h4>
                 <p>Setelah akun dibuat, Anda dapat memilih paket belajar. Setiap transaksi checkout akan berstatus
-                    <strong>menunggu verifikasi admin</strong>. Akses materi premium aktif setelah validasi.</p>
+                    <strong>menunggu verifikasi admin</strong>. Akses materi premium aktif setelah validasi.
+                </p>
 
                 <h4>3. Materi & Jadwal</h4>
                 <p>Konten belajar tersedia dinamis sesuai paket. Jadwal kelas mengikuti sesi yang dirancang tentor. Kami
