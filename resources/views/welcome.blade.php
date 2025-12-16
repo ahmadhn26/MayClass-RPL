@@ -201,7 +201,7 @@
 
         @media (max-width: 768px) {
             nav {
-                padding: 12px 20px;
+                padding: 6px 20px;
             }
 
             .nav-inner {
@@ -276,6 +276,12 @@
             height: 42px;
             width: auto;
             object-fit: contain;
+        }
+
+        @media (max-width: 768px) {
+            .brand img {
+                height: 56px !important;
+            }
         }
 
         .nav-links {
@@ -850,17 +856,13 @@
         @media (max-width: 768px) {
             .articles-grid {
                 display: flex;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                gap: 20px;
-                padding-bottom: 24px;
-                /* Hide scrollbar */
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-
-            .articles-grid::-webkit-scrollbar {
-                display: none;
+                flex-direction: column;
+                gap: 0;
+                padding-bottom: 0;
+                max-height: 420px;
+                overflow-y: auto;
+                scroll-snap-type: y mandatory;
+                scroll-behavior: smooth;
             }
         }
 
@@ -880,39 +882,42 @@
 
         @media (max-width: 768px) {
             .article-card {
-                min-width: 160px !important;
-                max-width: 160px !important;
-                width: 160px !important;
-                scroll-snap-align: center;
-                border-radius: 12px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                min-height: 400px;
                 flex-shrink: 0;
+                scroll-snap-align: start;
+                margin-bottom: 24px;
             }
 
             .article-image-wrapper {
-                height: 100px !important;
+                height: 160px !important;
             }
 
             .article-content {
-                padding: 10px !important;
+                padding: 16px !important;
             }
 
             .article-content h3 {
-                font-size: 0.75rem !important;
-                line-height: 1.2 !important;
-                margin: 0 0 4px !important;
+                font-size: 1.1rem !important;
+                line-height: 1.3 !important;
+                margin-bottom: 6px !important;
             }
 
             .article-content p {
-                display: none !important;
+                display: block !important;
+                font-size: 0.9rem !important;
+                margin-bottom: 12px !important;
             }
 
             .article-footer {
-                padding-top: 6px !important;
+                padding-top: 12px !important;
             }
 
             .btn-read-more {
-                font-size: 0.65rem !important;
-                padding: 4px 0 !important;
+                padding: 0 !important;
+                font-size: 0.85rem !important;
             }
 
             .article-badge {
@@ -930,7 +935,7 @@
         .article-image-wrapper {
             position: relative;
             width: 100%;
-            height: 220px;
+            height: 160px;
             overflow: hidden;
         }
 
@@ -1672,7 +1677,7 @@
         footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
-            padding: 80px 0 32px;
+            padding: 40px 0 32px;
             position: relative;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -2501,39 +2506,38 @@
         this.modalOpen = false;
         document.body.style.overflow = 'auto';
     }
-}">
-    @php
-        $joinLink = route('join');
-        $profileLink = $profileLink ?? null;
-        $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
+}">@php
+    $joinLink = route('join');
+    $profileLink = $profileLink ?? null;
+    $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
 
-        // Check for pending order
-        $pendingOrder = null;
-        // Check for active/approved package
-        $hasActivePackage = false;
+    // Check for pending order
+    $pendingOrder = null;
+    // Check for active/approved package
+    $hasActivePackage = false;
 
-        if (Auth::check() && in_array(Auth::user()->role, ['student', 'visitor'])) {
-            // Check for pending order (initiated, pending, awaiting_payment, awaiting_verification)
-            $pendingOrder = Auth::user()->orders()
-                ->whereIn('status', ['initiated', 'pending', 'awaiting_payment', 'awaiting_verification'])
-                ->where(function ($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                })
-                ->with('package')
-                ->latest()
-                ->first();
+    if (Auth::check() && in_array(Auth::user()->role, ['student', 'visitor'])) {
+        // Check for pending order (initiated, pending, awaiting_payment, awaiting_verification)
+        $pendingOrder = Auth::user()->orders()
+            ->whereIn('status', ['initiated', 'pending', 'awaiting_payment', 'awaiting_verification'])
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->with('package')
+            ->latest()
+            ->first();
 
-            // Check for active/approved package (Enrollment is the source of truth for active access)
-            $hasActivePackage = Auth::user()->enrollments()
-                ->where('is_active', true)
-                ->where(function ($query) {
-                    $query->whereNull('ends_at')
-                        ->orWhere('ends_at', '>', now());
-                })
-                ->exists();
-        }
-    @endphp
+        // Check for active/approved package (Enrollment is the source of truth for active access)
+        $hasActivePackage = Auth::user()->enrollments()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>', now());
+            })
+            ->exists();
+    }
+@endphp
 
     <header>
         <nav>
@@ -2822,42 +2826,73 @@
                 </div>
 
                 <style>
+                    .doc-scroll-wrapper {
+                        max-height: 520px;
+                        overflow-y: auto;
+                        scroll-behavior: smooth;
+                        margin-top: 40px;
+                        padding-right: 8px;
+                    }
+
+                    /* Scrollbar styling */
+                    .doc-scroll-wrapper::-webkit-scrollbar {
+                        width: 6px;
+                    }
+
+                    .doc-scroll-wrapper::-webkit-scrollbar-track {
+                        background: rgba(0, 0, 0, 0.05);
+                        border-radius: 3px;
+                    }
+
+                    .doc-scroll-wrapper::-webkit-scrollbar-thumb {
+                        background: rgba(63, 166, 126, 0.4);
+                        border-radius: 3px;
+                    }
+
+                    .doc-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+                        background: rgba(63, 166, 126, 0.6);
+                    }
+
                     .doc-grid {
                         display: grid;
                         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                         gap: 24px;
-                        margin-top: 40px;
                     }
 
                     @media (max-width: 768px) {
-                        .doc-grid {
-                            display: flex;
-                            overflow-x: auto;
-                            scroll-snap-type: x mandatory;
-                            gap: 12px;
-                            padding-bottom: 16px;
+                        .doc-scroll-wrapper {
+                            max-height: 420px;
                             margin-top: 20px;
-                            -ms-overflow-style: none;
-                            scrollbar-width: none;
                         }
 
-                        .doc-grid::-webkit-scrollbar {
-                            display: none;
+                        .doc-grid {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 0;
+                            scroll-snap-type: y mandatory;
                         }
 
                         .doc-card {
-                            min-width: 160px !important;
-                            max-width: 160px !important;
+                            width: 100% !important;
+                            max-width: 100% !important;
+                            min-width: 0 !important;
+                            flex-shrink: 0;
                             scroll-snap-align: start;
+                            margin-bottom: 16px !important;
+                        }
+
+                        .doc-card>div:first-child {
+                            aspect-ratio: auto !important;
+                            height: 160px !important;
                         }
 
                         .doc-card img {
-                            aspect-ratio: 1/1 !important;
+                            aspect-ratio: auto !important;
                         }
 
                         .doc-card .doc-desc {
-                            font-size: 0.7rem !important;
-                            padding: 10px !important;
+                            font-size: 0.9rem !important;
+                            padding: 16px !important;
                         }
 
                         .doc-card .doc-badge {
@@ -2866,47 +2901,49 @@
                         }
                     }
                 </style>
-                <div class="doc-grid">
-                    @foreach($documentations as $doc)
-                        <div class="doc-card" data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
-                            style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;"
-                            onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
-                            <div style="position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f8fafc;">
-                                @php
-                                    // Gunakan AvatarResolver untuk mengubah gambar jadi Base64
-                                    // Ini mem-bypass masalah hosting/symlink/https link
-                                    $docImage = \App\Support\AvatarResolver::resolve([
-                                        $doc->photo_path,
-                                        'uploads/' . $doc->photo_path
-                                    ]);
-                                @endphp
-                                <img src="{{ $docImage ?? asset('storage/' . $doc->photo_path) }}"
-                                    alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
-                                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"
-                                    onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.9rem;\'>Gambar tidak tersedia</div>'">
-                                <div class="doc-badge"
-                                    style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                    {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
-                                </div>
-                            </div>
-                            <div class="doc-desc" style="padding: 16px;">
-                                <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
-                                    {{ Str::limit($doc->description, 100) }}
-                                </p>
-                            </div>
+                <div class="doc-scroll-wrapper">
+                    <div class="doc-grid">
+                        @foreach($documentations as $doc)
+                            <div class="doc-card" data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
+                                style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;"
+                                onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
+                                <div style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #f8fafc;">
+                                            @php
+                                                // Gunakan AvatarResolver untuk mengubah gambar jadi Base64
+                                                // Ini mem-bypass masalah hosting/symlink/https link
+                                                $docImage = \App\Support\AvatarResolver::resolve([
+                                                    $doc->photo_path,
+                                                    'uploads/' . $doc->photo_path
+                                                ]);
+                                            @endphp
+                                            <img src="{{ $docImage ?? asset('storage/' . $doc->photo_path) }}"
+                                                alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
+                                                style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"
+                                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.9rem;\'>Gambar tidak tersedia</div>'">
+                                            <div class="doc-badge"
+                                                style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
+                                            </div>
+                                        </div>
+                                        <div class="doc-desc" style="padding: 16px;">
+                                            <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
+                                                {{ Str::limit($doc->description, 100) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                        @endforeach
                         </div>
-                    @endforeach
-                </div>
 
-                <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
-                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
-                        <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
-                        minggu!
-                    </p>
+                    </div>
+                    <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
+                        <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
+                            <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
+                            minggu!
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
     @endif
 
     <section class="pricing-section" id="paket">
@@ -3227,15 +3264,16 @@
 
         /* Footer logo styling */
         .footer-logo {
-            height: 50px;
+            height: 120px;
             width: auto;
+            max-width: 100%;
             object-fit: contain;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         @media (max-width: 768px) {
             .footer-logo {
-                height: 40px;
+                height: 90px;
             }
         }
     </style>
