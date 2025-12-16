@@ -2406,13 +2406,51 @@
 
         @media (max-width: 768px) {
             .modal-container {
-                max-width: 100%;
-                border-radius: 16px 16px 0 0;
+                max-width: 90%;
+                width: 90%;
+                border-radius: 16px;
                 height: auto;
-                max-height: 85vh;
-                position: absolute;
-                bottom: 0;
-                margin: 0;
+                max-height: 80vh;
+                position: relative;
+                margin: auto;
+                bottom: auto;
+            }
+        }
+
+        /* New Responsive Modal Classes */
+        .modal-body {
+            padding: 32px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .modal-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .modal-title {
+            font-size: 2.2rem;
+            margin: 0 0 12px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-content-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
             }
         }
 
@@ -3623,9 +3661,9 @@
                 </svg>
             </button>
 
-            <div style="padding: 32px; max-width: 900px; width: 100%;">
+            <div class="modal-body">
 
-                <div style="display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: start;">
+                <div class="modal-content-grid">
                     <!-- LEFT COLUMN -->
                     <div>
                         <!-- Badge Program -->
@@ -3634,8 +3672,7 @@
                             x-show="pkg.tag" x-text="pkg.tag ?? 'PROGRAM'"></span>
 
                         <!-- Title -->
-                        <h2 style="font-size: 2.2rem; margin: 0 0 12px; line-height: 1.2; font-weight: 800; color: var(--text-main);"
-                            x-text="pkg.detail_title"></h2>
+                        <h2 class="modal-title" x-text="pkg.detail_title"></h2>
 
                         <!-- Description -->
                         <div style="margin-bottom: 24px; color: var(--text-muted); line-height: 1.6; font-size: 1rem;"
