@@ -332,6 +332,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
     Route::post('/finance/{order}/approve', [AdminFinanceController::class, 'approve'])->name('finance.approve');
     Route::post('/finance/{order}/reject', [AdminFinanceController::class, 'reject'])->name('finance.reject');
+    Route::post('/finance/{order}/refund', [AdminFinanceController::class, 'refund'])->name('finance.refund');
     Route::get('/finance/{order}/proof', [AdminFinanceController::class, 'downloadProof'])->name('finance.proof');
 
     Route::get('/schedules', [AdminScheduleController::class, 'index'])->name('schedules.index');

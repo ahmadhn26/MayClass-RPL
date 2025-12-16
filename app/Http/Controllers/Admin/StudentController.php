@@ -14,14 +14,26 @@ use Illuminate\View\View;
 
 class StudentController extends BaseAdminController
 {
-    public function index(): View
+    public function index(Request $request): \Illuminate\Http\Response|View
     {
         if (!Schema::hasTable('users')) {
             $students = collect();
         } else {
             $hasEnrollments = Schema::hasTable('enrollments');
 
-            $query = User::query()->where('role', 'student')->orderBy('name');
+            $query = User::query()->where('role', 'student');
+
+            // --- 1. Filter Logic (Search) ---
+            if ($request->filled('q')) {
+                $search = $request->q;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('student_id', 'like', "%{$search}%");
+                });
+            }
+
+            $query->orderBy('name');
 
             if ($hasEnrollments) {
                 $query->with([
@@ -62,6 +74,11 @@ class StudentController extends BaseAdminController
                         'ends_at' => $endsAt,
                     ];
                 });
+        }
+
+        // --- 2. Live Search Response (AJAX) ---
+        if ($request->ajax()) {
+            return response()->view('admin.students._table_rows', ['students' => $students]);
         }
 
         return $this->render('admin.students.index', [

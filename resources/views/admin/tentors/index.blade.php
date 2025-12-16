@@ -844,66 +844,8 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($tentors as $tentor)
-                            <tr>
-                                <td>
-                                    <div class="profile-col">
-                                        <img src="{{ $tentor['avatar'] }}" alt="Avatar" class="avatar">
-                                        <div class="user-info">
-                                            <h4>{{ $tentor['name'] }}</h4>
-                                            <span>{{ $tentor['username'] }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="contact-info">
-                                        <span>{{ $tentor['email'] }}</span>
-                                        <small>{{ $tentor['phone'] ?: '-' }}</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="spec-badge">{{ $tentor['specializations'] ?? 'Umum' }}</span>
-                                </td>
-                                <td>
-                                    <div class="contact-info">
-                                        <span>{{ $tentor['bank_name'] ?: '-' }}</span>
-                                        <small>{{ $tentor['account_number'] ?: '-' }}</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-pill {{ $tentor['is_active'] ? 'status-active' : 'status-inactive' }}">
-                                        {{ $tentor['is_active'] ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="action-group">
-                                        <button type="button" class="btn-action btn-edit"
-                                            onclick="openEditModal({{ $tentor['id'] }})">
-                                            Edit
-                                        </button>
-                                        <button type="button" class="btn-delete" data-id="{{ $tentor['id'] }}"
-                                            data-name="{{ $tentor['name'] }}"
-                                            data-action="{{ route('admin.tentors.destroy', $tentor['id']) }}"
-                                            data-active="{{ $tentor['is_active'] ? 'true' : 'false' }}">
-                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                </path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6">
-                                    <div class="empty-state">
-                                        <p>Belum ada data tentor yang sesuai dengan pencarian.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
+                    <tbody id="tentors-table-body">
+                        @include('admin.tentors._table_rows')
                     </tbody>
                 </table>
             </div>
@@ -1058,6 +1000,12 @@
             </form>
         </div>
     </div>
+
+    {{-- Hidden Form for Deletion --}}
+    <form id="delete-form" action="" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
 
     {{-- EDIT TENTOR MODAL --}}
     <div id="editTentorModal" class="modal-overlay">
@@ -1260,7 +1208,7 @@
                         document.getElementById('edit_education').value = data.education || '';
                         document.getElementById('edit_bio').value = data.bio || '';
                         document.getElementById('edit_is_active').checked = data.is_active || false;
-                        
+
                         // Bank information
                         document.getElementById('edit_bank_name').value = data.bank_name || '';
                         document.getElementById('edit_account_number').value = data.account_number || '';
@@ -1289,9 +1237,54 @@
                     });
             }
 
+            // --- Event Listener Re-attacher ---
+            const reattachActiveListeners = () => {
+                const deleteButtons = document.querySelectorAll('.btn-delete');
+                const deleteForm = document.getElementById('delete-form');
+
+                deleteButtons.forEach(button => {
+                    // Avoid adding duplicate listeners if we call this multiple times
+                    button.onclick = null;
+                    button.onclick = function (e) {
+                        e.preventDefault();
+                        const id = this.dataset.id;
+                        const name = this.dataset.name;
+                        const action = this.dataset.action;
+                        const isActive = this.dataset.active === 'true';
+
+                        if (isActive) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Tidak Bisa Menghapus',
+                                text: 'Tentor ini masih berstatus aktif. Silakan nonaktifkan terlebih dahulu.',
+                            });
+                            return;
+                        }
+
+                        Swal.fire({
+                            title: 'Hapus Tentor?',
+                            text: `Apakah Anda yakin ingin menghapus data tentor "${name}" secara permanen?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: 'Ya, Hapus!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                deleteForm.action = action;
+                                deleteForm.submit();
+                            }
+                        });
+                    };
+                });
+            };
+
             // Handle Edit Form Submission with AJAX
             document.addEventListener('DOMContentLoaded', function () {
                 const editForm = document.getElementById('editTentorForm');
+
+                reattachActiveListeners();
 
                 if (editForm) {
                     editForm.addEventListener('submit', function (e) {
@@ -1333,6 +1326,37 @@
                                 submitBtn.disabled = false;
                                 submitBtn.innerHTML = originalBtnText;
                             });
+                    });
+                }
+
+                // --- Live Search ---
+                const searchInput = document.querySelector('input[name="q"]');
+                const tableBody = document.getElementById('tentors-table-body');
+                let timeout = null;
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function () {
+                        const query = this.value;
+                        const status = document.querySelector('select[name="status"]').value;
+
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => {
+                            const url = new URL("{{ route('admin.tentors.index') }}");
+                            url.searchParams.set('q', query);
+                            if (status !== 'all') url.searchParams.set('status', status);
+
+                            fetch(url, {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                                .then(response => response.text())
+                                .then(html => {
+                                    tableBody.innerHTML = html;
+                                    reattachActiveListeners();
+                                })
+                                .catch(error => console.error('Error:', error));
+                        }, 300);
                     });
                 }
             });

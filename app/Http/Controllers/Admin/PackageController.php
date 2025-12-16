@@ -16,17 +16,48 @@ use Illuminate\Support\Str;
 
 class PackageController extends BaseAdminController
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $level = $request->input('level', 'all');
+        $queryTerm = $request->input('q');
+
+        $packagesQuery = Package::withQuotaUsage()->with(['subjects', 'tutors']);
+
+        if ($level !== 'all') {
+            $packagesQuery->where('level', $level);
+        }
+
+        if ($queryTerm) {
+            $packagesQuery->where(function ($q) use ($queryTerm) {
+                $q->where('detail_title', 'like', '%' . $queryTerm . '%')
+                    ->orWhere('summary', 'like', '%' . $queryTerm . '%');
+            });
+        }
+
         $packages = Schema::hasTable('packages')
-            ? Package::withQuotaUsage()->with(['subjects', 'tutors'])->orderBy('level')->get()
+            ? $packagesQuery->orderBy('level')->get()
             : collect();
+
+        if ($request->ajax()) {
+            return view('admin.packages._table_rows', compact('packages'));
+        }
+
+        // These variables need to be defined for the main view
+        $stats = []; // Placeholder, as no instruction was given on how to calculate stats
+        $subjectsByLevel = $this->getSubjectsByLevel();
+        $tutors = User::where('role', 'tutor')->where('is_active', true)->with('subjects')->orderBy('name')->get();
+
 
         return $this->render('admin.packages.index', [
             'packages' => $packages,
+            'stats' => $stats,
+            'subjectsByLevel' => $subjectsByLevel,
+            'tutors' => $tutors,
             'stages' => $this->stageOptions(),
-            'subjectsByLevel' => $this->getSubjectsByLevel(),
-            'tutors' => User::where('role', 'tutor')->where('is_active', true)->with('subjects')->orderBy('name')->get(),
+            'filters' => [
+                'level' => in_array($level, ['all', 'SD', 'SMP', 'SMA'], true) ? $level : 'all',
+                'q' => $queryTerm,
+            ]
         ]);
     }
 

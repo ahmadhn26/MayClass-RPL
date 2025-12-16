@@ -651,63 +651,8 @@
                             <th style="text-align: right;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($subjects as $subject)
-                            <tr>
-                                <td>
-                                    <div class="subject-name">{{ $subject->name }}</div>
-                                </td>
-                                <td>
-                                    <span
-                                        class="level-badge level-{{ strtolower($subject->level) }}">{{ $subject->level }}</span>
-                                </td>
-                                <td>
-                                    <div class="subject-desc">{{ $subject->description ?: '—' }}</div>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-{{ $subject->is_active ? 'active' : 'inactive' }}">
-                                        {{ $subject->is_active ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="action-group">
-                                        <button type="button" class="btn-icon" title="Edit Mata Pelajaran"
-                                            onclick="openEditSubjectModal({{ $subject->id }})">
-                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                </path>
-                                            </svg>
-                                        </button>
-
-                                        <button type="button" class="btn-icon delete btn-delete"
-                                            title="Nonaktifkan Mata Pelajaran" data-id="{{ $subject->id }}"
-                                            data-name="{{ $subject->name }}"
-                                            data-action="{{ route('admin.subjects.destroy', $subject) }}">
-                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                </path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5">
-                                    <div class="empty-state">
-                                        <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                                            </path>
-                                        </svg>
-                                        <p>Belum ada mata pelajaran yang tersedia.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
+                    <tbody id="subjects-table-body">
+                        @include('admin.subjects._table_rows')
                     </tbody>
                 </table>
             </div>
@@ -809,25 +754,131 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeEditSubjectModal()">Batal</button>
-                    <button type="submit" class="btn-submit">Perbarui Mata Pelajaran</button>
+                    <button type="submit" class="btn-submit">✓ Simpan Perubahan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            function openModal(modalId) {
-                document.getElementById(modalId).classList.add('active');
-                document.body.style.overflow = 'hidden';
+    {{-- Hidden Form for Deletion --}}
+    <form id="delete-form" action="" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+@endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openEditSubjectModal(id) {
+            // Fetch data
+            fetch(`/admin/subjects/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('edit_name').value = data.name;
+                    document.getElementById('edit_level').value = data.level;
+                    document.getElementById('edit_description').value = data.description || '';
+
+                    const form = document.getElementById('editSubjectForm');
+                    form.action = `/admin/subjects/${id}`;
+
+                    openModal('editSubjectModal');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Gagal memuat data mata pelajaran', 'error');
+                });
+        }
+
+        function closeEditSubjectModal() {
+            closeModal('editSubjectModal');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Event Listener Re-attacher ---
+            const reattachEventListeners = () => {
+                const deleteButtons = document.querySelectorAll('.btn-delete');
+                const deleteForm = document.getElementById('delete-form');
+
+                deleteButtons.forEach(button => {
+                    button.onclick = function (e) {
+                        e.preventDefault();
+                        const id = this.dataset.id;
+                        const name = this.dataset.name;
+                        const action = this.dataset.action;
+
+                        Swal.fire({
+                            title: 'Nonaktifkan Mata Pelajaran?',
+                            text: `Apakah Anda yakin ingin menonaktifkan mata pelajaran "${name}"?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: 'Ya, Nonaktifkan!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                deleteForm.action = action;
+                                deleteForm.submit();
+                            }
+                        });
+                    };
+                });
+            };
+
+            // Initial call
+            reattachEventListeners();
+
+            // --- Live Search ---
+            const searchInput = document.querySelector('input[name="q"]');
+            const tableBody = document.getElementById('subjects-table-body');
+            let timeout = null;
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    const query = this.value;
+                    const level = document.querySelector('input[name="level"]').value;
+                    const status = document.querySelector('input[name="status"]').value;
+
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        const url = new URL("{{ route('admin.subjects.index') }}");
+                        url.searchParams.set('q', query);
+                        if (level !== 'all') url.searchParams.set('level', level);
+                        if (status !== 'all') url.searchParams.set('status', status);
+
+                        fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                            .then(response => response.text())
+                            .then(html => {
+                                tableBody.innerHTML = html;
+                                reattachEventListeners();
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }, 300);
+                });
             }
 
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
 
-            // Close modal on outside click
+            // Modal outside click
             window.onclick = function (event) {
                 if (event.target.classList.contains('modal-overlay')) {
                     event.target.classList.remove('active');
@@ -835,45 +886,24 @@
                 }
             }
 
-            // Edit Subject Modal Functions
-            async function openEditSubjectModal(subjectId) {
-                try {
-                    const response = await fetch(`/admin/subjects/${subjectId}/edit`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    // Set form action
-                    document.getElementById('editSubjectForm').action = `/admin/subjects/${subjectId}`;
-
-                    // Populate fields
-                    document.getElementById('edit_name').value = data.name || '';
-                    document.getElementById('edit_level').value = data.level || '';
-                    document.getElementById('edit_description').value = data.description || '';
-
-                    // Open modal
-                    document.getElementById('editSubjectModal').classList.add('active');
-                    document.body.style.overflow = 'hidden';
-
-                } catch (error) {
-                    console.error('Error loading subject data:', error);
-                    alert('Gagal memuat data mata pelajaran. Silakan coba lagi.');
-                }
-            }
-
-            function closeEditSubjectModal() {
-                document.getElementById('editSubjectModal').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-
-            // Auto open modal if validation errors exist
-            @if($errors->any())
-                openModal('addSubjectModal');
+            // Messages
+            @if(session('status'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: "{{ session('status') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
             @endif
-        </script>
-    @endpush
-@endsection
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: "{{ session('error') }}",
+                });
+            @endif
+            });
+    </script>
+@endpush

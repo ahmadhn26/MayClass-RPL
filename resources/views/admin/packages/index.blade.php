@@ -871,663 +871,602 @@
 @endpush
 
 @section('content')
-<div class="page-container">
+    <div class="page-container">
 
-    {{-- Header --}}
-    <div class="page-header">
-        <div class="header-title">
-            <h2>Manajemen Paket Belajar</h2>
-            <p>Atur penawaran harga, jenjang pendidikan, dan detail paket untuk siswa.</p>
-        </div>
-        <button type="button" class="btn-add" onclick="openModal('addPackageModal')">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Tambah Paket Baru
-        </button>
-    </div>
-
-    {{-- Search Box --}}
-    <div style="margin-bottom: 0px;">
-        <div style="position: relative; max-width: 500px;">
-            <svg style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #94a3b8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <input 
-                type="text" 
-                id="packageSearch" 
-                placeholder="Cari paket berdasarkan nama, jenjang, atau mata pelajaran..." 
-                style="width: 100%; padding: 12px 16px 12px 48px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.2s; background: white;"
-                onkeyup="filterPackages()"
-                onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"
-            />
-        </div>
-        <p id="searchResults" style="margin-top: 8px; font-size: 0.875rem; color: #64748b;"></p>
-    </div>
-
-    {{-- Table --}}
-    <div class="table-card">
-        <div class="table-responsive">
-            <table class="package-table">
-                <thead>
-                    <tr>
-                        <th>Nama Paket</th>
-                        <th>Jenjang & Kelas</th>
-                        <th>Harga</th>
-                        <th>Kuota</th>
-                        <th>Mata Pelajaran</th>
-                        <th>Tutor</th>
-                        <th style="text-align: right;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($packages as $package)
-                    <tr>
-                        <td>
-                            <span class="pkg-name">{{ $package->detail_title }}</span>
-                            <span class="pkg-price-label">{{ $package->detail_price_label }}</span>
-                        </td>
-                        <td>
-                            <span
-                                class="pkg-level">{{ \App\Support\PackagePresenter::stageLabel($package->level) }}</span>
-                            @if ($package->grade_range)
-                                <span class="pkg-grades">{{ $package->grade_range }}</span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="pkg-price">Rp {{ number_format($package->price, 0, ',', '.') }}</span>
-                        </td>
-                        <td>
-                            @php($quota = $package->quotaSnapshot())
-                            @if ($quota['limit'] === null)
-                                <span class="tag-pill tag-default">Tak terbatas</span>
-                            @else
-                                <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <strong>{{ $quota['remaining'] }} / {{ $quota['limit'] }} kursi tersisa</strong>
-                                    <small style="color: var(--text-muted);">
-                                        Aktif: {{ $quota['active_enrollments'] }}, Checkout terkunci:
-                                        {{ $quota['checkout_holds'] }}
-                                    </small>
-                                </div>
-                            @endif
-                        </td>
-                        <td>
-                            @if($package->subjects->isNotEmpty())
-                                <div class="subject-pills">
-                                    @foreach($package->subjects->take(3) as $subject)
-                                        <span class="subject-pill">{{ $subject->name }}</span>
-                                    @endforeach
-                                    @if($package->subjects->count() > 3)
-                                        <span class="subject-pill-more">+{{ $package->subjects->count() - 3 }} lainnya</span>
-                                    @endif
-                                </div>
-                            @else
-                                <span class="text-muted">Belum ada</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($package->tutors->isNotEmpty())
-                                <div class="subject-pills">
-                                    @foreach($package->tutors->take(3) as $tutor)
-                                        <span class="subject-pill"
-                                            style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">{{ $tutor->name }}</span>
-                                    @endforeach
-                                    @if($package->tutors->count() > 3)
-                                        <span class="subject-pill-more"
-                                            style="background: #f1f5f9; color: #64748b;">+{{ $package->tutors->count() - 3 }}</span>
-                                    @endif
-                                </div>
-                            @else
-                                <span class="text-muted">Belum ada</span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="action-group">
-                                <button type="button" class="btn-icon" title="Edit Paket"
-                                    onclick="openEditPackageModal({{ $package->id }})">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                        </path>
-                                    </svg>
-                                </button>
-
-                                <button type="button" class="btn-icon delete btn-delete" title="Hapus Paket"
-                                    data-id="{{ $package->id }}" data-name="{{ $package->detail_title }}"
-                                    data-action="{{ route('admin.packages.destroy', $package) }}">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                        </path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <svg style="width: 48px; height: 48px; margin-bottom: 16px; color: #cbd5e1;" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                </svg>
-                                <p>Belum ada paket belajar yang tersedia.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-{{-- ADD PACKAGE MODAL --}}
-<div id="addPackageModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Tambah Paket Belajar</h2>
-            <button type="button" class="btn-close" onclick="closeModal('addPackageModal')">
-                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
+        {{-- Header --}}
+        <div class="page-header">
+            <div class="header-title">
+                <h2>Manajemen Paket Belajar</h2>
+                <p>Atur penawaran harga, jenjang pendidikan, dan detail paket untuk siswa.</p>
+            </div>
+            <button type="button" class="btn-add" onclick="openModal('addPackageModal')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
+                Tambah Paket Baru
             </button>
         </div>
-        <form action="{{ route('admin.packages.store') }}" method="POST">
-            @csrf
-            <div class="modal-body">
-                {{-- Modern Error Alert --}}
-                @if($errors->any())
-                    <div class="error-alert">
-                        <div class="error-header">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <strong>Gagal menambahkan paket!</strong>
+
+        {{-- Search Box --}}
+        <div style="margin-bottom: 0px;">
+            <div style="position: relative; max-width: 500px;">
+                <svg style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #94a3b8;"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" id="packageSearch" value="{{ $filters['q'] ?? '' }}"
+                    placeholder="Cari paket berdasarkan nama, jenjang, atau mata pelajaran..."
+                    style="width: 100%; padding: 12px 16px 12px 48px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.2s; background: white;"
+                    onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                    onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'" />
+            </div>
+            <p id="searchResults" style="margin-top: 8px; font-size: 0.875rem; color: #64748b;"></p>
+        </div>
+
+        {{-- Table --}}
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="package-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Paket</th>
+                            <th>Jenjang & Kelas</th>
+                            <th>Harga</th>
+                            <th>Kuota</th>
+                            <th>Mata Pelajaran</th>
+                            <th>Tutor</th>
+                            <th style="text-align: right;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packages-table-body">
+                        @include('admin.packages._table_rows')
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {{-- ADD PACKAGE MODAL --}}
+    <div id="addPackageModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tambah Paket Belajar</h2>
+                <button type="button" class="btn-close" onclick="closeModal('addPackageModal')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <form action="{{ route('admin.packages.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    {{-- Modern Error Alert --}}
+                    @if($errors->any())
+                        <div class="error-alert">
+                            <div class="error-header">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <strong>Gagal menambahkan paket!</strong>
+                            </div>
+                            <ul class="error-list">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                        <ul class="error-list">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <div class="form-grid">
+                    @endif
+                    <div class="form-grid">
 
-                    <div class="form-group">
-                        <label>Jenjang Pendidikan *</label>
-                        <select name="level" class="form-control" required>
-                            <option value="" disabled selected>Pilih jenjang</option>
-                            @foreach ($stages as $value => $label)
-                                <option value="{{ $value }}">{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Rentang Kelas *</label>
-                        <input type="text" name="grade_range" class="form-control" placeholder="Contoh: Kelas 10 - 12"
-                            required>
-                    </div>
-                    <div class="form-group">
-                        <label>Harga (Numerik) *</label>
-                        <input type="number" name="price" class="form-control" min="0" step="1000" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Kuota Maksimum (Opsional)</label>
-                        <input type="number" name="max_students" class="form-control" min="1"
-                            placeholder="Kosongkan jika tak terbatas">
-                    </div>
-                    <div class="form-group full-width">
-                        <label>Judul Paket *</label>
-                        <input type="text" name="detail_title" class="form-control" required>
-                    </div>
+                        <div class="form-group">
+                            <label>Jenjang Pendidikan *</label>
+                            <select name="level" class="form-control" required>
+                                <option value="" disabled selected>Pilih jenjang</option>
+                                @foreach ($stages as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Rentang Kelas *</label>
+                            <input type="text" name="grade_range" class="form-control" placeholder="Contoh: Kelas 10 - 12"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Harga (Numerik) *</label>
+                            <input type="number" name="price" class="form-control" min="0" step="1000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Kuota Maksimum (Opsional)</label>
+                            <input type="number" name="max_students" class="form-control" min="1"
+                                placeholder="Kosongkan jika tak terbatas">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Judul Paket *</label>
+                            <input type="text" name="detail_title" class="form-control" required>
+                        </div>
 
-                    <div class="form-group full-width">
-                        <label>Ringkasan *</label>
-                        <textarea name="summary" class="form-control" rows="3" required></textarea>
-                    </div>
+                        <div class="form-group full-width">
+                            <label>Ringkasan *</label>
+                            <textarea name="summary" class="form-control" rows="3" required></textarea>
+                        </div>
 
-                    {{-- Features --}}
-                    <div class="form-group full-width">
-                        <label>Fitur Pricing (Kartu Paket)</label>
-                        <p class="helper-text">Tambahkan fitur yang akan muncul di kartu paket.</p>
-                        <div class="feature-list" id="feature-list">
-                            <div class="feature-item">
-                                <input type="text" name="card_features[]" class="form-control"
-                                    placeholder="Contoh: 6x kelas live per bulan">
-                                <button type="button" class="btn-remove-feature"
-                                    onclick="removeFeature(this)">Hapus</button>
+                        {{-- Features --}}
+                        <div class="form-group full-width">
+                            <label>Fitur Pricing (Kartu Paket)</label>
+                            <p class="helper-text">Tambahkan fitur yang akan muncul di kartu paket.</p>
+                            <div class="feature-list" id="feature-list">
+                                <div class="feature-item">
+                                    <input type="text" name="card_features[]" class="form-control"
+                                        placeholder="Contoh: 6x kelas live per bulan">
+                                    <button type="button" class="btn-remove-feature"
+                                        onclick="removeFeature(this)">Hapus</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-feature" onclick="addFeature()">+ Tambah Fitur</button>
+                        </div>
+
+                        {{-- Subjects --}}
+                        <div class="form-group full-width">
+                            <label>Mata Pelajaran yang Termasuk *</label>
+                            <div class="subject-selection">
+                                @foreach(['SD', 'SMP', 'SMA'] as $level)
+                                    @if($subjectsByLevel[$level]->isNotEmpty())
+                                        <div class="subject-group">
+                                            <h4>{{ $level }}</h4>
+                                            <div class="subject-checkboxes">
+                                                @foreach($subjectsByLevel[$level] as $subject)
+                                                    <label class="checkbox-label">
+                                                        <input type="checkbox" name="subjects[]" value="{{ $subject->id }}"
+                                                            data-level="{{ $level }}">
+                                                        {{ $subject->name }}
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
-                        <button type="button" class="btn-add-feature" onclick="addFeature()">+ Tambah Fitur</button>
-                    </div>
 
-                    {{-- Subjects --}}
-                    <div class="form-group full-width">
-                        <label>Mata Pelajaran yang Termasuk *</label>
-                        <div class="subject-selection">
-                            @foreach(['SD', 'SMP', 'SMA'] as $level)
-                                @if($subjectsByLevel[$level]->isNotEmpty())
-                                    <div class="subject-group">
-                                        <h4>{{ $level }}</h4>
-                                        <div class="subject-checkboxes">
-                                            @foreach($subjectsByLevel[$level] as $subject)
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" data-level="{{ $level }}">
-                                                    {{ $subject->name }}
-                                                </label>
-                                            @endforeach
-                                        </div>
+                        {{-- Tutors --}}
+                        <div class="form-group full-width">
+                            <label>Tutor Pengampu (Opsional)</label>
+                            <div class="subject-selection">
+                                @if($tutors->isEmpty())
+                                    <p class="helper-text">Belum ada tutor aktif.</p>
+                                @else
+                                    <div class="subject-checkboxes">
+                                        @foreach($tutors as $tutor)
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}"
+                                                    data-subjects="{{ json_encode($tutor->subjects->map(fn($s) => ['id' => $s->id, 'level' => $s->level])) }}"
+                                                    onchange="handleTutorSelection(this)">
+                                                {{ $tutor->name }}
+                                            </label>
+                                        @endforeach
                                     </div>
                                 @endif
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- Tutors --}}
-                    <div class="form-group full-width">
-                        <label>Tutor Pengampu (Opsional)</label>
-                        <div class="subject-selection">
-                            @if($tutors->isEmpty())
-                                <p class="helper-text">Belum ada tutor aktif.</p>
-                            @else
-                                <div class="subject-checkboxes">
-                                    @foreach($tutors as $tutor)
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}"
-                                                data-subjects="{{ json_encode($tutor->subjects->map(fn($s) => ['id' => $s->id, 'level' => $s->level])) }}"
-                                                onchange="handleTutorSelection(this)">
-                                            {{ $tutor->name }}
-                                        </label>
-                                    @endforeach
-                                </div>
-                            @endif
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeModal('addPackageModal')">Batal</button>
-                <button type="submit" class="btn-submit">✓ Simpan Paket</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{{-- EDIT PACKAGE MODAL --}}
-<div id="editPackageModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Edit Paket Belajar</h2>
-            <button type="button" class="btn-close" onclick="closeEditPackageModal()">
-                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal('addPackageModal')">Batal</button>
+                    <button type="submit" class="btn-submit">✓ Simpan Paket</button>
+                </div>
+            </form>
         </div>
-        <form id="editPackageForm" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-body">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="edit_level">Jenjang Pendidikan *</label>
-                        <select id="edit_level" name="level" required>
-                            <option value="">Pilih jenjang</option>
-                            @foreach ($stages ?? [] as $value => $label)
-                                <option value="{{ $value }}">{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_grade_range">Rentang Kelas *</label>
-                        <input type="text" id="edit_grade_range" name="grade_range"
-                            placeholder="Contoh: Kelas 10 - 12 & UTBK" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_price">Harga (numerik) *</label>
-                        <input type="number" id="edit_price" name="price" min="0" step="1000" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_max_students">Kuota Maksimum (opsional)</label>
-                        <input type="number" id="edit_max_students" name="max_students" min="1" step="1"
-                            placeholder="Contoh: 25" />
-                        <p class="helper-text">Biarkan kosong jika kuota tidak dibatasi.</p>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="edit_detail_title">Judul Paket *</label>
-                        <input type="text" id="edit_detail_title" name="detail_title" required />
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="edit_summary">Ringkasan *</label>
-                        <textarea id="edit_summary" name="summary" rows="4" required></textarea>
-                    </div>
+    </div>
 
-                    <div class="form-group full-width">
-                        <label>Fitur Pricing (Ditampilkan di Kartu Paket)</label>
-                        <p class="helper-text">Tambahkan fitur-fitur yang akan ditampilkan pada kartu paket di landing
-                            page.</p>
-                        <div class="feature-list" id="edit-feature-list"></div>
-                        <button type="button" class="btn-add-feature" onclick="addEditFeature()">+ Tambah Fitur</button>
-                    </div>
+    {{-- EDIT PACKAGE MODAL --}}
+    <div id="editPackageModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Paket Belajar</h2>
+                <button type="button" class="btn-close" onclick="closeEditPackageModal()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <form id="editPackageForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="edit_level">Jenjang Pendidikan *</label>
+                            <select id="edit_level" name="level" required>
+                                <option value="">Pilih jenjang</option>
+                                @foreach ($stages ?? [] as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_grade_range">Rentang Kelas *</label>
+                            <input type="text" id="edit_grade_range" name="grade_range"
+                                placeholder="Contoh: Kelas 10 - 12 & UTBK" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_price">Harga (numerik) *</label>
+                            <input type="number" id="edit_price" name="price" min="0" step="1000" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_max_students">Kuota Maksimum (opsional)</label>
+                            <input type="number" id="edit_max_students" name="max_students" min="1" step="1"
+                                placeholder="Contoh: 25" />
+                            <p class="helper-text">Biarkan kosong jika kuota tidak dibatasi.</p>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="edit_detail_title">Judul Paket *</label>
+                            <input type="text" id="edit_detail_title" name="detail_title" required />
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="edit_summary">Ringkasan *</label>
+                            <textarea id="edit_summary" name="summary" rows="4" required></textarea>
+                        </div>
 
-                    <div class="form-group full-width">
-                        <label>Mata Pelajaran yang Termasuk *</label>
-                        <p class="helper-text">Pilih minimal 1 mata pelajaran yang akan diajarkan dalam paket ini.</p>
-                        <div class="subject-selection" id="edit-subject-selection"></div>
-                    </div>
+                        <div class="form-group full-width">
+                            <label>Fitur Pricing (Ditampilkan di Kartu Paket)</label>
+                            <p class="helper-text">Tambahkan fitur-fitur yang akan ditampilkan pada kartu paket di landing
+                                page.</p>
+                            <div class="feature-list" id="edit-feature-list"></div>
+                            <button type="button" class="btn-add-feature" onclick="addEditFeature()">+ Tambah Fitur</button>
+                        </div>
 
-                    <div class="form-group full-width">
-                        <label>Tutor Pengampu (Opsional)</label>
-                        <div class="subject-selection" id="edit-tutor-selection"></div>
+                        <div class="form-group full-width">
+                            <label>Mata Pelajaran yang Termasuk *</label>
+                            <p class="helper-text">Pilih minimal 1 mata pelajaran yang akan diajarkan dalam paket ini.</p>
+                            <div class="subject-selection" id="edit-subject-selection"></div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Tutor Pengampu (Opsional)</label>
+                            <div class="subject-selection" id="edit-tutor-selection"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeEditPackageModal()">Batal</button>
-                <button type="submit" class="btn-submit">Simpan Perubahan</button>
-            </div>
-        </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditPackageModal()">Batal</button>
+                    <button type="submit" class="btn-submit">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-@push('scripts')
-    <script>
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+    {{-- Hidden Form for Deletion --}}
+    <form id="delete-form" action="" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function addFeature() {
-            const list = document.getElementById('feature-list');
-            const item = document.createElement('div');
-            item.className = 'feature-item';
-            item.innerHTML = `
-                                                                <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
-                                                                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
-                                                            `;
-            list.appendChild(item);
-        }
-
-        function removeFeature(button) {
-            const list = document.getElementById('feature-list');
-            if (list.children.length > 1) {
-                button.parentElement.remove();
-            } else {
-                button.parentElement.querySelector('input').value = '';
-            }
-        }
-
-        // Edit Package Modal Functions
-        async function openEditPackageModal(packageId) {
-            try {
-                const response = await fetch(`/admin/packages/${packageId}/edit`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const data = await response.json();
-
-                // Set form action
-                document.getElementById('editPackageForm').action = `/admin/packages/${packageId}`;
-
-                // Populate basic fields
-                document.getElementById('edit_level').value = data.level || '';
-                document.getElementById('edit_grade_range').value = data.grade_range || '';
-                document.getElementById('edit_price').value = data.price || '';
-                document.getElementById('edit_max_students').value = data.max_students || '';
-                document.getElementById('edit_detail_title').value = data.detail_title || '';
-                document.getElementById('edit_summary').value = data.summary || '';
-
-                // Populate card features
-                const featureList = document.getElementById('edit-feature-list');
-                featureList.innerHTML = '';
-                if (data.card_features && data.card_features.length > 0) {
-                    data.card_features.forEach(feature => {
-                        addEditFeature(feature);
-                    });
-                } else {
-                    addEditFeature('');
-                }
-
-                // Populate subjects checkboxes
-                const subjectSelection = document.getElementById('edit-subject-selection');
-                subjectSelection.innerHTML = '';
-                @foreach(['SD', 'SMP', 'SMA'] as $level)
-                    @if(isset($subjectsByLevel[$level]) && $subjectsByLevel[$level]->isNotEmpty())
-                        const {{ $level }}_div = document.createElement('div');
-                        {{ $level }}_div.className = 'subject-group';
-                        {{ $level }}_div.innerHTML = '<h4>{{ $level }}</h4><div class="subject-checkboxes" id="edit-subjects-{{ $level }}"></div>';
-                        subjectSelection.appendChild({{ $level }}_div);
-
-                        @foreach($subjectsByLevel[$level] as $subject)
-                            const sub_{{ $subject->id }} = document.createElement('label');
-                            sub_{{ $subject->id }}.className = 'checkbox-label';
-                            let isChecked_{{ $subject->id }} = data.subject_ids.includes({{ $subject->id }});
-                            sub_{{ $subject->id }}.innerHTML = `
-                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" data-level="{{ $level }}" ${isChecked_{{ $subject->id }} ? 'checked' : ''}>
-                                {{ $subject->name }}
-                            `;
-                            document.getElementById('edit-subjects-{{ $level }}').appendChild(sub_{{ $subject->id }});
-                        @endforeach
-                    @endif
-                @endforeach
-
-                                        // Populate tutors checkboxes
-                                        const tutorSelection = document.getElementById('edit-tutor-selection');
-                tutorSelection.innerHTML = '';
-                @if($tutors->isNotEmpty())
-                    const tutorDiv = document.createElement('div');
-                    tutorDiv.className = 'subject-checkboxes';
-                    @foreach($tutors as $tutor)
-                        const tutor_{{ $tutor->id }} = document.createElement('label');
-                        tutor_{{ $tutor->id }}.className = 'checkbox-label';
-                        let tutorChecked_{{ $tutor->id }} = data.tutor_ids.includes({{ $tutor->id }});
-                        tutor_{{ $tutor->id }}.innerHTML = `
-                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" 
-                                                data-subjects="{{ json_encode($tutor->subjects->map(fn($s) => ['id' => $s->id, 'level' => $s->level])) }}"
-                                                onchange="handleTutorSelection(this)"
-                                                ${tutorChecked_{{ $tutor->id }} ? 'checked' : ''}>
-                                            {{ $tutor->name }}
-                                        `;
-                        tutorDiv.appendChild(tutor_{{ $tutor->id }});
-                    @endforeach
-                    tutorSelection.appendChild(tutorDiv);
-                @else
-                    tutorSelection.innerHTML = '<p class="helper-text">Belum ada tutor aktif.</p>';
-                @endif
-
-                // Setup level change listener for filtering
-                const editLevelSelect = document.getElementById('edit_level');
-                if (editLevelSelect) {
-                    // Remove any existing listener to avoid duplicates
-                    editLevelSelect.removeEventListener('change', filterEditModalSubjects);
-                    // Add new listener
-                    editLevelSelect.addEventListener('change', filterEditModalSubjects);
-                    // Run initial filter based on loaded data
-                    filterEditModalSubjects();
-                }
-
-                // Open modal
-                document.getElementById('editPackageModal').classList.add('active');
+    @push('scripts')
+        <script>
+            function openModal(modalId) {
+                document.getElementById(modalId).classList.add('active');
                 document.body.style.overflow = 'hidden';
-
-            } catch (error) {
-                console.error('Error loading package data:', error);
-                alert('Gagal memuat data paket. Silakan coba lagi.');
             }
-        }
 
-        function closeEditPackageModal() {
-            document.getElementById('editPackageModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function addEditFeature(value = '') {
-            const list = document.getElementById('edit-feature-list');
-            const item = document.createElement('div');
-            item.className = 'feature-item';
-            item.innerHTML = `
-                                        <input type="text" name="card_features[]" value="${value}" placeholder="Contoh: 6x kelas live per bulan" />
-                                        <button type="button" class="btn-remove" onclick="removeEditFeature(this)">Hapus</button>
-                                    `;
-            list.appendChild(item);
-        }
-
-        function removeEditFeature(button) {
-            const list = document.getElementById('edit-feature-list');
-            if (list.children.length > 1) {
-                button.parentElement.remove();
-            } else {
-                button.parentElement.querySelector('input').value = '';
-            }
-        }
-
-        // Close modal on outside click
-        window.onclick = function (event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.classList.remove('active');
+            function closeModal(modalId) {
+                document.getElementById(modalId).classList.remove('active');
                 document.body.style.overflow = 'auto';
             }
-        }
 
-        // Auto open modal if validation errors exist
-        @if($errors->any())
-            openModal('addPackageModal');
-        @endif
+            function addFeature() {
+                const list = document.getElementById('feature-list');
+                const item = document.createElement('div');
+                item.className = 'feature-item';
+                item.innerHTML = `
+                                                                                                <input type="text" name="card_features[]" class="form-control" placeholder="Contoh: 6x kelas live per bulan" />
+                                                                                                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)">Hapus</button>
+                                                                                            `;
+                list.appendChild(item);
+            }
 
-        function handleTutorSelection(checkbox) {
-            if (checkbox.checked) {
-                const tutorSubjects = JSON.parse(checkbox.getAttribute('data-subjects'));
-                const form = checkbox.closest('form');
-                if (!form) return;
-                
-                // Get selected package level
-                const levelSelect = form.querySelector('select[name="level"]');
-                const packageLevel = levelSelect ? levelSelect.value : null;
-                
-                // If level not selected, alert and uncheck
-                if (!packageLevel) {
-                    alert('Silakan pilih Jenjang Pendidikan terlebih dahulu sebelum memilih tutor!');
-                    checkbox.checked = false;
-                    return;
+            function removeFeature(button) {
+                const list = document.getElementById('feature-list');
+                if (list.children.length > 1) {
+                    button.parentElement.remove();
+                } else {
+                    button.parentElement.querySelector('input').value = '';
                 }
-                
-                // Filter: only subjects matching package level
-                const relevantSubjects = tutorSubjects.filter(s => s.level === packageLevel);
-                
-                // Auto-check only relevant subjects
-                relevantSubjects.forEach(subject => {
-                    const subjectCheckbox = form.querySelector(`input[name="subjects[]"][value="${subject.id}"]`);
-                    if (subjectCheckbox) {
-                        subjectCheckbox.checked = true;
-                        subjectCheckbox.dispatchEvent(new Event('change'));
+            }
+
+            // --- Event Listener Re-attacher ---
+            const reattachActiveListeners = () => {
+                const deleteButtons = document.querySelectorAll('.btn-delete');
+                const deleteForm = document.getElementById('delete-form');
+
+                deleteButtons.forEach(button => {
+                    button.onclick = function (e) {
+                        e.preventDefault();
+                        const id = this.dataset.id;
+                        const name = this.dataset.name;
+                        const action = this.dataset.action;
+
+                        Swal.fire({
+                            title: 'Hapus Paket?',
+                            text: `Apakah Anda yakin ingin menghapus paket "${name}" secara permanen?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: 'Ya, Hapus!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                deleteForm.action = action;
+                                deleteForm.submit();
+                            }
+                        });
+                    };
+                });
+            };
+
+            document.addEventListener('DOMContentLoaded', function () {
+                reattachActiveListeners();
+
+                // --- Live Search ---
+                const searchInput = document.getElementById('packageSearch');
+                const tableBody = document.getElementById('packages-table-body');
+                let timeout = null;
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function () {
+                        const query = this.value;
+                        const level = '{{ $filters['level'] ?? 'all' }}'; // Currently not dynamic in filter bar, but kept for future
+
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => {
+                            const url = new URL("{{ route('admin.packages.index') }}");
+                            url.searchParams.set('q', query);
+                            if (level !== 'all') url.searchParams.set('level', level);
+
+                            fetch(url, {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                                .then(response => response.text())
+                                .then(html => {
+                                    tableBody.innerHTML = html;
+                                    reattachActiveListeners();
+                                })
+                                .catch(error => console.error('Error:', error));
+                        }, 300);
+                    });
+                }
+            });
+
+            // Edit Package Modal Functions
+            async function openEditPackageModal(packageId) {
+                try {
+                    const response = await fetch(`/admin/packages/${packageId}/edit`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    // Set form action
+                    document.getElementById('editPackageForm').action = `/admin/packages/${packageId}`;
+
+                    // Populate basic fields
+                    document.getElementById('edit_level').value = data.level || '';
+                    document.getElementById('edit_grade_range').value = data.grade_range || '';
+                    document.getElementById('edit_price').value = data.price || '';
+                    document.getElementById('edit_max_students').value = data.max_students || '';
+                    document.getElementById('edit_detail_title').value = data.detail_title || '';
+                    document.getElementById('edit_summary').value = data.summary || '';
+
+                    // Populate card features
+                    const featureList = document.getElementById('edit-feature-list');
+                    featureList.innerHTML = '';
+                    if (data.card_features && data.card_features.length > 0) {
+                        data.card_features.forEach(feature => {
+                            addEditFeature(feature);
+                        });
+                    } else {
+                        addEditFeature('');
+                    }
+
+                    // Populate subjects checkboxes
+                    const subjectSelection = document.getElementById('edit-subject-selection');
+                    subjectSelection.innerHTML = '';
+                    @foreach(['SD', 'SMP', 'SMA'] as $level)
+                        @if(isset($subjectsByLevel[$level]) && $subjectsByLevel[$level]->isNotEmpty())
+                            const {{ $level }}_div = document.createElement('div');
+                                                                                        {{ $level }}_div.className = 'subject-group';
+                                                                                        {{ $level }}_div.innerHTML = '<h4>{{ $level }}</h4><div class="subject-checkboxes" id="edit-subjects-{{ $level }}"></div>';
+                            subjectSelection.appendChild({{ $level }}_div);
+
+                            @foreach($subjectsByLevel[$level] as $subject)
+                                const sub_{{ $subject->id }} = document.createElement('label');
+                                sub_{{ $subject->id }}.className = 'checkbox-label';
+                                let isChecked_{{ $subject->id }} = data.subject_ids.includes({{ $subject->id }});
+                                sub_{{ $subject->id }}.innerHTML = `
+                                                                                                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" data-level="{{ $level }}" ${isChecked_{{ $subject->id }} ? 'checked' : ''}>
+                                                                                                                {{ $subject->name }}
+                                                                                                            `;
+                                document.getElementById('edit-subjects-{{ $level }}').appendChild(sub_{{ $subject->id }});
+                            @endforeach
+                        @endif
+                    @endforeach
+
+                                                                        // Populate tutors checkboxes
+                                                                        const tutorSelection = document.getElementById('edit-tutor-selection');
+                    tutorSelection.innerHTML = '';
+                    @if($tutors->isNotEmpty())
+                        const tutorDiv = document.createElement('div');
+                        tutorDiv.className = 'subject-checkboxes';
+                        @foreach($tutors as $tutor)
+                            const tutor_{{ $tutor->id }} = document.createElement('label');
+                            tutor_{{ $tutor->id }}.className = 'checkbox-label';
+                            let tutorChecked_{{ $tutor->id }} = data.tutor_ids.includes({{ $tutor->id }});
+                            tutor_{{ $tutor->id }}.innerHTML = `
+                                                                                                            <input type="checkbox" name="tutors[]" value="{{ $tutor->id }}" 
+                                                                                                                data-subjects="{{ json_encode($tutor->subjects->map(fn($s) => ['id' => $s->id, 'level' => $s->level])) }}"
+                                                                                                                onchange="handleTutorSelection(this)"
+                                                                                                                ${tutorChecked_{{ $tutor->id }} ? 'checked' : ''}>
+                                                                                                            {{ $tutor->name }}
+                                                                                                        `;
+                            tutorDiv.appendChild(tutor_{{ $tutor->id }});
+                        @endforeach
+                        tutorSelection.appendChild(tutorDiv);
+                    @else
+                        tutorSelection.innerHTML = '<p class="helper-text">Belum ada tutor aktif.</p>';
+                    @endif
+
+                                                // Setup level change listener for filtering
+                                                const editLevelSelect = document.getElementById('edit_level');
+                    if (editLevelSelect) {
+                        // Remove any existing listener to avoid duplicates
+                        editLevelSelect.removeEventListener('change', filterEditModalSubjects);
+                        // Add new listener
+                        editLevelSelect.addEventListener('change', filterEditModalSubjects);
+                        // Run initial filter based on loaded data
+                        filterEditModalSubjects();
+                    }
+
+                    // Open modal
+                    document.getElementById('editPackageModal').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+
+                } catch (error) {
+                    console.error('Error loading package data:', error);
+                    alert('Gagal memuat data paket. Silakan coba lagi.');
+                }
+            }
+
+            function closeEditPackageModal() {
+                document.getElementById('editPackageModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            function addEditFeature(value = '') {
+                const list = document.getElementById('edit-feature-list');
+                const item = document.createElement('div');
+                item.className = 'feature-item';
+                item.innerHTML = `
+                                                                        <input type="text" name="card_features[]" value="${value}" placeholder="Contoh: 6x kelas live per bulan" />
+                                                                        <button type="button" class="btn-remove" onclick="removeEditFeature(this)">Hapus</button>
+                                                                    `;
+                list.appendChild(item);
+            }
+
+            function removeEditFeature(button) {
+                const list = document.getElementById('edit-feature-list');
+                if (list.children.length > 1) {
+                    button.parentElement.remove();
+                } else {
+                    button.parentElement.querySelector('input').value = '';
+                }
+            }
+
+            // Close modal on outside click
+            window.onclick = function (event) {
+                if (event.target.classList.contains('modal-overlay')) {
+                    event.target.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+
+            // Auto open modal if validation errors exist
+            @if($errors->any())
+                openModal('addPackageModal');
+            @endif
+
+                function handleTutorSelection(checkbox) {
+                    if (checkbox.checked) {
+                        const tutorSubjects = JSON.parse(checkbox.getAttribute('data-subjects'));
+                        const form = checkbox.closest('form');
+                        if (!form) return;
+
+                        // Get selected package level
+                        const levelSelect = form.querySelector('select[name="level"]');
+                        const packageLevel = levelSelect ? levelSelect.value : null;
+
+                        // If level not selected, alert and uncheck
+                        if (!packageLevel) {
+                            alert('Silakan pilih Jenjang Pendidikan terlebih dahulu sebelum memilih tutor!');
+                            checkbox.checked = false;
+                            return;
+                        }
+
+                        // Filter: only subjects matching package level
+                        const relevantSubjects = tutorSubjects.filter(s => s.level === packageLevel);
+
+                        // Auto-check only relevant subjects
+                        relevantSubjects.forEach(subject => {
+                            const subjectCheckbox = form.querySelector(`input[name="subjects[]"][value="${subject.id}"]`);
+                            if (subjectCheckbox) {
+                                subjectCheckbox.checked = true;
+                                subjectCheckbox.dispatchEvent(new Event('change'));
+                            }
+                        });
+                    }
+                }
+
+            // Filter subjects by level in Add Package Modal
+            function filterAddModalSubjects() {
+                const levelSelect = document.querySelector('#addPackageModal select[name="level"]');
+                if (!levelSelect) return;
+
+                const selectedLevel = levelSelect.value;
+                const subjectGroups = document.querySelectorAll('#addPackageModal .subject-group');
+
+                subjectGroups.forEach(group => {
+                    const groupTitle = group.querySelector('h4').textContent.trim();
+
+                    if (selectedLevel === '' || groupTitle === selectedLevel) {
+                        group.style.display = 'block';
+                    } else {
+                        group.style.display = 'none';
+                        // Uncheck hidden subjects
+                        const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                        checkboxes.forEach(cb => cb.checked = false);
                     }
                 });
             }
-        }
 
-        // Filter subjects by level in Add Package Modal
-        function filterAddModalSubjects() {
-            const levelSelect = document.querySelector('#addPackageModal select[name="level"]');
-            if (!levelSelect) return;
-            
-            const selectedLevel = levelSelect.value;
-            const subjectGroups = document.querySelectorAll('#addPackageModal .subject-group');
-            
-            subjectGroups.forEach(group => {
-                const groupTitle = group.querySelector('h4').textContent.trim();
-                
-                if (selectedLevel === '' || groupTitle === selectedLevel) {
-                    group.style.display = 'block';
-                } else {
-                    group.style.display = 'none';
-                    // Uncheck hidden subjects
-                    const checkboxes = group.querySelectorAll('input[type="checkbox"]');
-                    checkboxes.forEach(cb => cb.checked = false);
-                }
-            });
-        }
+            // Filter subjects by level in Edit Package Modal  
+            function filterEditModalSubjects() {
+                const levelSelect = document.getElementById('edit_level');
+                if (!levelSelect) return;
 
-        // Filter subjects by level in Edit Package Modal  
-        function filterEditModalSubjects() {
-            const levelSelect = document.getElementById('edit_level');
-            if (!levelSelect) return;
-            
-            const selectedLevel = levelSelect.value;
-            const subjectGroups = document.querySelectorAll('#edit-subject-selection .subject-group');
-            
-            subjectGroups.forEach(group => {
-                const groupTitle = group.querySelector('h4').textContent.trim();
-                
-                if (selectedLevel === '' || groupTitle === selectedLevel) {
-                    group.style.display = 'block';
-                } else {
-                    group.style.display = 'none';
-                    // Uncheck hidden subjects
-                    const checkboxes = group.querySelectorAll('input[type="checkbox"]');
-                    checkboxes.forEach(cb => cb.checked = false);
-                }
-            });
-        }
+                const selectedLevel = levelSelect.value;
+                const subjectGroups = document.querySelectorAll('#edit-subject-selection .subject-group');
 
-        // Initialize Add Modal filtering
-        document.addEventListener('DOMContentLoaded', function() {
-            const addLevelSelect = document.querySelector('#addPackageModal select[name="level"]');
-            if (addLevelSelect) {
-                addLevelSelect.addEventListener('change', filterAddModalSubjects);
+                subjectGroups.forEach(group => {
+                    const groupTitle = group.querySelector('h4').textContent.trim();
+
+                    if (selectedLevel === '' || groupTitle === selectedLevel) {
+                        group.style.display = 'block';
+                    } else {
+                        group.style.display = 'none';
+                        // Uncheck hidden subjects
+                        const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                        checkboxes.forEach(cb => cb.checked = false);
+                    }
+                });
             }
-        });
 
-        // Package Search Filter
-        function filterPackages() {
-            const searchInput = document.getElementById('packageSearch');
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const table = document.querySelector('.package-table tbody');
-            const rows = table.querySelectorAll('tr');
-            let visibleCount = 0;
-            
-            rows.forEach(row => {
-                // Get text content from all relevant columns
-                const packageName = row.querySelector('.pkg-name')?.textContent.toLowerCase() || '';
-                const level = row.querySelector('.pkg-level')?.textContent.toLowerCase() || '';
-                const gradeRange = row.querySelector('.pkg-grades')?.textContent.toLowerCase() || '';
-                const subjects = Array.from(row.querySelectorAll('.subject-pill')).map(el => el.textContent.toLowerCase()).join(' ');
-                const tutors = Array.from(row.querySelectorAll('.subject-pill[style*="background: #e0f2fe"]')).map(el => el.textContent.toLowerCase()).join(' ');
-                
-                // Combine all searchable text
-                const searchableText = `${packageName} ${level} ${gradeRange} ${subjects} ${tutors}`;
-                
-                // Show/hide row based on search
-                if (searchTerm === '' || searchableText.includes(searchTerm)) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
+            // Initialize Add Modal filtering
+            document.addEventListener('DOMContentLoaded', function () {
+                const addLevelSelect = document.querySelector('#addPackageModal select[name="level"]');
+                if (addLevelSelect) {
+                    addLevelSelect.addEventListener('change', filterAddModalSubjects);
                 }
             });
-            
-            // Update search results text
-            const resultsText = document.getElementById('searchResults');
-            if (searchTerm === '') {
-                resultsText.textContent = '';
-            } else {
-                resultsText.textContent = `Menampilkan ${visibleCount} dari ${rows.length} paket`;
-            }
-        }
-    </script>
-@endpush
+        </script>
+    @endpush
 @endsection
