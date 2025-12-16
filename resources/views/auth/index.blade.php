@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
 
+    {{-- Script reCAPTCHA (Wajib Ada) --}}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <style>
         :root {
             --primary-600: #0f766e;
@@ -379,6 +382,13 @@
             text-decoration: underline;
         }
 
+        /* Recaptcha Wrapper */
+        .recaptcha-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
         /* Terms Checkbox */
         .terms-trigger-wrapper {
             display: flex;
@@ -637,6 +647,11 @@
                 font-size: 0.8rem;
                 margin-bottom: 12px;
             }
+
+            .recaptcha-wrapper {
+                transform: scale(0.85);
+                transform-origin: center;
+            }
         }
     </style>
 </head>
@@ -792,6 +807,25 @@
                 </label>
                 <a href="{{ route('password.request') }}" class="forgot-link">Lupa Password?</a>
             </div>
+
+            {{-- reCAPTCHA --}}
+            @if(config('services.recaptcha.key'))
+                <div class="input-group" style="margin-top: 20px;">
+                    <div class="recaptcha-wrapper">
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+                    </div>
+                    @error('g-recaptcha-response') <p class="error-msg" style="text-align:center">{{ $message }}</p>
+                    @enderror
+                </div>
+            @else
+                @if(app()->environment('local', 'development'))
+                    <div class="input-group" style="margin-top: 12px;">
+                        <p class="form-helper" style="color: #f59e0b; font-size: 0.85rem; text-align: center; margin: 0;">
+                            ⚠️ Development Mode: reCAPTCHA tidak dikonfigurasi (validasi di-skip)
+                        </p>
+                    </div>
+                @endif
+            @endif
 
             <button class="btn-primary" type="submit">Masuk</button>
 

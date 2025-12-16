@@ -231,7 +231,56 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $secret = config('services.recaptcha.secret');
+
+                    // 🔧 BYPASS: Skip validation di development jika reCAPTCHA tidak dikonfigurasi
+                    if (!$secret) {
+                        if (app()->environment('local', 'development')) {
+                            Log::info('reCAPTCHA validation skipped (development mode, no credentials configured).');
+                            return; // Skip validation
+                        }
+
+                        Log::warning('Google reCAPTCHA secret key tidak dikonfigurasi.');
+                        $fail(__('Konfigurasi reCAPTCHA belum benar. Hubungi admin.'));
+
+                        return;
+                    }
+
+                    // Jika kredensial ada, validasi harus required
+                    if (empty($value)) {
+                        $fail(__('Silakan selesaikan verifikasi reCAPTCHA.'));
+                        return;
+                    }
+
+                    try {
+                        $response = Http::withoutVerifying()->asForm()->post(
+                            'https://www.google.com/recaptcha/api/siteverify',
+                            [
+                                'secret' => $secret,
+                                'response' => $value,
+                                'remoteip' => $request->ip(),
+                            ]
+                        );
+
+                        $body = $response->json();
+
+                        if (!($body['success'] ?? false)) {
+                            $fail(__('Verifikasi reCAPTCHA gagal. Silakan coba lagi.'));
+                        }
+                    } catch (Throwable $e) {
+                        Log::error('Gagal memverifikasi reCAPTCHA.', [
+                            'message' => $e->getMessage(),
+                        ]);
+
+                        $fail(__('Terjadi kesalahan saat memverifikasi reCAPTCHA. Silakan coba lagi.'));
+                    }
+                },
+            ],
         ]);
+
+        unset($credentials['g-recaptcha-response']);
 
         try {
             // 1. Cek apakah user ada di database
@@ -321,8 +370,8 @@ class AuthController extends Controller
             $hasActivePackage = $user->enrollments()
                 ->where('is_active', true)
                 ->where(function ($query) {
-                     $query->whereNull('ends_at')
-                           ->orWhere('ends_at', '>', now());
+                    $query->whereNull('ends_at')
+                        ->orWhere('ends_at', '>', now());
                 })
                 ->exists();
 
