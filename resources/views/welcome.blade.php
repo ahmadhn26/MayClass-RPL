@@ -120,7 +120,7 @@
             right: 0;
             z-index: 1000;
             width: 100%;
-            padding: 8px clamp(12px, 3vw, 24px);
+            padding: 14px clamp(12px, 3vw, 24px);
             background: rgba(255, 254, 254, 0.52);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -273,7 +273,7 @@
         }
 
         .brand img {
-            height: 90px;
+            height: 42px;
             width: auto;
             object-fit: contain;
         }
@@ -284,7 +284,7 @@
             justify-content: center;
             gap: 28px;
             font-size: 0.95rem;
-            margin-left: 57px;
+            margin-left: 0;
         }
 
         .nav-links a {
@@ -366,7 +366,7 @@
 
         @media (max-width: 768px) {
             .brand img {
-                height: 52px;
+                height: 30px;
             }
 
             /* Mobile sidebar profile photo - circular style */
@@ -2517,52 +2517,53 @@
                     <div class="nav-actions">
                         {{-- Mobile Nav Actions --}}
                         @auth
-                            <div
-                                style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px;">
-                                    <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                        aria-label="Buka profil" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; aspect-ratio: 1/1;">
-                                        <img src="{{ $profileAvatar }}" alt="Foto profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
-                                    </a>
-                                </div>
+                            <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px;">
+                                <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                    aria-label="Buka profil"
+                                    style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; aspect-ratio: 1/1;">
+                                    <img src="{{ $profileAvatar }}" alt="Foto profil"
+                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                </a>
+                            </div>
 
-                                {{-- LOGIKA TOMBOL MOBILE --}}
-                                @if($hasActivePackage)
-                                    {{-- 1. SUDAH LUNAS / AKTIF --}}
-                                    <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
-                                        style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                        </svg>
-                                        Ayo Belajar
+                            {{-- LOGIKA TOMBOL MOBILE --}}
+                            @if($hasActivePackage)
+                                {{-- 1. SUDAH LUNAS / AKTIF --}}
+                                <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
+                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    Ayo Belajar
+                                </a>
+                            @elseif($pendingOrder && $pendingOrder->package)
+                                {{-- 2. ADA TRANSAKSI BERJALAN --}}
+                                @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
+                                    {{-- Sudah upload bukti, menunggu admin --}}
+                                    <a class="btn btn-primary"
+                                        href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
+                                        style="background: #3b82f6; border-color: #3b82f6; color: white;">
+                                        Lihat Status
                                     </a>
-                                @elseif($pendingOrder && $pendingOrder->package)
-                                    {{-- 2. ADA TRANSAKSI BERJALAN --}}
-                                    @if($pendingOrder->status === 'awaiting_verification' || $pendingOrder->status === 'paid' || $pendingOrder->payment_proof_path)
-                                        {{-- Sudah upload bukti, menunggu admin --}}
-                                        <a class="btn btn-primary"
-                                            href="{{ route('checkout.success', ['slug' => $pendingOrder->package->slug, 'order' => $pendingOrder->id]) }}"
-                                            style="background: #3b82f6; border-color: #3b82f6; color: white;">
-                                            Lihat Status
-                                        </a>
-                                    @else
-                                        {{-- Belum bayar / Belum upload bukti --}}
-                                        <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}"
-                                            style="background: #f59e0b; border-color: #f59e0b; color: white;">
-                                            Lanjut Bayar
-                                        </a>
-                                    @endif
                                 @else
-                                    <a class="btn btn-primary" href="{{ route('packages.index') }}">
-                                        Beli Paket Belajar
+                                    {{-- Belum bayar / Belum upload bukti --}}
+                                    <a class="btn btn-primary" href="{{ route('checkout.show', $pendingOrder->package->slug) }}"
+                                        style="background: #f59e0b; border-color: #f59e0b; color: white;">
+                                        Lanjut Bayar
                                     </a>
                                 @endif
+                            @else
+                                <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                                    Beli Paket Belajar
+                                </a>
+                            @endif
 
-                                <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline"
-                                        style="color: #000; border-color: #ccc;">Keluar</button>
-                                </form>
+                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline"
+                                    style="color: #000; border-color: #ccc;">Keluar</button>
+                            </form>
                         @else
                             <a class="btn btn-primary" href="{{ $joinLink }}">
                                 Gabung Sekarang
@@ -2607,21 +2608,23 @@
 
                             {{-- 3. BELUM ADA TRANSAKSI (Default) --}}
                         @else
-                            <a class="btn btn-primary" href="{{ route('packages.index') }}">
-                                Beli Paket Belajar
-                            </a>
+                            @if(auth()->user()->role === 'student')
+                                <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                                    Beli Paket Belajar
+                                </a>
+                            @endif
                         @endif
 
-                        <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                            aria-label="Buka profil">
-                            <img src="{{ $profileAvatar }}" alt="Foto profil" />
-                        </a>
+                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                                aria-label="Buka profil">
+                                <img src="{{ $profileAvatar }}" alt="Foto profil" />
+                            </a>
 
-                        <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                            @csrf
-                            <button type="submit" class="btn btn-outline"
-                                style="color: #000; border-color: #ccc;">Keluar</button>
-                        </form>
+                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline"
+                                    style="color: #000; border-color: #ccc;">Keluar</button>
+                            </form>
                     @else
                         {{-- GUEST --}}
                         <a class="btn btn-primary" href="{{ route('join') }}">
@@ -2796,9 +2799,18 @@
                             onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
                             <div style="position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f8fafc;">
-                                <img src="{{ asset('storage/' . $doc->photo_path) }}"
+                                @php
+                                    // Gunakan AvatarResolver untuk mengubah gambar jadi Base64
+                                    // Ini mem-bypass masalah hosting/symlink/https link
+                                    $docImage = \App\Support\AvatarResolver::resolve([
+                                        $doc->photo_path,
+                                        'uploads/' . $doc->photo_path
+                                    ]);
+                                @endphp
+                                <img src="{{ $docImage ?? asset('storage/' . $doc->photo_path) }}"
                                     alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
-                                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"
+                                    onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.9rem;\'>Gambar tidak tersedia</div>'">
                                 <div class="doc-badge"
                                     style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
                                     {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
@@ -3147,6 +3159,20 @@
         @media (max-width: 640px) {
             .footer-top {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        /* Footer logo styling */
+        .footer-logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-logo {
+                height: 40px;
             }
         }
     </style>
