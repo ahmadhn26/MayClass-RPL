@@ -2615,16 +2615,16 @@
                             @endif
                         @endif
 
-                            <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                aria-label="Buka profil">
-                                <img src="{{ $profileAvatar }}" alt="Foto profil" />
-                            </a>
+                        <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
+                            aria-label="Buka profil">
+                            <img src="{{ $profileAvatar }}" alt="Foto profil" />
+                        </a>
 
-                            <form method="post" action="{{ route('logout') }}" style="margin: 0;">
-                                @csrf
-                                <button type="submit" class="btn btn-outline"
-                                    style="color: #000; border-color: #ccc;">Keluar</button>
-                            </form>
+                        <form method="post" action="{{ route('logout') }}" style="margin: 0;">
+                            @csrf
+                            <button type="submit" class="btn btn-outline"
+                                style="color: #000; border-color: #ccc;">Keluar</button>
+                        </form>
                     @else
                         {{-- GUEST --}}
                         <a class="btn btn-primary" href="{{ route('join') }}">
@@ -3072,33 +3072,22 @@
             <!-- Swiper Mentors -->
             <div class="swiper mentor-slider" data-reveal>
                 <div class="swiper-wrapper">
-                    @forelse($landingContents['mentor'] ?? [] as $mentor)
+                    @forelse($activeTutors as $mentor)
                         <div class="swiper-slide">
                             <article class="mentor-profile">
                                 <div class="mentor-avatar">
-                                    <img src="{{ asset($mentor->image ?? 'images/avatar-placeholder.svg') }}"
-                                        alt="{{ $mentor->content['name'] }}"
-                                        onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor->content['name']) }}&background=random'" />
+                                    <img src="{{ $mentor['avatar'] }}" alt="{{ $mentor['name'] }}"
+                                        onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor['name']) }}&background=random'" />
                                 </div>
                                 <div class="mentor-info">
-                                    <strong>{{ $mentor->content['name'] }}</strong>
-                                    <span class="mentor-role">{{ $mentor->content['role'] }}</span>
+                                    <strong>{{ $mentor['name'] }}</strong>
+                                    <span class="mentor-role">{{ $mentor['role'] }}</span>
                                 </div>
-                                <p class="mentor-saying">“{{ $mentor->content['quote'] }}”</p>
+                                <p class="mentor-saying">“{{ $mentor['quote'] }}”</p>
                                 <div class="mentor-meta">
-                                    @if(isset($mentor->content['meta']) && is_array($mentor->content['meta']))
-                                        @foreach($mentor->content['meta'] as $meta)
-                                            <span>{{ $meta }}</span>
-                                        @endforeach
-                                    @else
-                                        {{-- Legacy Fallback --}}
-                                        @if(!empty($mentor->content['meta_1']))
-                                            <span>{{ $mentor->content['meta_1'] }}</span>
-                                        @endif
-                                        @if(!empty($mentor->content['meta_2']))
-                                            <span>{{ $mentor->content['meta_2'] }}</span>
-                                        @endif
-                                    @endif
+                                    @foreach($mentor['meta'] as $meta)
+                                        <span>{{ $meta }}</span>
+                                    @endforeach
                                 </div>
                             </article>
                         </div>

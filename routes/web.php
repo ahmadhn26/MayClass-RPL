@@ -118,13 +118,20 @@ Route::get('/', function () {
     // Get active tutors with their avatars for carousel
     $activeTutors = \App\Models\User::where('role', 'tutor')
         ->where('is_active', true)
-        ->select('id', 'name', 'avatar_path')
+        ->with('tutorProfile')
         ->limit(10)
         ->get()
         ->map(function ($tutor) {
+            $profile = $tutor->tutorProfile;
             return [
                 'name' => $tutor->name,
-                'avatar' => ProfileAvatar::forUser($tutor)
+                'role' => $profile?->headline ?? 'Tentor Spesialis',
+                'quote' => $profile?->bio ? \Illuminate\Support\Str::limit($profile->bio, 80) : 'Siap membimbing kamu meraih impian.',
+                'avatar' => ProfileAvatar::forUser($tutor),
+                'meta' => array_filter([
+                    $profile?->education ?? 'Lulusan Terbaik',
+                    ($profile && $profile->experience_years ? $profile->experience_years . ' Tahun Pengalaman' : null)
+                ])
             ];
         });
 
