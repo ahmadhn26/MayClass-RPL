@@ -638,6 +638,153 @@
                 gap: 16px;
             }
         }
+
+        /* === CONFIRMATION MODAL STYLES === */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .confirm-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: confirmModalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        }
+
+        @keyframes confirmModalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .confirm-modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-modal-icon.icon-approve {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .confirm-modal-icon.icon-refund {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .confirm-modal-icon.icon-reject {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .confirm-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 8px;
+        }
+
+        .confirm-modal-message {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0 0 24px;
+            line-height: 1.5;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .confirm-modal-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .confirm-modal-btn-approve {
+            background: #059669;
+            color: white;
+        }
+
+        .confirm-modal-btn-approve:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        .confirm-modal-btn-refund {
+            background: #d97706;
+            color: white;
+        }
+
+        .confirm-modal-btn-refund:hover {
+            background: #b45309;
+            transform: translateY(-1px);
+        }
+
+        .confirm-modal-btn-reject {
+            background: #dc2626;
+            color: white;
+        }
+
+        .confirm-modal-btn-reject:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+        }
     </style>
 @endpush
 
@@ -793,46 +940,38 @@
 
                                             <div id="dropdown-{{ $order['id'] }}" class="dropdown-menu">
                                                 @if ($order['canApprove'])
-                                                    <form action="{{ route('admin.finance.approve', $order['id']) }}" method="POST">
-                                                        @csrf
-                                                        <button type="submit" class="dropdown-item item-approve">
-                                                            <svg width="16" height="16" fill="none" stroke="currentColor"
-                                                                viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M5 13l4 4L19 7"></path>
-                                                            </svg>
-                                                            Setujui
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" class="dropdown-item item-approve"
+                                                        onclick="openConfirmModal('approve', {{ $order['id'] }}, '{{ $order['student'] }}')">
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                        Setujui
+                                                    </button>
                                                 @endif
 
                                                 @if ($order['canReject'])
-                                                    <form action="{{ route('admin.finance.refund', $order['id']) }}" method="POST">
-                                                        @csrf
-                                                        <button type="submit" class="dropdown-item item-refund"
-                                                            onclick="return confirm('Apakah Anda yakin ingin melakukan refund dana untuk pesanan ini?')">
-                                                            <svg width="16" height="16" fill="none" stroke="currentColor"
-                                                                viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
-                                                                </path>
-                                                            </svg>
-                                                            Refund
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" class="dropdown-item item-refund"
+                                                        onclick="openConfirmModal('refund', {{ $order['id'] }}, '{{ $order['student'] }}')">
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                                            </path>
+                                                        </svg>
+                                                        Refund
+                                                    </button>
 
-                                                    <form action="{{ route('admin.finance.reject', $order['id']) }}" method="POST">
-                                                        @csrf
-                                                        <button type="submit" class="dropdown-item item-reject"
-                                                            onclick="return confirm('Tolak bukti pembayaran ini?')">
-                                                            <svg width="16" height="16" fill="none" stroke="currentColor"
-                                                                viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M6 18L18 6M6 6l12 12"></path>
-                                                            </svg>
-                                                            Tolak
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" class="dropdown-item item-reject"
+                                                        onclick="openConfirmModal('reject', {{ $order['id'] }}, '{{ $order['student'] }}')">
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                        Tolak
+                                                    </button>
                                                 @endif
                                             </div>
                                         </div>
@@ -969,6 +1108,41 @@
             </div>
         @endforeach
 
+        {{-- Confirmation Modal --}}
+        <div class="confirm-modal" id="confirmModal">
+            <div class="confirm-modal-overlay" onclick="closeConfirmModal()"></div>
+            <div class="confirm-modal-content">
+                <div class="confirm-modal-icon" id="confirmModalIcon">
+                    <svg id="confirmIconSvg" width="32" height="32" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24"></svg>
+                </div>
+                <h3 class="confirm-modal-title" id="confirmModalTitle"></h3>
+                <p class="confirm-modal-message" id="confirmModalMessage"></p>
+                <div class="confirm-modal-actions">
+                    <button type="button" class="confirm-modal-btn confirm-modal-btn-cancel"
+                        onclick="closeConfirmModal()">Batal</button>
+                    <button type="button" class="confirm-modal-btn" id="confirmModalBtn"
+                        onclick="submitConfirmAction()">Konfirmasi</button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Hidden Forms for Actions --}}
+        @foreach ($orders as $order)
+            <form id="form-approve-{{ $order['id'] }}" action="{{ route('admin.finance.approve', $order['id']) }}" method="POST"
+                style="display:none;">
+                @csrf
+            </form>
+            <form id="form-refund-{{ $order['id'] }}" action="{{ route('admin.finance.refund', $order['id']) }}" method="POST"
+                style="display:none;">
+                @csrf
+            </form>
+            <form id="form-reject-{{ $order['id'] }}" action="{{ route('admin.finance.reject', $order['id']) }}" method="POST"
+                style="display:none;">
+                @csrf
+            </form>
+        @endforeach
+
     </div>
 @endsection
 
@@ -991,6 +1165,91 @@
             document.addEventListener('click', function (e) {
                 if (!e.target.closest('.dropdown-wrapper')) {
                     document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.remove('show'));
+                }
+            });
+
+            // --- Confirmation Modal Logic ---
+            let currentAction = null;
+            let currentOrderId = null;
+
+            const modalConfig = {
+                approve: {
+                    icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>',
+                    iconClass: 'icon-approve',
+                    btnClass: 'confirm-modal-btn-approve',
+                    title: 'Setujui Pembayaran?',
+                    getMessage: (name) => `Anda akan menyetujui pembayaran dari <strong>${name}</strong>. Akun siswa akan langsung diaktifkan.`
+                },
+                refund: {
+                    icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>',
+                    iconClass: 'icon-refund',
+                    btnClass: 'confirm-modal-btn-refund',
+                    title: 'Refund Pembayaran?',
+                    getMessage: (name) => `Anda akan melakukan refund dana untuk pesanan <strong>${name}</strong>. Pastikan dana sudah dikembalikan ke siswa.`
+                },
+                reject: {
+                    icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>',
+                    iconClass: 'icon-reject',
+                    btnClass: 'confirm-modal-btn-reject',
+                    title: 'Tolak Pembayaran?',
+                    getMessage: (name) => `Anda akan menolak bukti pembayaran dari <strong>${name}</strong>. Siswa akan diminta untuk upload ulang bukti.`
+                }
+            };
+
+            window.openConfirmModal = function (action, orderId, studentName) {
+                currentAction = action;
+                currentOrderId = orderId;
+
+                const config = modalConfig[action];
+                const modal = document.getElementById('confirmModal');
+                const iconEl = document.getElementById('confirmModalIcon');
+                const iconSvg = document.getElementById('confirmIconSvg');
+                const titleEl = document.getElementById('confirmModalTitle');
+                const messageEl = document.getElementById('confirmModalMessage');
+                const btnEl = document.getElementById('confirmModalBtn');
+
+                // Set icon
+                iconEl.className = 'confirm-modal-icon ' + config.iconClass;
+                iconSvg.innerHTML = config.icon;
+
+                // Set content
+                titleEl.textContent = config.title;
+                messageEl.innerHTML = config.getMessage(studentName);
+
+                // Set button style
+                btnEl.className = 'confirm-modal-btn ' + config.btnClass;
+                btnEl.textContent = action === 'approve' ? 'Ya, Setujui' : action === 'refund' ? 'Ya, Refund' : 'Ya, Tolak';
+
+                // Show modal
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                // Close dropdown
+                document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.remove('show'));
+            };
+
+            window.closeConfirmModal = function () {
+                const modal = document.getElementById('confirmModal');
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                currentAction = null;
+                currentOrderId = null;
+            };
+
+            window.submitConfirmAction = function () {
+                if (!currentAction || !currentOrderId) return;
+
+                const form = document.getElementById(`form-${currentAction}-${currentOrderId}`);
+                if (form) {
+                    form.submit();
+                }
+                closeConfirmModal();
+            };
+
+            // Close modal with ESC key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeConfirmModal();
                 }
             });
 
