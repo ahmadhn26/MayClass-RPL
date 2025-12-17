@@ -73,10 +73,10 @@
         }
 
         .student-navbar__brand img {
-            width: 90px;
-            height: 70px;
-            border-radius: 12px;
-            object-fit: cover;
+            width: auto;
+            height: 42px;
+            border-radius: 8px;
+            object-fit: contain;
         }
 
         /* Hamburger menu button */
@@ -422,8 +422,8 @@
             }
 
             .student-navbar__brand img {
-                width: 60px;
-                height: 48px;
+                width: auto;
+                height: 36px;
             }
 
             /* Mobile menu link styles */
