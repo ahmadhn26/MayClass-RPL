@@ -784,18 +784,16 @@
                             </div>
 
                             {{-- Judul Sesi & Mata Pelajaran --}}
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label>Judul Sesi</label>
-                                    <input type="text" name="title" class="form-control" placeholder="Contoh: Pertemuan 1"
-                                        required>
+                                    <input type="text" name="title" class="form-control"
+                                        placeholder="Contoh: Pertemuan Rutin Matematika" required>
                                 </div>
+
                                 <div class="form-group">
                                     <label>Mata Pelajaran</label>
-                                    <!-- Hidden field for subject_id (for validation) -->
-                                    <input type="hidden" name="subject_id" id="subject-id-hidden">
-                                    <!-- Visible select for category (for display) -->
-                                    <select name="category" id="subject-select" class="form-control" required disabled>
+                                    <select name="subject_id" id="subject-select" class="form-control" disabled required>
                                         <option value="">Pilih Mata Pelajaran</option>
                                     </select>
                                 </div>
@@ -847,7 +845,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn-primary">✓ Simpan Jadwal</button>
+                            <button type="submit" class="btn-primary" id="submit-schedule-btn">✓ Simpan Jadwal</button>
                         </form>
                     @endif
                 </div>
@@ -1126,35 +1124,83 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // ========== CHECK FOR ERRORS ==========
+            @if($errors->any())
+                console.error('VALIDATION ERRORS DETECTED:', @json($errors->all()));
+            @else
+                console.log('No validation errors');
+            @endif
+            
             // ========== SWEETALERT ERROR NOTIFICATION ==========
             @if($errors->any())
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Menyimpan Jadwal!',
-                    html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
+                try {
+                    console.log('Showing error notification');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menyimpan Jadwal!',
+                        html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
                                 @foreach($errors->all() as $error)
                                     <li style="margin-bottom: 8px;">{{ $error }}</li>
                                 @endforeach
                             </ul>`,
-                    confirmButtonColor: '#ef4444',
-                    confirmButtonText: 'Mengerti'
-                });
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'Mengerti'
+                    });
+                } catch (error) {
+                    console.error('SweetAlert error:', error);
+                }
             @endif
 
-            // ========== SWEETALERT SUCCESS NOTIFICATION ==========
-            @if(session('status'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: '{{ session('status') }}',
-                    confirmButtonColor: '#0f766e',
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
+            // ========== SUCCESS NOTIFICATION FROM QUERY PARAMETER ==========
+            // Check URL for success parameter (more reliable than session flash)
+            const urlParams = new URLSearchParams(window.location.search);
+            const successParam = urlParams.get('success');
+            const messageParam = urlParams.get('message');
+            
+            if (successParam === '1') {
+                try {
+                    const successMessage = messageParam || 'Jadwal berhasil ditambahkan!';
+                    console.log('Success parameter detected:', successMessage);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: decodeURIComponent(successMessage),
+                        confirmButtonColor: '#0f766e',
+                        confirmButtonText: 'OK',
+                        timer: 3000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Remove success parameter from URL after showing notification
+                        const cleanUrl = window.location.pathname + '?tutor_id=' + urlParams.get('tutor_id');
+                        window.history.replaceState({}, '', cleanUrl);
+                    });
+                } catch (error) {
+                    console.error('SweetAlert error:', error);
+                }
+            }
+            
+            // Fallback: Check session (for backward compatibility)
+            @if(session('success') || session('status'))
+                try {
+                    const successMessage = '{{ session('success') ?? session('status') }}';
+                    console.log('Session success detected:', successMessage);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: successMessage,
+                        confirmButtonColor: '#0f766e',
+                        confirmButtonText: 'OK',
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                } catch (error) {
+                    console.error('SweetAlert error:', error);
+                }
             @endif
 
-                const packageSelect = document.getElementById('package-select');
+            const packageSelect = document.getElementById('package-select');
             const subjectSelect = document.getElementById('subject-select');
             const locationSelect = document.getElementById('location-select');
             const zoomLinkContainer = document.getElementById('zoom-link-container');
@@ -1179,21 +1225,17 @@
             packageSelect.addEventListener('change', function () {
                 const selectedOption = this.options[this.selectedIndex];
                 const subjectsData = selectedOption.getAttribute('data-subjects') || '';
-                const subjectIdHidden = document.getElementById('subject-id-hidden');
 
-                // Populate subjects dropdown
+                // Populate subjects dropdown with ID as value
                 subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
-                if (subjectIdHidden) subjectIdHidden.value = '';
 
                 if (subjectsData) {
                     const subjects = subjectsData.split('|');
                     subjects.forEach(function (subjectStr) {
                         const [id, name, level] = subjectStr.split(':');
                         const option = document.createElement('option');
-                        // Send subject NAME as value (stored in 'category' field)
-                        option.value = name;
-                        option.setAttribute('data-id', id);  // Store ID for hidden field
-                        option.setAttribute('data-level', level);
+                        // IMPORTANT: Use ID as value for direct submission
+                        option.value = id;
                         option.textContent = name + ' (' + level + ')';
                         subjectSelect.appendChild(option);
                     });
@@ -1203,16 +1245,56 @@
                 }
             });
 
-            // Update hidden subject_id when subject is selected
-            subjectSelect.addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                const subjectId = selectedOption.getAttribute('data-id');
-                const subjectIdHidden = document.getElementById('subject-id-hidden');
-
-                if (subjectIdHidden && subjectId) {
-                    subjectIdHidden.value = subjectId;
-                }
-            });
+            // ========== COMPREHENSIVE FORM VALIDATION ==========
+            const scheduleForm = document.querySelector('form[action*="schedule/template"]');
+            if (scheduleForm) {
+                console.log('✓ Form validation handler attached');
+                
+                scheduleForm.addEventListener('submit', function(e) {
+                    console.log('=== FORM SUBMIT ATTEMPT ===');
+                    
+                    // Get all form data
+                    const formData = new FormData(scheduleForm);
+                    const data = {};
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+                    
+                    console.log('Form data:', data);
+                    
+                    // Check required fields
+                    const requiredFields = {
+                        'user_id': 'Tutor ID',
+                        'package_id': 'Paket Belajar',
+                        'title': 'Judul Sesi',
+                        'subject_id': 'Mata Pelajaran',
+                        'location': 'Lokasi',
+                        'reference_date': 'Tanggal',
+                        'start_time': 'Jam Mulai',
+                        'duration_minutes': 'Durasi',
+                        'student_count': 'Jumlah Siswa'
+                    };
+                    
+                    const missing = [];
+                    for (let [field, label] of Object.entries(requiredFields)) {
+                        if (!data[field] || data[field].trim() === '') {
+                            missing.push(label);
+                            console.error('Missing field:', label, '(' + field + ')');
+                        }
+                    }
+                    
+                    if (missing.length > 0) {
+                        e.preventDefault();
+                        console.error('SUBMIT BLOCKED - Missing fields:', missing);
+                        alert('Field yang harus diisi:\n- ' + missing.join('\n- '));
+                        return false;
+                    }
+                    
+                    console.log('✓ All validations passed, submitting...');
+                });
+            } else {
+                console.error('✗ Schedule form not found!');
+            }
         });
 
         // Edit Modal Functions
