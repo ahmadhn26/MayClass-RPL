@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\LoginThrottleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -282,11 +283,14 @@ class AuthController extends Controller
 
         unset($credentials['g-recaptcha-response']);
 
+        // Initialize throttle service
+        $throttleService = new LoginThrottleService();
+
         try {
             // 1. Cek apakah user ada di database
-            $userExists = User::where('username', $credentials['username'])->exists();
+            $user = User::where('username', $credentials['username'])->first();
 
-            if (!$userExists) {
+            if (!$user) {
                 // Notifikasi: Pengguna belum memiliki akun, arahkan ke registrasi
                 return redirect()
                     ->route('register')
@@ -294,13 +298,57 @@ class AuthController extends Controller
                     ->with('error', __('Anda belum memiliki akun MayClass. Silakan daftar terlebih dahulu.'));
             }
 
-            // 2. Coba otentikasi
-            if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-                // Notifikasi: Username atau Password salah (jika user ada, tapi password salah)
+            // 2. Cek apakah akun sedang dikunci (brute force protection)
+            if ($throttleService->isLocked($user)) {
+                $remainingMinutes = $throttleService->getRemainingLockMinutes($user);
+                $remainingSeconds = $throttleService->getRemainingLockSeconds($user);
+
+                Log::warning('Login attempt on locked account.', [
+                    'user_id' => $user->id,
+                    'username' => $user->username,
+                    'ip' => $request->ip(),
+                    'remaining_minutes' => $remainingMinutes,
+                ]);
+
                 return back()
                     ->withInput($request->only('username'))
-                    ->with('error', __('Username atau Password salah.'));
+                    ->with('error', __('Akun Anda dikunci sementara karena terlalu banyak percobaan login gagal.'))
+                    ->with('lock_remaining_minutes', $remainingMinutes)
+                    ->with('lock_remaining_seconds', $remainingSeconds);
             }
+
+            // 3. Coba otentikasi
+            if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+                // Record failed attempt
+                $throttleService->recordFailedAttempt($user);
+
+                // Cek apakah baru saja dikunci
+                if ($throttleService->isLocked($user)) {
+                    $remainingMinutes = $throttleService->getRemainingLockMinutes($user);
+                    $remainingSeconds = $throttleService->getRemainingLockSeconds($user);
+
+                    return back()
+                        ->withInput($request->only('username'))
+                        ->with('error', __('Akun Anda dikunci sementara karena terlalu banyak percobaan login gagal.'))
+                        ->with('lock_remaining_minutes', $remainingMinutes)
+                        ->with('lock_remaining_seconds', $remainingSeconds);
+                }
+
+                // Tampilkan warning jika sudah mendekati batas
+                $remainingAttempts = $throttleService->getRemainingAttempts($user);
+                $errorMessage = __('Kredensial yang Anda masukkan tidak valid.');
+
+                if ($throttleService->shouldShowWarning($user)) {
+                    $errorMessage .= ' ' . __('Tersisa :count percobaan sebelum akun dikunci.', ['count' => $remainingAttempts]);
+                }
+
+                return back()
+                    ->withInput($request->only('username'))
+                    ->with('error', $errorMessage);
+            }
+
+            // 4. Login berhasil - reset throttle counter
+            $throttleService->resetAttempts($user);
 
             $user = Auth::user();
 

@@ -2686,9 +2686,9 @@
 
                             {{-- 3. BELUM ADA TRANSAKSI (Default) --}}
                         @else
-                            @if(auth()->user()->role === 'student')
+                            @if(in_array(auth()->user()->role, ['student', 'visitor']))
                                 <a class="btn btn-primary" href="{{ route('packages.index') }}">
-                                    Beli Paket Belajar
+                                    Beli Paket Sekarang
                                 </a>
                             @endif
                         @endif
@@ -2909,41 +2909,41 @@
                                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
                                 <div style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #f8fafc;">
-                                            @php
-                                                // Gunakan AvatarResolver untuk mengubah gambar jadi Base64
-                                                // Ini mem-bypass masalah hosting/symlink/https link
-                                                $docImage = \App\Support\AvatarResolver::resolve([
-                                                    $doc->photo_path,
-                                                    'uploads/' . $doc->photo_path
-                                                ]);
-                                            @endphp
-                                            <img src="{{ $docImage ?? asset('storage/' . $doc->photo_path) }}"
-                                                alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
-                                                style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"
-                                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.9rem;\'>Gambar tidak tersedia</div>'">
-                                            <div class="doc-badge"
-                                                style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                                {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
-                                            </div>
-                                        </div>
-                                        <div class="doc-desc" style="padding: 16px;">
-                                            <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
-                                                {{ Str::limit($doc->description, 100) }}
-                                            </p>
-                                        </div>
+                                    @php
+                                        // Gunakan AvatarResolver untuk mengubah gambar jadi Base64
+                                        // Ini mem-bypass masalah hosting/symlink/https link
+                                        $docImage = \App\Support\AvatarResolver::resolve([
+                                            $doc->photo_path,
+                                            'uploads/' . $doc->photo_path
+                                        ]);
+                                    @endphp
+                                    <img src="{{ $docImage ?? asset('storage/' . $doc->photo_path) }}"
+                                        alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
+                                        style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"
+                                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.9rem;\'>Gambar tidak tersedia</div>'">
+                                    <div class="doc-badge"
+                                        style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                        {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
                                     </div>
+                                </div>
+                                <div class="doc-desc" style="padding: 16px;">
+                                    <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
+                                        {{ Str::limit($doc->description, 100) }}
+                                    </p>
+                                </div>
+                            </div>
                         @endforeach
-                        </div>
+                    </div>
 
-                    </div>
-                    <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
-                        <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
-                            <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
-                            minggu!
-                        </p>
-                    </div>
                 </div>
-            </section>
+                <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
+                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
+                        <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
+                        minggu!
+                    </p>
+                </div>
+            </div>
+        </section>
     @endif
 
     <section class="pricing-section" id="paket">

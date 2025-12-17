@@ -690,9 +690,54 @@
         @if (session('status'))
         <div class="alert-success">{{ session('status') }}</div> @endif
 
-        {{-- ALERT ERROR (MERAH) --}}
-        @if (session('error'))
-        <div class="alert-error">{{ session('error') }}</div> @endif
+        {{-- ALERT ACCOUNT LOCKED (SPECIAL) --}}
+        @if (session('lock_remaining_seconds'))
+            <div class="alert-error" id="lock-alert" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        style="flex-shrink: 0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <div
+                    style="background: rgba(0,0,0,0.1); padding: 8px 12px; border-radius: 6px; text-align: center; font-weight: 600;">
+                    Waktu tersisa: <span id="countdown-timer">{{ session('lock_remaining_minutes') }} menit</span>
+                </div>
+            </div>
+            <script>
+                (function () {
+                    let seconds = {{ session('lock_remaining_seconds') }};
+                    const timerEl = document.getElementById('countdown-timer');
+                    const alertEl = document.getElementById('lock-alert');
+
+                    function updateTimer() {
+                        if (seconds <= 0) {
+                            alertEl.innerHTML = '<div style="display: flex; align-items: center; gap: 8px; color: #065f46;"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Akun sudah terbuka! Silakan coba login kembali.</span></div>';
+                            alertEl.style.background = '#ecfdf5';
+                            alertEl.style.borderColor = '#a7f3d0';
+                            return;
+                        }
+
+                        const mins = Math.floor(seconds / 60);
+                        const secs = seconds % 60;
+                        timerEl.textContent = mins > 0
+                            ? mins + ' menit ' + secs + ' detik'
+                            : secs + ' detik';
+
+                        seconds--;
+                        setTimeout(updateTimer, 1000);
+                    }
+
+                    updateTimer();
+                })();
+            </script>
+        @elseif (session('error'))
+            {{-- ALERT ERROR (MERAH) --}}
+            <div class="alert-error">{{ session('error') }}</div>
+        @endif
 
         {{-- FORM REGISTER --}}
         <form data-mode="register" method="post" action="{{ route('register.details') }}" class="auth-form" novalidate>
