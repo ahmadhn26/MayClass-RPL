@@ -358,8 +358,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideUp {
@@ -367,6 +372,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -630,6 +636,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -721,7 +728,8 @@
             <div class="metric-card">
                 <span class="metric-label">Pola Aktif</span>
                 <div class="metric-value" style="color: var(--primary);">
-                    {{ number_format($schedule['metrics']['templates']) }}</div>
+                    {{ number_format($schedule['metrics']['templates']) }}
+                </div>
             </div>
         </div>
 
@@ -749,7 +757,8 @@
                                 <div class="error-alert">
                                     <div class="error-header">
                                         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <strong>Gagal menyimpan jadwal!</strong>
                                     </div>
@@ -766,10 +775,10 @@
                                 <select name="package_id" id="package-select" class="form-control" required>
                                     <option value="">Pilih Paket</option>
                                     @foreach ($schedule['packages'] as $package)
-                                                        <option value="{{ $package->id }}" data-level="{{ $package->level }}"
-                                                            data-subjects="{{ $package->subjects->map(function ($s) {
+                                                        <option value="{{ $package->id }}" data-level="{{ $package->level }}" data-subjects="{{ $package->subjects->map(function ($s) {
                                         return $s->id . ':' . $s->name . ':' . $s->level; })->join('|') }}">
-                                                            {{ $package->detail_title }}</option>
+                                                            {{ $package->detail_title }}
+                                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -1117,7 +1126,35 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const packageSelect = document.getElementById('package-select');
+            // ========== SWEETALERT ERROR NOTIFICATION ==========
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Menyimpan Jadwal!',
+                    html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
+                                @foreach($errors->all() as $error)
+                                    <li style="margin-bottom: 8px;">{{ $error }}</li>
+                                @endforeach
+                            </ul>`,
+                    confirmButtonColor: '#ef4444',
+                    confirmButtonText: 'Mengerti'
+                });
+            @endif
+
+            // ========== SWEETALERT SUCCESS NOTIFICATION ==========
+            @if(session('status'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('status') }}',
+                    confirmButtonColor: '#0f766e',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            @endif
+
+                const packageSelect = document.getElementById('package-select');
             const subjectSelect = document.getElementById('subject-select');
             const locationSelect = document.getElementById('location-select');
             const zoomLinkContainer = document.getElementById('zoom-link-container');
@@ -1125,9 +1162,9 @@
 
             // ========== ZOOM LINK CONDITIONAL DISPLAY ==========
             // Show/hide Zoom link input based on location selection
-            locationSelect.addEventListener('change', function() {
+            locationSelect.addEventListener('change', function () {
                 const isOnline = this.value.toLowerCase().includes('online');
-                
+
                 if (isOnline) {
                     zoomLinkContainer.classList.add('show');
                     zoomLinkInput.setAttribute('required', 'required');
@@ -1167,11 +1204,11 @@
             });
 
             // Update hidden subject_id when subject is selected
-            subjectSelect.addEventListener('change', function() {
+            subjectSelect.addEventListener('change', function () {
                 const selectedOption = this.options[this.selectedIndex];
                 const subjectId = selectedOption.getAttribute('data-id');
                 const subjectIdHidden = document.getElementById('subject-id-hidden');
-                
+
                 if (subjectIdHidden && subjectId) {
                     subjectIdHidden.value = subjectId;
                 }
@@ -1240,15 +1277,15 @@
         }
 
         // Handle delete template with SweetAlert
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Use click event on button instead of form submit
             document.querySelectorAll('.btn-delete-schedule').forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     const form = this.closest('form');
-                    
+
                     Swal.fire({
                         title: 'Hapus Pola Jadwal?',
                         text: 'Pola jadwal ini akan dihapus dan sesi mendatang akan dibatalkan.',

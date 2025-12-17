@@ -260,7 +260,7 @@
             background: #fee2e2;
             color: #dc2626;
         }
-        
+
         .btn-danger:hover {
             background: #fecaca;
             color: #b91c1c;
@@ -545,10 +545,11 @@
                             Edit Folder
                         </a>
                         <form action="{{ route('tutor.quizzes.destroy', $quiz) }}" method="POST" style="display: inline-block;"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus quiz ini? Tindakan ini tidak dapat dibatalkan.');">
+                            class="delete-quiz-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="action-btn btn-danger" style="width: 100%; border: none; cursor: pointer;">
+                            <button type="button" class="action-btn btn-danger btn-delete-quiz"
+                                style="width: 100%; border: none; cursor: pointer;">
                                 Hapus
                             </button>
                         </form>
@@ -695,56 +696,56 @@
                 let quizItemsHTML = '';
                 if (quiz.quiz_items && quiz.quiz_items.length > 0) {
                     quizItemsHTML = quiz.quiz_items.map((item, index) => `
-                        <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                                <strong style="color: #1e293b; font-size: 1rem;">📝 ${item.name}</strong>
-                                <span style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Quiz #${index + 1}</span>
-                            </div>
-                            <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">${item.description}</p>
-                            <a href="${item.link}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: #3fa67e; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-top: 8px;">
-                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                Buka Quiz
-                            </a>
-                        </div>
-                    `).join('');
+                                <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                        <strong style="color: #1e293b; font-size: 1rem;">📝 ${item.name}</strong>
+                                        <span style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Quiz #${index + 1}</span>
+                                    </div>
+                                    <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">${item.description}</p>
+                                    <a href="${item.link}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: #3fa67e; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-top: 8px;">
+                                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                        Buka Quiz
+                                    </a>
+                                </div>
+                            `).join('');
                 } else {
                     quizItemsHTML = '<p style="text-align: center; color: #94a3b8; padding: 24px;">Tidak ada quiz di folder ini</p>';
                 }
 
                 overlay.innerHTML = `
-                    <div class="modal-content" style="max-width: 700px;">
-                        <div class="modal-header">
-                            <h2 class="modal-title">📁 ${quiz.title}</h2>
-                            <button type="button" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = 'auto';" class="btn-close">
-                                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="modal-body" style="padding: 24px;">
-                            <div style="margin-bottom: 20px;">
-                                <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
-                                    <span style="background: #f5f3ff; color: #7c3aed; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
-                                        ${quiz.subject?.name || 'Tanpa Mapel'}
-                                    </span>
-                                    <span style="background: #eff6ff; color: #2563eb; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
-                                        ${quiz.class_level || 'Semua Kelas'}
-                                    </span>
+                            <div class="modal-content" style="max-width: 700px;">
+                                <div class="modal-header">
+                                    <h2 class="modal-title">📁 ${quiz.title}</h2>
+                                    <button type="button" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = 'auto';" class="btn-close">
+                                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                                    ${quiz.summary || 'Tidak ada deskripsi'}
-                                </p>
+                                <div class="modal-body" style="padding: 24px;">
+                                    <div style="margin-bottom: 20px;">
+                                        <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                                            <span style="background: #f5f3ff; color: #7c3aed; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
+                                                ${quiz.subject?.name || 'Tanpa Mapel'}
+                                            </span>
+                                            <span style="background: #eff6ff; color: #2563eb; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
+                                                ${quiz.class_level || 'Semua Kelas'}
+                                            </span>
+                                        </div>
+                                        <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                            ${quiz.summary || 'Tidak ada deskripsi'}
+                                        </p>
+                                    </div>
+                                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                                    <h3 style="color: #0f172a; font-size: 1rem; font-weight: 600; margin-bottom: 16px;">
+                                        Daftar Quiz (${quiz.quiz_items?.length || 0})
+                                    </h3>
+                                    ${quizItemsHTML}
+                                </div>
                             </div>
-                            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-                            <h3 style="color: #0f172a; font-size: 1rem; font-weight: 600; margin-bottom: 16px;">
-                                Daftar Quiz (${quiz.quiz_items?.length || 0})
-                            </h3>
-                            ${quizItemsHTML}
-                        </div>
-                    </div>
-                `;
+                        `;
 
                 document.body.appendChild(overlay);
                 document.body.style.overflow = 'hidden';
@@ -840,13 +841,13 @@
                     const div = document.createElement('div');
                     div.className = 'dynamic-item';
                     div.innerHTML = `
-                            <div class="dynamic-item__row">
-                                <input type="url" name="link_urls[]" placeholder="https://" required />
-                            </div>
-                            <div class="dynamic-item__actions">
-                                <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
-                            </div>
-                        `;
+                                    <div class="dynamic-item__row">
+                                        <input type="url" name="link_urls[]" placeholder="https://" required />
+                                    </div>
+                                    <div class="dynamic-item__actions">
+                                        <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
+                                    </div>
+                                `;
                     return div;
                 };
 
@@ -877,4 +878,100 @@
             });
         </script>
     @endpush
+
+    {{-- Custom SweetAlert Styles with Blur --}}
+    <style>
+        .swal2-popup {
+            border-radius: 20px !important;
+            padding: 28px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .swal2-title {
+            font-size: 1.4rem !important;
+            font-weight: 700 !important;
+            color: #1e293b !important;
+        }
+
+        .swal2-icon.swal2-warning {
+            border-color: #f59e0b !important;
+            color: #f59e0b !important;
+        }
+
+        .swal2-actions {
+            gap: 12px !important;
+        }
+
+        .swal2-confirm {
+            border-radius: 12px !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+        }
+
+        .swal2-cancel {
+            border-radius: 12px !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+        }
+
+        /* Backdrop blur effect */
+        .swal2-container {
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+    </style>
+
+    <script>
+        // ========== SWEETALERT DELETE CONFIRMATION ==========
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.btn-delete-quiz').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const form = this.closest('form');
+
+                    Swal.fire({
+                        title: 'Hapus Quiz?',
+                        html: `
+                    <div style="text-align: center; color: #64748b;">
+                        <p style="margin: 0 0 8px 0;">Quiz ini akan dihapus secara permanen.</p>
+                        <p style="margin: 0; font-size: 0.9rem; color: #ef4444;"><strong>⚠️ Tindakan ini tidak dapat dibatalkan!</strong></p>
+                    </div>
+                `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: '🗑️ Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        backdrop: `
+                    rgba(0,0,0,0.6)
+                    left top
+                    no-repeat
+                `,
+                        customClass: {
+                            popup: 'swal-modern-popup',
+                            title: 'swal-modern-title',
+                            confirmButton: 'swal-modern-confirm',
+                            cancelButton: 'swal-modern-cancel'
+                        },
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown animate__faster'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp animate__faster'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
     @endsection
