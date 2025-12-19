@@ -674,6 +674,35 @@
             </div>
         </div>
 
+        {{-- Alert Messages --}}
+        @if(session('status'))
+            <div
+                style="background: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {{ session('status') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div
+                style="background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <strong>Terjadi Kesalahan:</strong>
+                </div>
+                <ul style="margin: 0; padding-left: 28px;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- Hero Section --}}
         <div class="section-block">
             <div class="section-header">
@@ -873,140 +902,140 @@
                     @php
                         $testiImg = $item->image ? \App\Support\AvatarResolver::resolve([$item->image]) : null;
                     @endphp
-                            <div class="preview-card-compact">
-                                @if($testiImg)
-                                    <img src="{{ $testiImg }}" alt="Avatar" class="preview-avatar">
-                                @else
-                                    <div class="preview-avatar" style="background: #e2e8f0;"></div>
-                                @endif
-                                <div class="preview-info">
-                                    <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
-                                    <p class="preview-subtitle" style="font-style: italic;">"{{ $item->content['quote'] ?? '' }}"</p>
-                                </div>
-                                <div class="preview-actions">
-                                    <button onclick="openModal('edit', 'testimonial', {{ $item }})" class="btn-icon">Edit</button>
-                                    <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
-                                        data-name="{{ $item->content['name'] ?? 'Testimoni' }}"
-                                        data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
-                                        Hapus
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="preview-card-compact">
+                        @if($testiImg)
+                            <img src="{{ $testiImg }}" alt="Avatar" class="preview-avatar">
+                        @else
+                            <div class="preview-avatar" style="background: #e2e8f0;"></div>
+                        @endif
+                        <div class="preview-info">
+                            <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
+                            <p class="preview-subtitle" style="font-style: italic;">"{{ $item->content['quote'] ?? '' }}"</p>
+                        </div>
+                        <div class="preview-actions">
+                            <button onclick="openModal('edit', 'testimonial', {{ $item }})" class="btn-icon">Edit</button>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="{{ $item->content['name'] ?? 'Testimoni' }}"
+                                data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
                 @empty
-                        <div class="empty-state">Belum ada testimoni.</div>
-                    @endforelse
-                </div>
-            </div>
-
-            {{-- Mentors Section --}}
-            <div class="section-block">
-                <div class="section-header">
-                    <h3 class="section-title">Mentor</h3>
-                    <button onclick="openModal('create', 'mentor')" class="btn-add">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Tambah
-                    </button>
-                </div>
-                <div class="content-grid">
-                    @forelse($contents['mentor'] ?? [] as $item)
-                        @php
-                            $mentorImg = $item->image ? \App\Support\AvatarResolver::resolve([$item->image]) : null;
-                        @endphp
-                        <div class="preview-card-compact">
-                            @if($mentorImg)
-                                <img src="{{ $mentorImg }}" alt="Mentor" class="preview-img-square">
-                            @else
-                                <div class="preview-img-square" style="background: #e2e8f0;"></div>
-                            @endif
-                            <div class="preview-info">
-                                <h4 class="preview-title">{{ $item->content['name'] ?? '' }}</h4>
-                                <p class="preview-subtitle" style="color: var(--primary); font-weight: 500;">
-                                    {{ $item->content['role'] ?? '' }}
-                                </p>
-                                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
-                                    @foreach($item->content['meta'] ?? [] as $meta)
-                                        <span
-                                            style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="preview-actions">
-                                <button onclick="openModal('edit', 'mentor', {{ $item }})" class="btn-icon">Edit</button>
-                                <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
-                                    data-name="{{ $item->content['name'] ?? 'Mentor' }}"
-                                    data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
-                                    Hapus
-                                </button>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="empty-state">Belum ada mentor.</div>
-                    @endforelse
-                </div>
-            </div>
-
-            {{-- FAQ Section --}}
-            <div class="section-block">
-                <div class="section-header">
-                    <h3 class="section-title">FAQ</h3>
-                    <button onclick="openModal('create', 'faq')" class="btn-add">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Tambah
-                    </button>
-                </div>
-                <div class="content-grid" style="grid-template-columns: 1fr;">
-                    @forelse($contents['faq'] ?? [] as $item)
-                        <div class="content-card" style="flex-direction: row; align-items: center;">
-                            <div class="card-body">
-                                <h4 class="card-title" style="color: var(--primary); font-size: 0.9rem;">Q:
-                                    {{ $item->content['question'] ?? '' }}
-                                </h4>
-                                <p class="card-desc" style="margin-top: 2px;">A: {{ $item->content['answer'] ?? '' }}</p>
-                            </div>
-                            <div class="card-actions"
-                                style="border-top: none; background: transparent; border-left: 1px solid var(--border-color);">
-                                <button onclick="openModal('edit', 'faq', {{ $item }})" class="btn-icon">Edit</button>
-                                <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
-                                    data-name="FAQ" data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
-                                    Hapus
-                                </button>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="empty-state">Belum ada FAQ.</div>
-                    @endforelse
-                </div>
-            </div>
-
-        </div>
-
-        {{-- Glassmorphism Modal --}}
-        <div id="contentModal" class="modal-backdrop">
-            <div class="modal-glass">
-                <div class="modal-header">
-                    <h2 id="modalTitle" class="modal-title">Tambah Konten</h2>
-                    <button type="button" onclick="closeModal()" class="btn-close">&times;</button>
-                </div>
-                <form id="contentForm" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div id="methodField"></div>
-                    <input type="hidden" name="section" id="sectionInput">
-
-                    <div id="dynamicFields">
-                        <!-- Fields injected via JS -->
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" onclick="closeModal()" class="btn-cancel">Batal</button>
-                        <button type="submit" class="btn-submit">Simpan</button>
-                    </div>
-                </form>
+                    <div class="empty-state">Belum ada testimoni.</div>
+                @endforelse
             </div>
         </div>
+
+        {{-- Mentors Section --}}
+        <div class="section-block">
+            <div class="section-header">
+                <h3 class="section-title">Mentor</h3>
+                <button onclick="openModal('create', 'mentor')" class="btn-add">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah
+                </button>
+            </div>
+            <div class="content-grid">
+                @forelse($activeTutors ?? [] as $tutor)
+                    <div class="preview-card-compact">
+                        <img src="{{ $tutor['avatar'] }}" alt="{{ $tutor['name'] }}" class="preview-img-square"
+                            onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($tutor['name']) }}&background=random'">
+                        <div class="preview-info">
+                            <h4 class="preview-title">{{ $tutor['name'] }}</h4>
+                            <p class="preview-subtitle" style="color: var(--primary); font-weight: 500;">
+                                {{ $tutor['role'] }}
+                            </p>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; font-style: italic;">
+                                "{{ $tutor['quote'] }}"
+                            </p>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+                                @foreach($tutor['meta'] ?? [] as $meta)
+                                    <span
+                                        style="font-size: 0.7rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ $meta }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="preview-actions">
+                            <button type="button" class="btn-icon"
+                                style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3);"
+                                onclick="window.location.href='{{ route('admin.tentors.edit', $tutor['id']) }}'">Edit</button>
+                            <button type="button" class="btn-icon btn-delete-tentor"
+                                style="background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3);"
+                                data-id="{{ $tutor['id'] }}" data-name="{{ $tutor['name'] }}"
+                                data-action="{{ route('admin.tentors.destroy', $tutor['id']) }}">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                @empty
+                    <div class="empty-state">Belum ada mentor.</div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- FAQ Section --}}
+        <div class="section-block">
+            <div class="section-header">
+                <h3 class="section-title">FAQ</h3>
+                <button onclick="openModal('create', 'faq')" class="btn-add">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah
+                </button>
+            </div>
+            <div class="content-grid" style="grid-template-columns: 1fr;">
+                @forelse($contents['faq'] ?? [] as $item)
+                    <div class="content-card" style="flex-direction: row; align-items: center;">
+                        <div class="card-body">
+                            <h4 class="card-title" style="color: var(--primary); font-size: 0.9rem;">Q:
+                                {{ $item->content['question'] ?? '' }}
+                            </h4>
+                            <p class="card-desc" style="margin-top: 2px;">A: {{ $item->content['answer'] ?? '' }}</p>
+                        </div>
+                        <div class="card-actions"
+                            style="border-top: none; background: transparent; border-left: 1px solid var(--border-color);">
+                            <button onclick="openModal('edit', 'faq', {{ $item }})" class="btn-icon">Edit</button>
+                            <button type="button" class="btn-icon text-danger btn-delete" data-id="{{ $item->id }}"
+                                data-name="FAQ" data-action="{{ route('admin.landing-content.destroy', $item->id) }}">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                @empty
+                    <div class="empty-state">Belum ada FAQ.</div>
+                @endforelse
+            </div>
+        </div>
+
+    </div>
+
+    {{-- Glassmorphism Modal --}}
+    <div id="contentModal" class="modal-backdrop">
+        <div class="modal-glass">
+            <div class="modal-header">
+                <h2 id="modalTitle" class="modal-title">Tambah Konten</h2>
+                <button type="button" onclick="closeModal()" class="btn-close">&times;</button>
+            </div>
+            <form id="contentForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div id="methodField"></div>
+                <input type="hidden" name="section" id="sectionInput">
+
+                <div id="dynamicFields">
+                    <!-- Fields injected via JS -->
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" onclick="closeModal()" class="btn-cancel">Batal</button>
+                    <button type="submit" class="btn-submit">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -1036,7 +1065,7 @@
 
             if (mode === 'edit') {
                 modalTitle.textContent = `Edit ${sectionName}`;
-                form.action = `/admin/landing-content/${data.id}`;
+                form.action = `{{ url('admin/landing-content') }}/${data.id}`;
                 methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
             } else {
                 modalTitle.textContent = `Tambah ${sectionName}`;
@@ -1158,21 +1187,29 @@
                     const zone = document.createElement('div');
                     zone.className = 'file-upload-zone';
                     zone.innerHTML = `
-                                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                                    </svg>
-                                                    <div class="file-upload-text">Klik atau drag file ke sini</div>
-                                                    <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 10MB</div>
-                                                `;
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom: 8px; color: var(--text-muted);">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <div class="file-upload-text">Klik atau drag file ke sini</div>
+                            <div class="file-upload-text" style="font-size: 0.75rem; margin-top: 4px;">Max size: 5MB (Base64)</div>
+                        `;
 
+                    // Hidden input for base64 data
+                    const base64Input = document.createElement('input');
+                    base64Input.type = 'hidden';
+                    base64Input.name = 'image_base64';
+
+                    // File input (just for file picker, not submitted)
                     const input = document.createElement('input');
                     input.type = 'file';
-                    input.name = field.name;
                     input.style.display = 'none';
                     input.accept = 'image/*';
 
                     const preview = document.createElement('div');
                     preview.className = 'file-preview';
+
+                    const previewImg = document.createElement('img');
+                    previewImg.style.cssText = 'max-width: 80px; max-height: 60px; border-radius: 4px; object-fit: cover;';
 
                     const fileInfo = document.createElement('div');
                     fileInfo.className = 'file-info';
@@ -1184,8 +1221,9 @@
 
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'file-error';
-                    errorMsg.textContent = 'File terlalu besar! Maksimal 10MB.';
+                    errorMsg.textContent = 'File terlalu besar! Maksimal 5MB.';
 
+                    preview.appendChild(previewImg);
                     preview.appendChild(fileInfo);
                     preview.appendChild(removeBtn);
 
@@ -1203,8 +1241,7 @@
                         e.preventDefault();
                         zone.classList.remove('dragover');
                         if (e.dataTransfer.files.length) {
-                            input.files = e.dataTransfer.files;
-                            handleFile(input.files[0]);
+                            handleFile(e.dataTransfer.files[0]);
                         }
                     };
 
@@ -1216,26 +1253,47 @@
 
                     removeBtn.onclick = () => {
                         input.value = '';
+                        base64Input.value = '';
                         preview.classList.remove('active');
+                        previewImg.src = '';
                         errorMsg.style.display = 'none';
                     };
 
                     function handleFile(file) {
-                        if (file.size > 10 * 1024 * 1024) { // 10MB
+                        // Check size (5MB limit for base64)
+                        if (file.size > 5 * 1024 * 1024) {
                             errorMsg.style.display = 'block';
-                            input.value = ''; // Clear input
+                            input.value = '';
+                            base64Input.value = '';
                             preview.classList.remove('active');
-                        } else {
-                            errorMsg.style.display = 'none';
-                            fileInfo.textContent = file.name;
-                            preview.classList.add('active');
+                            return;
                         }
+
+                        // Check type
+                        if (!file.type.startsWith('image/')) {
+                            errorMsg.textContent = 'File harus berupa gambar!';
+                            errorMsg.style.display = 'block';
+                            return;
+                        }
+
+                        errorMsg.style.display = 'none';
+                        fileInfo.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+                        preview.classList.add('active');
+
+                        // Convert to base64
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            base64Input.value = e.target.result;
+                            previewImg.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
                     }
 
                     fileWrapper.appendChild(zone);
                     fileWrapper.appendChild(preview);
                     fileWrapper.appendChild(errorMsg);
                     fileWrapper.appendChild(input);
+                    fileWrapper.appendChild(base64Input);
                     wrapper.appendChild(fileWrapper);
 
                 } else {
@@ -1343,6 +1401,26 @@
         // Close on click outside
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
+        });
+
+        // Delete confirmation for tentors in mentor section
+        document.querySelectorAll('.btn-delete-tentor').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const name = this.dataset.name;
+                const action = this.dataset.action;
+
+                if (confirm(`Apakah Anda yakin ingin menghapus tentor "${name}"? Tindakan ini tidak dapat dibatalkan.`)) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = action;
+                    form.innerHTML = `
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         });
     </script>
 @endpush
