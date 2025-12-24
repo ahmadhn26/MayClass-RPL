@@ -281,20 +281,89 @@
         }
 
         @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
             .auth-container {
-                padding: 24px 20px;
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .back-button {
+                top: 12px;
+                left: 12px;
+                font-size: 0.8rem;
+                padding: 6px 12px;
             }
 
             .header-text {
-                margin-bottom: 20px;
+                margin-top: 24px;
+                margin-bottom: 16px;
             }
 
             .header-text h2 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
+            }
+
+            .header-text p {
+                font-size: 0.85rem;
+            }
+
+            .summary-box {
+                padding: 14px;
+                margin-bottom: 16px;
+            }
+
+            .summary-title {
+                font-size: 0.75rem;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+            }
+
+            .summary-grid {
+                gap: 8px;
+            }
+
+            .summary-item {
+                font-size: 0.8rem;
+            }
+
+            .input-group {
+                gap: 4px;
+                margin-bottom: 12px;
+            }
+
+            .label {
+                font-size: 0.8rem;
+            }
+
+            .input-field {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                border-radius: 10px;
             }
 
             .btn-primary {
-                padding: 12px;
+                padding: 10px;
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+
+            .form-helper {
+                font-size: 0.8rem;
+                margin-top: 12px;
+            }
+
+            .error-alert {
+                padding: 10px;
+                font-size: 0.8rem;
+                margin-bottom: 14px;
+            }
+
+            .recaptcha-wrapper {
+                transform: scale(0.85);
+                transform-origin: center;
             }
         }
     </style>

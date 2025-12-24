@@ -16,54 +16,85 @@ use Illuminate\Support\Str;
 
 class PackageController extends BaseAdminController
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $level = $request->input('level', 'all');
+        $queryTerm = $request->input('q');
+
+        $packagesQuery = Package::withQuotaUsage()->with(['subjects', 'tutors']);
+
+        if ($level !== 'all') {
+            $packagesQuery->where('level', $level);
+        }
+
+        if ($queryTerm) {
+            $packagesQuery->where(function ($q) use ($queryTerm) {
+                $q->where('detail_title', 'like', '%' . $queryTerm . '%')
+                    ->orWhere('summary', 'like', '%' . $queryTerm . '%');
+            });
+        }
+
         $packages = Schema::hasTable('packages')
-            ? Package::withQuotaUsage()->with(['subjects', 'tutors'])->orderBy('level')->get()
+            ? $packagesQuery->orderBy('level')->get()
             : collect();
+
+        if ($request->ajax()) {
+            return view('admin.packages._table_rows', compact('packages'));
+        }
+
+        // These variables need to be defined for the main view
+        $stats = []; // Placeholder, as no instruction was given on how to calculate stats
+        $subjectsByLevel = $this->getSubjectsByLevel();
+        $tutors = User::where('role', 'tutor')->where('is_active', true)->with('subjects')->orderBy('name')->get();
+
 
         return $this->render('admin.packages.index', [
             'packages' => $packages,
+            'stats' => $stats,
+            'subjectsByLevel' => $subjectsByLevel,
+            'tutors' => $tutors,
             'stages' => $this->stageOptions(),
-            'subjectsByLevel' => $this->getSubjectsByLevel(),
-            'tutors' => User::where('role', 'tutor')->where('is_active', true)->with('subjects')->orderBy('name')->get(),
+            'filters' => [
+                'level' => in_array($level, ['all', 'SD', 'SMP', 'SMA'], true) ? $level : 'all',
+                'q' => $queryTerm,
+            ]
         ]);
     }
 
 
 
     public function store(Request $request): RedirectResponse
-{
-    $data = $this->validatePayload($request);
-    $data['slug'] = $this->generateUniqueSlug($data['detail_title']);
+    {
+        $data = $this->validatePayload($request);
+        $data['slug'] = $this->generateUniqueSlug($data['detail_title']);
 
-    $package = Package::create($data);
+        $package = Package::create($data);
 
-    // Sync subjects WITH LEVEL VALIDATION
-    if ($request->has('subjects')) {
-        $packageLevel = $data['level'];
-        
-        // Filter: only subjects matching package level
-        $validSubjectIds = Subject::whereIn('id', $request->subjects)
-            ->where('level', $packageLevel)
-            ->pluck('id')
-            ->toArray();
-        
-        $package->subjects()->sync($validSubjectIds);
+        // Sync subjects WITH LEVEL VALIDATION
+        if ($request->has('subjects')) {
+            $packageLevel = $data['level'];
+
+            // Filter: only subjects matching package level
+            $validSubjectIds = Subject::whereIn('id', $request->subjects)
+                ->where('level', $packageLevel)
+                ->pluck('id')
+                ->toArray();
+
+            $package->subjects()->sync($validSubjectIds);
+        }
+
+        // Sync tutors
+        if ($request->has('tutors')) {
+            $package->tutors()->sync($request->tutors);
+        }
+
+        // Sync card features
+        if ($request->has('card_features')) {
+            $this->syncCardFeatures($package, $request->card_features);
+        }
+
+        return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil ditambahkan.'));
     }
-
-    // Sync tutors
-    if ($request->has('tutors')) {
-        $package->tutors()->sync($request->tutors);
-    }
-
-    // Sync card features
-    if ($request->has('card_features')) {
-        $this->syncCardFeatures($package, $request->card_features);
-    }
-
-    return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil ditambahkan.'));
-}
     public function edit(Package $package, Request $request): View|\Illuminate\Http\JsonResponse
     {
         $package->load(['subjects', 'cardFeatures', 'tutors']);
@@ -95,60 +126,68 @@ class PackageController extends BaseAdminController
     }
 
     public function update(Request $request, Package $package): RedirectResponse
-{
-    $data = $this->validatePayload($request, $package->id);
+    {
+        $data = $this->validatePayload($request, $package->id);
 
-    $package->update($data);
+        $package->update($data);
 
-    // Sync subjects WITH LEVEL VALIDATION
-    if ($request->has('subjects')) {
-        $packageLevel = $data['level'];
-        
-        // Filter: only subjects matching package level
-        $validSubjectIds = Subject::whereIn('id', $request->subjects)
-            ->where('level', $packageLevel)
-            ->pluck('id')
-            ->toArray();
-        
-        // Sync only valid subjects
-        $package->subjects()->sync($validSubjectIds);
-        
-        // Log if any subjects were rejected
-        $rejectedCount = count($request->subjects) - count($validSubjectIds);
-        if ($rejectedCount > 0) {
-            logger()->warning(
-                "Package update: rejected {$rejectedCount} subjects due to level mismatch",
-                [
-                    'package_id' => $package->id,
-                    'package_level' => $packageLevel,
-                    'requested_subjects' => $request->subjects,
-                    'valid_subjects' => $validSubjectIds
-                ]
-            );
+        // Sync subjects WITH LEVEL VALIDATION
+        if ($request->has('subjects')) {
+            $packageLevel = $data['level'];
+
+            // Filter: only subjects matching package level
+            $validSubjectIds = Subject::whereIn('id', $request->subjects)
+                ->where('level', $packageLevel)
+                ->pluck('id')
+                ->toArray();
+
+            // Sync only valid subjects
+            $package->subjects()->sync($validSubjectIds);
+
+            // Log if any subjects were rejected
+            $rejectedCount = count($request->subjects) - count($validSubjectIds);
+            if ($rejectedCount > 0) {
+                logger()->warning(
+                    "Package update: rejected {$rejectedCount} subjects due to level mismatch",
+                    [
+                        'package_id' => $package->id,
+                        'package_level' => $packageLevel,
+                        'requested_subjects' => $request->subjects,
+                        'valid_subjects' => $validSubjectIds
+                    ]
+                );
+            }
+        } else {
+            // If no subjects in request, clear all
+            $package->subjects()->sync([]);
         }
-    } else {
-        // If no subjects in request, clear all
-        $package->subjects()->sync([]);
-    }
 
-    // Sync tutors (no level restriction for tutors)
-    if ($request->has('tutors')) {
-        $package->tutors()->sync($request->tutors);
-    } else {
-        $package->tutors()->sync([]);
-    }
+        // Sync tutors (no level restriction for tutors)
+        if ($request->has('tutors')) {
+            $package->tutors()->sync($request->tutors);
+        } else {
+            $package->tutors()->sync([]);
+        }
 
-    // Sync card features - delete old and create new
-    $package->cardFeatures()->delete();
-    if ($request->has('card_features')) {
-        $this->syncCardFeatures($package, $request->card_features);
-    }
+        // Sync card features - delete old and create new
+        $package->cardFeatures()->delete();
+        if ($request->has('card_features')) {
+            $this->syncCardFeatures($package, $request->card_features);
+        }
 
-    return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil diperbarui.'));
-}
+        return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil diperbarui.'));
+    }
     public function destroy(Package $package): RedirectResponse
     {
-        $package->delete();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($package) {
+            // Manual cascade delete because user requested no migrations/schema changes
+            // and the database is set to RESTRICT on delete.
+            $package->checkoutSessions()->delete();
+            $package->enrollments()->delete();
+            $package->orders()->delete();
+
+            $package->delete();
+        });
 
         return redirect()->route('admin.packages.index')->with('status', __('Paket berhasil dihapus.'));
     }

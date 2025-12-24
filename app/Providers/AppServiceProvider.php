@@ -30,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         $this->guardSessionDriverFallback();
         // $this->ensureDemoAccounts(); <-- Dihapus
         $this->shareStudentAccessState();
@@ -83,7 +87,7 @@ class AppServiceProvider extends ServiceProvider
 
     // Metode ensureDemoAccounts() telah dihapus.
     // Metode ensureDemoUser() telah dihapus.
-    
+
     private function shareStudentAccessState(): void
     {
         View::composer('student.*', function ($view): void {

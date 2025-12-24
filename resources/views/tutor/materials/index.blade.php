@@ -147,7 +147,7 @@
         }
 
         /* CSS Thumbnail dihapus karena elemennya sudah tidak dipakai, 
-                                                       tapi layout card-content akan otomatis menyesuaikan */
+                                                               tapi layout card-content akan otomatis menyesuaikan */
 
         .card-content {
             flex: 1;
@@ -944,42 +944,43 @@
         <p>Mulai tambahkan materi pertama Anda untuk membagikan modul belajar kepada siswa.</p>
     </div>
 @else
-<div class="material-grid">
-    @foreach ($materials as $material)
-    <article class="material-card">
-        {{-- BAGIAN GAMBAR SUDAH DIHAPUS DI SINI --}}
+    <div class="material-grid">
+        @foreach ($materials as $material)
+            <article class="material-card">
+                {{-- BAGIAN GAMBAR SUDAH DIHAPUS DI SINI --}}
 
-        <div class="card-content">
-            <h3 class="card-title" title="{{ $material->title }}">📁 {{ $material->title }}</h3>
+                <div class="card-content">
+                    <h3 class="card-title" title="{{ $material->title }}">📁 {{ $material->title }}</h3>
 
-            <div class="tags-row">
-                <span class="tag tag-subject">{{ $material->subject->name ?? 'Tanpa Mapel' }}</span>
-                <span class="tag tag-level">{{ $material->level }}</span>
-                <span class="tag tag-default">{{ $material->materialItems->count() }} Materi</span>
-            </div>
+                    <div class="tags-row">
+                        <span class="tag tag-subject">{{ $material->subject->name ?? 'Tanpa Mapel' }}</span>
+                        <span class="tag tag-level">{{ $material->level }}</span>
+                        <span class="tag tag-default">{{ $material->materialItems->count() }} Materi</span>
+                    </div>
 
-            <p class="card-summary">{{ Str::limit($material->summary, 100) }}</p>
+                    <p class="card-summary">{{ Str::limit($material->summary, 100) }}</p>
 
-            <div class="card-actions">
-                <button onclick="openPreviewModal({{ $material->id }})" class="action-btn btn-outline">
-                    Preview
-                </button>
-                <a href="{{ route('tutor.materials.edit', $material) }}" class="action-btn btn-secondary">
-                    Edit Folder
-                </a>
-                <form action="{{ route('tutor.materials.destroy', $material) }}" method="POST"
-                    style="display: inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus folder materi ini? Tindakan ini tidak dapat dibatalkan.');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="action-btn btn-danger" style="width: 100%; border: none; cursor: pointer;">
-                        Hapus
-                    </button>
-                </form>
-            </div>
-        </div>
-    </article>
-    @endforeach
-</div>
+                    <div class="card-actions">
+                        <button onclick="openPreviewModal({{ $material->id }})" class="action-btn btn-outline">
+                            Preview
+                        </button>
+                        <a href="{{ route('tutor.materials.edit', $material) }}" class="action-btn btn-secondary">
+                            Edit Folder
+                        </a>
+                        <form action="{{ route('tutor.materials.destroy', $material) }}" method="POST"
+                            style="display: inline-block;" class="delete-material-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="action-btn btn-danger btn-delete-material"
+                                style="width: 100%; border: none; cursor: pointer;">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        @endforeach
+    </div>
 @endif
 
 {{-- --- MODERN MODAL STRUCTURE --- --}}
@@ -1041,7 +1042,7 @@
                     required></textarea>
             </div>
 
-           {{-- Dynamic Material Items --}}
+            {{-- Dynamic Material Items --}}
             <div class="dynamic-group span-full">
                 <div class="dynamic-group__header">
                     <span>Materi dalam Folder</span>
@@ -1067,7 +1068,8 @@
                             </div>
                         </div>
                         <div class="dynamic-item__actions">
-                            <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
+                            <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus
+                                Materi</button>
                         </div>
                     </div>
                 </div>
@@ -1099,20 +1101,20 @@
 </div>
 
 <script>
-// ========== GLOBAL FUNCTIONS (must be outside DOMContentLoaded) ==========
-// Dynamic Material Items
-let materialItemIndex = 1;
-window.addMaterialItem = function() {
-    console.log('addMaterialItem function called!');
-    const list = document.getElementById('materialItemsList');
-    if (!list) {
-        console.error('materialItemsList not found!');
-        return;
-    }
-    
-    const div = document.createElement('div');
-    div.className = 'dynamic-item';
-    div.innerHTML = `
+    // ========== GLOBAL FUNCTIONS (must be outside DOMContentLoaded) ==========
+    // Dynamic Material Items
+    let materialItemIndex = 1;
+    window.addMaterialItem = function () {
+        console.log('addMaterialItem function called!');
+        const list = document.getElementById('materialItemsList');
+        if (!list) {
+            console.error('materialItemsList not found!');
+            return;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
         <div class="dynamic-item__row">
             <div class="form-group" style="margin-bottom: 12px;">
                 <label class="form-label" style="font-size: 0.85rem;">Nama Materi</label>
@@ -1134,54 +1136,54 @@ window.addMaterialItem = function() {
             <button type="button" class="dynamic-item__remove" onclick="removeMaterialItem(this)">Hapus Materi</button>
         </div>
     `;
-    list.appendChild(div);
-    materialItemIndex++;
-    console.log('New material item added, index:', materialItemIndex);
-}
-
-window.removeMaterialItem = function(button) {
-    const list = document.getElementById('materialItemsList');
-    if (!list) return;
-    
-    // Prevent removing if it's the last item (minimum 1)
-    if (list.children.length > 1) {
-        button.closest('.dynamic-item').remove();
-        console.log('Material item removed');
-    } else {
-        alert('Minimal harus ada satu materi dalam folder!');
+        list.appendChild(div);
+        materialItemIndex++;
+        console.log('New material item added, index:', materialItemIndex);
     }
-}
 
-// Preview Modal Functions
-window.openPreviewModal = function(materialId) {
-    console.log('Opening preview for material:', materialId);
-    const modal = document.getElementById('previewModal');
-    const previewList = document.getElementById('previewItemsList');
-    
-    // Show modal
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    
-    // Show loading
-    previewList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Memuat...</p>';
-    
-    // Find material data from the page
-    const materials = @json($materials);
-    const material = materials.find(m => m.id === materialId);
-    
-    if (!material) {
-        previewList.innerHTML = '<p style="color: #ef4444;">Folder tidak ditemukan</p>';
-        return;
+    window.removeMaterialItem = function (button) {
+        const list = document.getElementById('materialItemsList');
+        if (!list) return;
+
+        // Prevent removing if it's the last item (minimum 1)
+        if (list.children.length > 1) {
+            button.closest('.dynamic-item').remove();
+            console.log('Material item removed');
+        } else {
+            alert('Minimal harus ada satu materi dalam folder!');
+        }
     }
-    
-    // Update title
-    document.getElementById('previewFolderName').textContent = material.title;
-    
-    // Display material items
-    if (material.material_items && material.material_items.length > 0) {
-        let html = '';
-        material.material_items.forEach((item, index) => {
-            html += `
+
+    // Preview Modal Functions
+    window.openPreviewModal = function (materialId) {
+        console.log('Opening preview for material:', materialId);
+        const modal = document.getElementById('previewModal');
+        const previewList = document.getElementById('previewItemsList');
+
+        // Show modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Show loading
+        previewList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Memuat...</p>';
+
+        // Find material data from the page
+        const materials = @json($materials);
+        const material = materials.find(m => m.id === materialId);
+
+        if (!material) {
+            previewList.innerHTML = '<p style="color: #ef4444;">Folder tidak ditemukan</p>';
+            return;
+        }
+
+        // Update title
+        document.getElementById('previewFolderName').textContent = material.title;
+
+        // Display material items
+        if (material.material_items && material.material_items.length > 0) {
+            let html = '';
+            material.material_items.forEach((item, index) => {
+                html += `
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">${index + 1}. ${item.name}</h3>
@@ -1193,235 +1195,235 @@ window.openPreviewModal = function(materialId) {
                     </a>
                 </div>
             `;
-        });
-        previewList.innerHTML = html;
-    } else {
-        previewList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Folder ini belum memiliki materi</p>';
-    }
-}
-
-window.closePreviewModal = function() {
-    const modal = document.getElementById('previewModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Handle Package Multi-Selection (MOVED TO GLOBAL SCOPE)
-window.handlePackageSelection = function() {
-    console.log('handlePackageSelection called!');
-    const checkboxes = document.querySelectorAll('.package-checkbox:checked');
-    const levelInput = document.getElementById('hiddenLevel');
-
-    if (checkboxes.length > 0) {
-        // Get first selected package to fetch subjects
-        const firstPackage = checkboxes[0];
-        const packageId = firstPackage.value;
-        const packageLevel = firstPackage.dataset.level;
-
-        console.log('Package selected:', packageId, 'Level:', packageLevel);
-
-        // Update level
-        if (levelInput) {
-            levelInput.value = packageLevel;
-        }
-
-        // Fetch subjects for first selected package
-        fetchSubjects(packageId);
-    } else {
-        // No package selected
-        const subjectSelect = document.getElementById('subjectSelect');
-        subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
-        subjectSelect.disabled = true;
-
-        if (levelInput) {
-            levelInput.value = '';
-        }
-    }
-}
-
-// AJAX Fetch Subjects (MOVED TO GLOBAL SCOPE)
-function fetchSubjects(packageId) {
-    console.log('fetchSubjects called with packageId:', packageId);
-    const subjectSelect = document.getElementById('subjectSelect');
-
-    if (!packageId) {
-        subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
-        subjectSelect.disabled = true;
-        return;
-    }
-
-    subjectSelect.innerHTML = '<option>Loading...</option>';
-    subjectSelect.disabled = true;
-
-    fetch(`/tutor/packages/${packageId}/subjects`)
-        .then(response => {
-            console.log('Fetch response received:', response);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Subjects data:', data);
-            subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
-            data.forEach(subject => {
-                subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
             });
-            subjectSelect.disabled = false;
-        })
-        .catch(error => {
-            console.error('Error fetching subjects:', error);
-            subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
-        });
-}
-
-// Wrap everything else in DOMContentLoaded to ensure DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded');
-    
-    // Modal Logic
-    const modal = document.getElementById('createModal');
-
-    window.openModal = function() {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        // Initialize dynamic buttons when modal opens
-        initializeDynamicButtons();
+            previewList.innerHTML = html;
+        } else {
+            previewList.innerHTML = '<p style="text-align: center; color: #94a3b8;">Folder ini belum memiliki materi</p>';
+        }
     }
 
-    window.closeModal = function() {
-        modal.classList.remove('active');
+    window.closePreviewModal = function () {
+        const modal = document.getElementById('previewModal');
+        modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 
-    // Close modal if clicking outside content
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) window.closeModal();
-        });
+    // Handle Package Multi-Selection (MOVED TO GLOBAL SCOPE)
+    window.handlePackageSelection = function () {
+        console.log('handlePackageSelection called!');
+        const checkboxes = document.querySelectorAll('.package-checkbox:checked');
+        const levelInput = document.getElementById('hiddenLevel');
+
+        if (checkboxes.length > 0) {
+            // Get first selected package to fetch subjects
+            const firstPackage = checkboxes[0];
+            const packageId = firstPackage.value;
+            const packageLevel = firstPackage.dataset.level;
+
+            console.log('Package selected:', packageId, 'Level:', packageLevel);
+
+            // Update level
+            if (levelInput) {
+                levelInput.value = packageLevel;
+            }
+
+            // Fetch subjects for first selected package
+            fetchSubjects(packageId);
+        } else {
+            // No package selected
+            const subjectSelect = document.getElementById('subjectSelect');
+            subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+            subjectSelect.disabled = true;
+
+            if (levelInput) {
+                levelInput.value = '';
+            }
+        }
     }
 
-    // Auto open modal if validation error exists (Laravel)
-    @if($errors->any())
-        window.openModal();
-    @endif
+    // AJAX Fetch Subjects (MOVED TO GLOBAL SCOPE)
+    function fetchSubjects(packageId) {
+        console.log('fetchSubjects called with packageId:', packageId);
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        if (!packageId) {
+            subjectSelect.innerHTML = '<option value="">-- Pilih Paket Dulu --</option>';
+            subjectSelect.disabled = true;
+            return;
+        }
+
+        subjectSelect.innerHTML = '<option>Loading...</option>';
+        subjectSelect.disabled = true;
+
+        fetch(`/tutor/packages/${packageId}/subjects`)
+            .then(response => {
+                console.log('Fetch response received:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Subjects data:', data);
+                subjectSelect.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+                data.forEach(subject => {
+                    subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name} (${subject.level})</option>`;
+                });
+                subjectSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching subjects:', error);
+                subjectSelect.innerHTML = '<option value="">Gagal memuat</option>';
+            });
+    }
+
+    // Wrap everything else in DOMContentLoaded to ensure DOM is ready
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM fully loaded');
+
+        // Modal Logic
+        const modal = document.getElementById('createModal');
+
+        window.openModal = function () {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Initialize dynamic buttons when modal opens
+            initializeDynamicButtons();
+        }
+
+        window.closeModal = function () {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal if clicking outside content
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) window.closeModal();
+            });
+        }
+
+        // Auto open modal if validation error exists (Laravel)
+        @if($errors->any())
+            window.openModal();
+        @endif
 
     // ========== AUTO-FILL LEVEL FROM PACKAGE ==========
     // Logic moved to handlePackageSelection
     const hiddenLevel = document.getElementById('hiddenLevel');
 
-    // ========== MODERN FILE UPLOAD HANDLER ==========
-    const fileUploadArea = document.getElementById('fileUploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-    const filePreview = document.getElementById('filePreview');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const fileRemove = document.getElementById('fileRemove');
+        // ========== MODERN FILE UPLOAD HANDLER ==========
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileRemove = document.getElementById('fileRemove');
 
-    // Click to upload
-    fileUploadArea.addEventListener('click', (e) => {
-        if (e.target.closest('.file-remove')) return; // Don't trigger if clicking remove button
-        fileInput.click();
-    });
+        // Click to upload
+        fileUploadArea.addEventListener('click', (e) => {
+            if (e.target.closest('.file-remove')) return; // Don't trigger if clicking remove button
+            fileInput.click();
+        });
 
-    // Handle file selection
-    fileInput.addEventListener('change', (e) => {
-        handleFile(e.target.files[0]);
-    });
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
 
-    // Drag and drop handlers
-    fileUploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileUploadArea.classList.add('dragover');
-    });
+        // Drag and drop handlers
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
 
-    fileUploadArea.addEventListener('dragleave', () => {
-        fileUploadArea.classList.remove('dragover');
-    });
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
 
-    fileUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileUploadArea.classList.remove('dragover');
-        const droppedFile = e.dataTransfer.files[0];
-        if (droppedFile) {
-            fileInput.files = e.dataTransfer.files; // Assign to input
-            handleFile(droppedFile);
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const droppedFile = e.dataTransfer.files[0];
+            if (droppedFile) {
+                fileInput.files = e.dataTransfer.files; // Assign to input
+                handleFile(droppedFile);
+            }
+        });
+
+        // Handle file display
+        function handleFile(file) {
+            if (!file) return;
+
+            // Validate file type
+            const allowedTypes = ['.pdf', '.ppt', '.pptx', '.doc', '.docx'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            if (!allowedTypes.includes(fileExt)) {
+                alert('Format file tidak didukung. Hanya PDF, PPT, dan DOC yang diperbolehkan.');
+                fileInput.value = '';
+                return;
+            }
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar. Maksimal 10MB.');
+                fileInput.value = '';
+                return;
+            }
+
+            // Show preview
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            uploadPlaceholder.style.display = 'none';
+            filePreview.style.display = 'flex';
         }
-    });
 
-    // Handle file display
-    function handleFile(file) {
-        if (!file) return;
-
-        // Validate file type
-        const allowedTypes = ['.pdf', '.ppt', '.pptx', '.doc', '.docx'];
-        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
-        if (!allowedTypes.includes(fileExt)) {
-            alert('Format file tidak didukung. Hanya PDF, PPT, dan DOC yang diperbolehkan.');
+        // Remove file
+        fileRemove.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering file upload
             fileInput.value = '';
-            return;
+            uploadPlaceholder.style.display = 'flex';
+            filePreview.style.display = 'none';
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
 
-        // Validate file size (10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            alert('Ukuran file terlalu besar. Maksimal 10MB.');
-            fileInput.value = '';
-            return;
-        }
+        // ========== GOOGLE DRIVE LINK HANDLER ==========
+        const gdriveInput = document.getElementById('gdriveInput');
+        const clearGdriveBtn = document.getElementById('clearGdriveBtn');
 
-        // Show preview
-        fileName.textContent = file.name;
-        fileSize.textContent = formatFileSize(file.size);
-        uploadPlaceholder.style.display = 'none';
-        filePreview.style.display = 'flex';
-    }
+        // Show/hide clear button based on input
+        gdriveInput.addEventListener('input', function () {
+            if (this.value.trim()) {
+                clearGdriveBtn.style.display = 'flex';
+            } else {
+                clearGdriveBtn.style.display = 'none';
+            }
+        });
 
-    // Remove file
-    fileRemove.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent triggering file upload
-        fileInput.value = '';
-        uploadPlaceholder.style.display = 'flex';
-        filePreview.style.display = 'none';
-    });
-
-    // Format file size
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-    }
-
-    // ========== GOOGLE DRIVE LINK HANDLER ==========
-    const gdriveInput = document.getElementById('gdriveInput');
-    const clearGdriveBtn = document.getElementById('clearGdriveBtn');
-
-    // Show/hide clear button based on input
-    gdriveInput.addEventListener('input', function () {
-        if (this.value.trim()) {
-            clearGdriveBtn.style.display = 'flex';
-        } else {
+        // Clear button click
+        clearGdriveBtn.addEventListener('click', function () {
+            gdriveInput.value = '';
             clearGdriveBtn.style.display = 'none';
-        }
-    });
+            gdriveInput.focus();
+        });
 
-    // Clear button click
-    clearGdriveBtn.addEventListener('click', function () {
-        gdriveInput.value = '';
-        clearGdriveBtn.style.display = 'none';
-        gdriveInput.focus();
-    });
+        // ========== DYNAMIC GDRIVE LINKS ==========
+        function initializeDynamicButtons() {
+            console.log('Initializing dynamic buttons...');
 
-    // ========== DYNAMIC GDRIVE LINKS ==========
-    function initializeDynamicButtons() {
-        console.log('Initializing dynamic buttons...');
-        
-        const gdriveContainer = document.querySelector('[data-gdrive-links]');
-        const addGDriveBtn = document.querySelector('[data-add-gdrive]');
+            const gdriveContainer = document.querySelector('[data-gdrive-links]');
+            const addGDriveBtn = document.querySelector('[data-add-gdrive]');
 
-        const createGDriveRow = () => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'dynamic-item';
-            wrapper.innerHTML = `
+            const createGDriveRow = () => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'dynamic-item';
+                wrapper.innerHTML = `
                 <div class="dynamic-item__row">
                     <input type="url" name="gdrive_links[]" class="form-control" placeholder="https://drive.google.com/..." required />
                 </div>
@@ -1429,58 +1431,152 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button type="button" class="dynamic-item__remove" data-remove-row>Hapus</button>
                 </div>
             `;
-            return wrapper;
-        };
+                return wrapper;
+            };
 
-        if (addGDriveBtn) {
-            console.log('Add GDrive button found, attaching event listener');
-            // Remove existing listener if any
-            const newBtn = addGDriveBtn.cloneNode(true);
-            addGDriveBtn.parentNode.replaceChild(newBtn, addGDriveBtn);
-            
-            newBtn.addEventListener('click', (e) => {
-                console.log('Add GDrive button clicked!');
-                e.preventDefault();
-                const row = createGDriveRow();
-                gdriveContainer.appendChild(row);
-                bindRemoveButton(row);
-                console.log('New GDrive row added');
-            });
-        } else {
-            console.error('Add GDrive button NOT found!');
-        }
+            if (addGDriveBtn) {
+                console.log('Add GDrive button found, attaching event listener');
+                // Remove existing listener if any
+                const newBtn = addGDriveBtn.cloneNode(true);
+                addGDriveBtn.parentNode.replaceChild(newBtn, addGDriveBtn);
 
-        // Bind Remove Button
-        const bindRemoveButton = (row) => {
-            const removeBtn = row.querySelector('[data-remove-row]');
-            if (removeBtn) {
-                console.log('Binding remove button to row');
-                removeBtn.addEventListener('click', function () {
-                    console.log('Remove button clicked!');
-                    const parent = this.closest('.dynamic-item').parentElement;
-                    // Prevent removing if it's the last item
-                    if (parent.children.length > 1) {
-                        row.remove();
-                        console.log('Row removed');
-                    } else {
-                        alert('Minimal harus ada satu link!');
-                    }
+                newBtn.addEventListener('click', (e) => {
+                    console.log('Add GDrive button clicked!');
+                    e.preventDefault();
+                    const row = createGDriveRow();
+                    gdriveContainer.appendChild(row);
+                    bindRemoveButton(row);
+                    console.log('New GDrive row added');
                 });
             } else {
-                console.error('Remove button NOT found in row!');
+                console.error('Add GDrive button NOT found!');
             }
-        };
 
-        // Initialize removal buttons for all existing rows
-        console.log('Initializing existing remove buttons...');
-        const existingItems = document.querySelectorAll('[data-gdrive-links] .dynamic-item, [data-quiz-urls] .dynamic-item');
-        console.log('Found ' + existingItems.length + ' existing dynamic items');
-        existingItems.forEach(item => {
-            bindRemoveButton(item);
+            // Bind Remove Button
+            const bindRemoveButton = (row) => {
+                const removeBtn = row.querySelector('[data-remove-row]');
+                if (removeBtn) {
+                    console.log('Binding remove button to row');
+                    removeBtn.addEventListener('click', function () {
+                        console.log('Remove button clicked!');
+                        const parent = this.closest('.dynamic-item').parentElement;
+                        // Prevent removing if it's the last item
+                        if (parent.children.length > 1) {
+                            row.remove();
+                            console.log('Row removed');
+                        } else {
+                            alert('Minimal harus ada satu link!');
+                        }
+                    });
+                } else {
+                    console.error('Remove button NOT found in row!');
+                }
+            };
+
+            // Initialize removal buttons for all existing rows
+            console.log('Initializing existing remove buttons...');
+            const existingItems = document.querySelectorAll('[data-gdrive-links] .dynamic-item, [data-quiz-urls] .dynamic-item');
+            console.log('Found ' + existingItems.length + ' existing dynamic items');
+            existingItems.forEach(item => {
+                bindRemoveButton(item);
+            });
+        }
+
+    }); // End of DOMContentLoaded
+
+    // ========== SWEETALERT DELETE CONFIRMATION ==========
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-delete-material').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Hapus Folder Materi?',
+                    html: `
+                    <div style="text-align: center; color: #64748b;">
+                        <p style="margin: 0 0 8px 0;">Folder materi ini akan dihapus secara permanen.</p>
+                        <p style="margin: 0; font-size: 0.9rem; color: #ef4444;"><strong>⚠️ Tindakan ini tidak dapat dibatalkan!</strong></p>
+                    </div>
+                `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: '🗑️ Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    backdrop: `
+                    rgba(0,0,0,0.6)
+                    left top
+                    no-repeat
+                `,
+                    customClass: {
+                        popup: 'swal-modern-popup',
+                        title: 'swal-modern-title',
+                        confirmButton: 'swal-modern-confirm',
+                        cancelButton: 'swal-modern-cancel'
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown animate__faster'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp animate__faster'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
         });
-    }
-
-}); // End of DOMContentLoaded
+    });
 
 </script>
+
+{{-- Custom SweetAlert Styles with Blur --}}
+<style>
+    .swal2-popup {
+        border-radius: 20px !important;
+        padding: 28px !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .swal2-title {
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+    }
+
+    .swal2-icon.swal2-warning {
+        border-color: #f59e0b !important;
+        color: #f59e0b !important;
+    }
+
+    .swal2-actions {
+        gap: 12px !important;
+    }
+
+    .swal2-confirm {
+        border-radius: 12px !important;
+        padding: 12px 24px !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+    }
+
+    .swal2-cancel {
+        border-radius: 12px !important;
+        padding: 12px 24px !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Backdrop blur effect */
+    .swal2-container {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+</style>
 @endsection

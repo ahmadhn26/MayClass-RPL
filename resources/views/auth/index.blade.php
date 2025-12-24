@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
 
+    {{-- Script reCAPTCHA (Wajib Ada) --}}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <style>
         :root {
             --primary-600: #0f766e;
@@ -292,27 +295,71 @@
             margin-bottom: 20px;
         }
 
-        /* Links */
-        .forgot-pass-wrapper {
+        /* Login Options Row (Remember Me + Forgot Password) */
+        .login-options {
             display: flex;
-            justify-content: flex-end;
-            margin-top: -12px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -8px;
+            gap: 12px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Modern Custom Checkbox */
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--neutral-400);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .remember-me input[type="checkbox"]:hover {
+            border-color: var(--primary-600);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .remember-me input[type="checkbox"]:checked {
+            background: var(--primary-600);
+            border-color: var(--primary-600);
+        }
+
+        .remember-me input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
         }
 
         .forgot-link {
-            font-size: 0.85rem;
-            color: var(--neutral-500);
-            font-weight: 500;
-        }
-
-        .forgot-link span {
+            font-size: 0.875rem;
             color: var(--primary-600);
             font-weight: 600;
+            transition: all 0.2s ease;
         }
 
         .forgot-link:hover {
-            color: var(--primary-600);
-            text-decoration: underline;
+            color: var(--primary-700);
+            transform: translateX(2px);
         }
 
         .auth-footer {
@@ -333,6 +380,13 @@
         .switch-link:hover {
             color: var(--primary-600);
             text-decoration: underline;
+        }
+
+        /* Recaptcha Wrapper */
+        .recaptcha-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
         }
 
         /* Terms Checkbox */
@@ -484,39 +538,119 @@
             border-color: #16a34a;
         }
 
-        @media (max-width: 600px) { 
-            .auth-container { 
-                padding: 24px 20px; 
-            } 
-            
-            .input-row { 
-                grid-template-columns: 1fr; 
-                gap: 12px;
-            }
-            
-            .header-text {
-                margin-bottom: 24px;
-            }
-            
-            .header-text h2 {
-                font-size: 1.5rem;
-            }
-            
-            .btn-primary {
+        @media (max-width: 600px) {
+            body {
                 padding: 12px;
             }
-            
-            .terms-dialog {
-                max-height: 90vh;
-            }
-        }
-        @media (max-width: 600px) {
+
             .auth-container {
-                padding: 32px 24px;
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .back-button {
+                top: 12px;
+                left: 12px;
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+
+            .header-text {
+                margin-top: 16px;
+                margin-bottom: 16px;
+            }
+
+            .header-text h2 {
+                font-size: 1.3rem;
+            }
+
+            .header-text p {
+                font-size: 0.85rem;
+            }
+
+            .auth-form {
+                gap: 12px;
             }
 
             .input-row {
                 grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .input-group {
+                gap: 4px;
+            }
+
+            .label {
+                font-size: 0.8rem;
+            }
+
+            .input-field {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+            }
+
+            .btn-primary {
+                padding: 10px;
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+
+            .btn-google {
+                padding: 10px;
+                font-size: 0.85rem;
+                margin-top: 10px;
+            }
+
+            .divider {
+                margin: 6px 0 0;
+            }
+
+            .divider span {
+                font-size: 0.75rem;
+            }
+
+            .auth-footer {
+                margin-top: 12px;
+                padding-top: 16px;
+                font-size: 0.8rem;
+            }
+
+            .login-options {
+                margin-top: -4px;
+            }
+
+            .remember-me {
+                font-size: 0.8rem;
+            }
+
+            .forgot-link {
+                font-size: 0.8rem;
+            }
+
+            .terms-trigger-wrapper {
+                margin-top: 2px;
+            }
+
+            .terms-trigger-wrapper label {
+                font-size: 0.8rem !important;
+            }
+
+            .terms-dialog {
+                max-height: 90vh;
+            }
+
+            .alert-success,
+            .alert-error {
+                padding: 10px;
+                font-size: 0.8rem;
+                margin-bottom: 12px;
+            }
+
+            .recaptcha-wrapper {
+                transform: scale(0.85);
+                transform-origin: center;
             }
         }
     </style>
@@ -534,7 +668,8 @@
                     ✓</div>
                 <h3 style="margin:0 0 8px; color: var(--neutral-900);">Berhasil!</h3>
                 <p style="margin:0; color:var(--neutral-500); font-size:0.9rem;">
-                    {{ session('status') ?? 'Akun berhasil dibuat.' }}</p>
+                    {{ session('status') ?? 'Akun berhasil dibuat.' }}
+                </p>
             </div>
         </div>
         <script>setTimeout(() => document.querySelector('.terms-modal.is-visible').classList.remove('is-visible'), 2000);</script>
@@ -555,9 +690,54 @@
         @if (session('status'))
         <div class="alert-success">{{ session('status') }}</div> @endif
 
-        {{-- ALERT ERROR (MERAH) --}}
-        @if (session('error'))
-        <div class="alert-error">{{ session('error') }}</div> @endif
+        {{-- ALERT ACCOUNT LOCKED (SPECIAL) --}}
+        @if (session('lock_remaining_seconds'))
+            <div class="alert-error" id="lock-alert" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        style="flex-shrink: 0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <div
+                    style="background: rgba(0,0,0,0.1); padding: 8px 12px; border-radius: 6px; text-align: center; font-weight: 600;">
+                    Waktu tersisa: <span id="countdown-timer">{{ session('lock_remaining_minutes') }} menit</span>
+                </div>
+            </div>
+            <script>
+                (function () {
+                    let seconds = {{ session('lock_remaining_seconds') }};
+                    const timerEl = document.getElementById('countdown-timer');
+                    const alertEl = document.getElementById('lock-alert');
+
+                    function updateTimer() {
+                        if (seconds <= 0) {
+                            alertEl.innerHTML = '<div style="display: flex; align-items: center; gap: 8px; color: #065f46;"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Akun sudah terbuka! Silakan coba login kembali.</span></div>';
+                            alertEl.style.background = '#ecfdf5';
+                            alertEl.style.borderColor = '#a7f3d0';
+                            return;
+                        }
+
+                        const mins = Math.floor(seconds / 60);
+                        const secs = seconds % 60;
+                        timerEl.textContent = mins > 0
+                            ? mins + ' menit ' + secs + ' detik'
+                            : secs + ' detik';
+
+                        seconds--;
+                        setTimeout(updateTimer, 1000);
+                    }
+
+                    updateTimer();
+                })();
+            </script>
+        @elseif (session('error'))
+            {{-- ALERT ERROR (MERAH) --}}
+            <div class="alert-error">{{ session('error') }}</div>
+        @endif
 
         {{-- FORM REGISTER --}}
         <form data-mode="register" method="post" action="{{ route('register.details') }}" class="auth-form" novalidate>
@@ -596,7 +776,7 @@
                 <div class="input-group">
                     <label class="label">Nomor WhatsApp Orang Tua/Wali *</label>
                     <input class="input-field" type="tel" name="parent_phone"
-                        value="{{ old('parent_phone', $profileData['parent_phone'] ?? '') }}" 
+                        value="{{ old('parent_phone', $profileData['parent_phone'] ?? '') }}"
                         placeholder="Contoh: 08123456789" required>
                     @error('parent_phone') <span class="error-msg">{{ $message }}</span> @enderror
                 </div>
@@ -665,11 +845,32 @@
                 @error('password') <span class="error-msg">{{ $message }}</span> @enderror
             </div>
 
-            <div class="forgot-pass-wrapper">
-                <a href="{{ route('password.request') }}" class="forgot-link">
-                    Lupa password? <span>Hubungi admin</span>
-                </a>
+            <div class="login-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    <span>Ingat Saya</span>
+                </label>
+                <a href="{{ route('password.request') }}" class="forgot-link">Lupa Password?</a>
             </div>
+
+            {{-- reCAPTCHA --}}
+            @if(config('services.recaptcha.key'))
+                <div class="input-group" style="margin-top: 20px;">
+                    <div class="recaptcha-wrapper">
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
+                    </div>
+                    @error('g-recaptcha-response') <p class="error-msg" style="text-align:center">{{ $message }}</p>
+                    @enderror
+                </div>
+            @else
+                @if(app()->environment('local', 'development'))
+                    <div class="input-group" style="margin-top: 12px;">
+                        <p class="form-helper" style="color: #f59e0b; font-size: 0.85rem; text-align: center; margin: 0;">
+                            ⚠️ Development Mode: reCAPTCHA tidak dikonfigurasi (validasi di-skip)
+                        </p>
+                    </div>
+                @endif
+            @endif
 
             <button class="btn-primary" type="submit">Masuk</button>
 
@@ -714,7 +915,8 @@
 
                 <h4>2. Langganan & Pembayaran</h4>
                 <p>Setelah akun dibuat, Anda dapat memilih paket belajar. Setiap transaksi checkout akan berstatus
-                    <strong>menunggu verifikasi admin</strong>. Akses materi premium aktif setelah validasi.</p>
+                    <strong>menunggu verifikasi admin</strong>. Akses materi premium aktif setelah validasi.
+                </p>
 
                 <h4>3. Materi & Jadwal</h4>
                 <p>Konten belajar tersedia dinamis sesuai paket. Jadwal kelas mengikuti sesi yang dirancang tentor. Kami

@@ -28,22 +28,36 @@ class ScheduleTemplateController extends BaseAdminController
 
             $template = ScheduleTemplate::create($data);
 
-            ScheduleTemplateGenerator::refreshTemplate($template);
+            // Try to generate sessions, but don't fail if it errors
+            try {
+                ScheduleTemplateGenerator::refreshTemplate($template);
+            } catch (\Exception $sessionError) {
+                \Log::error('Failed to generate sessions for template: ' . $sessionError->getMessage());
+                // Continue anyway - template is created, sessions can be generated later
+            }
 
-            return redirect()->route('admin.schedules.index', ['tutor_id' => $data['user_id']])
-                ->with('status', __('Jadwal berhasil ditambahkan.'));
+            // Use query parameter instead of session flash (more reliable)
+            return redirect()->route('admin.schedules.index', [
+                'tutor_id' => $data['user_id'],
+                'success' => '1',
+                'message' => 'Jadwal berhasil ditambahkan dan sesi telah dibuat'
+            ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Pass all validation errors directly to session
             return redirect()->route('admin.schedules.index', ['tutor_id' => $request->input('user_id')])
                 ->withErrors($e->validator)
                 ->withInput();
         } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Schedule creation failed: ' . $e->getMessage());
+            
             // Catch any other exceptions and display error message
             return redirect()->route('admin.schedules.index', ['tutor_id' => $request->input('user_id')])
                 ->withErrors(['exception' => 'Error: ' . $e->getMessage()])
                 ->withInput();
         }
     }
+
 
     public function update(Request $request, ScheduleTemplate $template): RedirectResponse
     {

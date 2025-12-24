@@ -120,7 +120,7 @@
             right: 0;
             z-index: 1000;
             width: 100%;
-            padding: 8px clamp(12px, 3vw, 24px);
+            padding: 14px clamp(12px, 3vw, 24px);
             background: rgba(255, 254, 254, 0.52);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -201,7 +201,7 @@
 
         @media (max-width: 768px) {
             nav {
-                padding: 12px 20px;
+                padding: 6px 20px;
             }
 
             .nav-inner {
@@ -273,9 +273,15 @@
         }
 
         .brand img {
-            height: 90px;
+            height: 42px;
             width: auto;
             object-fit: contain;
+        }
+
+        @media (max-width: 768px) {
+            .brand img {
+                height: 56px !important;
+            }
         }
 
         .nav-links {
@@ -284,7 +290,7 @@
             justify-content: center;
             gap: 28px;
             font-size: 0.95rem;
-            margin-left: 57px;
+            margin-left: 0;
         }
 
         .nav-links a {
@@ -366,7 +372,32 @@
 
         @media (max-width: 768px) {
             .brand img {
-                height: 36px;
+                height: 30px;
+            }
+
+            /* Mobile sidebar profile photo - circular style */
+            .nav-links .nav-profile {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                border: 3px solid var(--primary-main);
+                overflow: hidden;
+                flex-shrink: 0;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(63, 166, 126, 0.25);
+                display: block;
+                margin: 0 auto;
+            }
+
+            .nav-links .nav-actions {
+                align-items: center;
+            }
+
+            .nav-links .nav-profile img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
             }
         }
 
@@ -640,28 +671,42 @@
 
         @media (max-width: 768px) {
             .hero-stats {
-                gap: 16px;
-                margin-top: 32px;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 12px;
+                margin-top: 24px;
+                width: 100%;
+                justify-content: center;
             }
 
             .stat-card {
-                padding: 24px 32px;
-                min-width: 160px;
+                flex: 1;
+                max-width: 160px;
+                min-width: auto;
+                padding: 16px 12px;
+                border-radius: 14px;
             }
 
             .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 24px;
-                margin-bottom: 12px;
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+
+            .stat-icon-photo {
+                width: 36px;
+                height: 36px;
             }
 
             .stat-number {
-                font-size: 2rem;
+                font-size: 1.5rem;
+                margin-bottom: 2px;
             }
 
             .stat-label {
-                font-size: 0.85rem;
+                font-size: 0.7rem;
             }
         }
 
@@ -811,17 +856,13 @@
         @media (max-width: 768px) {
             .articles-grid {
                 display: flex;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                gap: 20px;
-                padding-bottom: 24px;
-                /* Hide scrollbar */
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-
-            .articles-grid::-webkit-scrollbar {
-                display: none;
+                flex-direction: column;
+                gap: 0;
+                padding-bottom: 0;
+                max-height: 420px;
+                overflow-y: auto;
+                scroll-snap-type: y mandatory;
+                scroll-behavior: smooth;
             }
         }
 
@@ -841,9 +882,47 @@
 
         @media (max-width: 768px) {
             .article-card {
-                min-width: 280px;
-                max-width: 280px;
-                scroll-snap-align: center;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                min-height: 400px;
+                flex-shrink: 0;
+                scroll-snap-align: start;
+                margin-bottom: 24px;
+            }
+
+            .article-image-wrapper {
+                height: 160px !important;
+            }
+
+            .article-content {
+                padding: 16px !important;
+            }
+
+            .article-content h3 {
+                font-size: 1.1rem !important;
+                line-height: 1.3 !important;
+                margin-bottom: 6px !important;
+            }
+
+            .article-content p {
+                display: block !important;
+                font-size: 0.9rem !important;
+                margin-bottom: 12px !important;
+            }
+
+            .article-footer {
+                padding-top: 12px !important;
+            }
+
+            .btn-read-more {
+                padding: 0 !important;
+                font-size: 0.85rem !important;
+            }
+
+            .article-badge {
+                font-size: 0.6rem !important;
+                padding: 4px 8px !important;
             }
         }
 
@@ -856,7 +935,7 @@
         .article-image-wrapper {
             position: relative;
             width: 100%;
-            height: 220px;
+            height: 160px;
             overflow: hidden;
         }
 
@@ -1031,14 +1110,49 @@
 
         @media (max-width: 768px) {
             .pricing-card {
-                padding: 20px;
-                gap: 12px;
-                width: 280px;
-                min-width: 280px;
-                max-width: 280px;
+                padding: 16px !important;
+                gap: 10px !important;
+                width: 220px !important;
+                min-width: 220px !important;
+                max-width: 220px !important;
                 flex-shrink: 0;
                 box-sizing: border-box;
                 scroll-snap-align: start;
+                border-radius: 14px !important;
+            }
+
+            .pricing-card .badge {
+                padding: 5px 10px !important;
+                font-size: 0.7rem !important;
+            }
+
+            .pricing-card strong {
+                font-size: 0.9rem !important;
+            }
+
+            .pricing-price {
+                font-size: 1.2rem !important;
+                margin: 4px 0 !important;
+            }
+
+            .pricing-meta {
+                font-size: 0.75rem !important;
+                padding: 3px 8px !important;
+            }
+
+            .pricing-features {
+                font-size: 0.8rem !important;
+                gap: 8px !important;
+            }
+
+            .pricing-actions {
+                padding-top: 12px !important;
+            }
+
+            .pricing-actions .btn {
+                font-size: 0.85rem !important;
+                padding: 10px !important;
+                border-radius: 10px !important;
             }
         }
 
@@ -1186,7 +1300,25 @@
 
         @media (max-width: 768px) {
             .highlight-grid {
-                gap: 16px;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+
+            .highlight-card {
+                padding: 14px !important;
+                border-radius: 12px !important;
+                gap: 6px !important;
+            }
+
+            .highlight-card strong {
+                font-size: 0.8rem !important;
+                line-height: 1.3 !important;
+            }
+
+            .highlight-card p {
+                font-size: 0.7rem !important;
+                line-height: 1.4 !important;
+                margin: 0 !important;
             }
         }
 
@@ -1198,12 +1330,6 @@
             display: grid;
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.16);
-        }
-
-        @media (max-width: 768px) {
-            .highlight-card {
-                padding: 20px;
-            }
         }
 
         .highlight-card strong {
@@ -1365,7 +1491,33 @@
 
         @media (max-width: 768px) {
             .mentor-profile {
-                padding: 20px;
+                padding: 14px !important;
+                gap: 10px !important;
+                border-radius: 16px !important;
+            }
+
+            .mentor-avatar {
+                width: 60px !important;
+                height: 60px !important;
+                border-radius: 18px !important;
+            }
+
+            .mentor-info strong {
+                font-size: 0.85rem !important;
+            }
+
+            .mentor-role {
+                font-size: 0.7rem !important;
+            }
+
+            .mentor-saying {
+                font-size: 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+
+            .mentor-meta span {
+                font-size: 0.65rem !important;
+                padding: 3px 8px !important;
             }
         }
 
@@ -1525,7 +1677,7 @@
         footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
-            padding: 80px 0 32px;
+            padding: 40px 0 32px;
             position: relative;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -1555,9 +1707,15 @@
         }
 
         @media (max-width: 768px) {
+            .footer-brand-col {
+                align-items: center;
+                text-align: center;
+            }
+
             .footer-logo {
                 width: 120px;
                 height: 80px;
+                margin: 0 auto;
             }
         }
 
@@ -1894,11 +2052,32 @@
 
         @media (max-width: 768px) {
             .testimonial-card {
-                padding: 24px;
+                padding: 16px !important;
+                gap: 12px !important;
+                border-radius: 16px !important;
+                min-height: auto !important;
+            }
+
+            .testimonial-rating {
+                font-size: 0.9rem !important;
             }
 
             .testimonial-quote {
-                font-size: 1rem;
+                font-size: 0.85rem !important;
+                line-height: 1.5 !important;
+            }
+
+            .testimonial-avatar {
+                width: 50px !important;
+                height: 50px !important;
+            }
+
+            .testimonial-meta strong {
+                font-size: 0.85rem !important;
+            }
+
+            .testimonial-meta span {
+                font-size: 0.75rem !important;
             }
 
             .swiper-button-next,
@@ -2134,14 +2313,29 @@
             .faq-grid {
                 display: grid !important;
                 grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+
+            .faq-grid details {
+                padding: 8px 12px !important;
+                border-radius: 10px !important;
             }
 
             .faq-grid summary {
-                font-size: 0.9rem !important;
+                font-size: 0.8rem !important;
+                padding: 2px 0 !important;
+            }
+
+            .faq-grid summary::after {
+                width: 18px !important;
+                height: 18px !important;
+                font-size: 0.7rem !important;
             }
 
             .faq-grid p {
-                font-size: 0.85rem !important;
+                font-size: 0.75rem !important;
+                margin: 6px 0 4px !important;
+                line-height: 1.5 !important;
             }
         }
 
@@ -2217,13 +2411,51 @@
 
         @media (max-width: 768px) {
             .modal-container {
-                max-width: 100%;
-                border-radius: 16px 16px 0 0;
+                max-width: 90%;
+                width: 90%;
+                border-radius: 16px;
                 height: auto;
-                max-height: 85vh;
-                position: absolute;
-                bottom: 0;
-                margin: 0;
+                max-height: 80vh;
+                position: relative;
+                margin: auto;
+                bottom: auto;
+            }
+        }
+
+        /* New Responsive Modal Classes */
+        .modal-body {
+            padding: 32px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .modal-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .modal-title {
+            font-size: 2.2rem;
+            margin: 0 0 12px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-content-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
             }
         }
 
@@ -2261,7 +2493,7 @@
 </head>
 
 <body x-data="{ 
-    selectedLevel: 'Semua Jenjang', 
+    selectedLevel: 'SD', 
     openDropdown: false,
     modalOpen: false, 
     pkg: {}, 
@@ -2274,39 +2506,38 @@
         this.modalOpen = false;
         document.body.style.overflow = 'auto';
     }
-}">
-    @php
-        $joinLink = route('join');
-        $profileLink = $profileLink ?? null;
-        $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
+}">@php
+    $joinLink = route('join');
+    $profileLink = $profileLink ?? null;
+    $profileAvatar = $profileAvatar ?? asset('images/avatar-placeholder.svg');
 
-        // Check for pending order
-        $pendingOrder = null;
-        // Check for active/approved package
-        $hasActivePackage = false;
+    // Check for pending order
+    $pendingOrder = null;
+    // Check for active/approved package
+    $hasActivePackage = false;
 
-        if (Auth::check() && in_array(Auth::user()->role, ['student', 'visitor'])) {
-            // Check for pending order (initiated, pending, awaiting_payment, awaiting_verification)
-            $pendingOrder = Auth::user()->orders()
-                ->whereIn('status', ['initiated', 'pending', 'awaiting_payment', 'awaiting_verification'])
-                ->where(function ($query) {
-                    $query->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                })
-                ->with('package')
-                ->latest()
-                ->first();
+    if (Auth::check() && in_array(Auth::user()->role, ['student', 'visitor'])) {
+        // Check for pending order (initiated, pending, awaiting_payment, awaiting_verification)
+        $pendingOrder = Auth::user()->orders()
+            ->whereIn('status', ['initiated', 'pending', 'awaiting_payment', 'awaiting_verification'])
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->with('package')
+            ->latest()
+            ->first();
 
-            // Check for active/approved package (Enrollment is the source of truth for active access)
-            $hasActivePackage = Auth::user()->enrollments()
-                ->where('is_active', true)
-                ->where(function ($query) {
-                    $query->whereNull('ends_at')
-                        ->orWhere('ends_at', '>', now());
-                })
-                ->exists();
-        }
-    @endphp
+        // Check for active/approved package (Enrollment is the source of truth for active access)
+        $hasActivePackage = Auth::user()->enrollments()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>', now());
+            })
+            ->exists();
+    }
+@endphp
 
     <header>
         <nav>
@@ -2328,16 +2559,35 @@
                     <div class="nav-actions">
                         {{-- Mobile Nav Actions --}}
                         @auth
-                            <div
-                                style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px;">
                                 <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
-                                    aria-label="Buka profil">
-                                    <img src="{{ $profileAvatar }}" alt="Foto profil" />
+                                    aria-label="Buka profil"
+                                    style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; aspect-ratio: 1/1;">
+                                    <img src="{{ $profileAvatar }}" alt="Foto profil"
+                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
                                 </a>
                             </div>
 
                             {{-- LOGIKA TOMBOL MOBILE --}}
-                            @if($hasActivePackage)
+                            @if(auth()->user()->role === 'admin')
+                                <a class="btn btn-primary" href="{{ route('admin.dashboard') }}"
+                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                    </svg>
+                                    Dashboard
+                                </a>
+                            @elseif(auth()->user()->role === 'tutor')
+                                <a class="btn btn-primary" href="{{ route('tutor.dashboard') }}"
+                                    style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    Ayo Mengajar
+                                </a>
+                            @elseif($hasActivePackage)
                                 {{-- 1. SUDAH LUNAS / AKTIF --}}
                                 <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
                                     style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
@@ -2387,8 +2637,26 @@
                     @auth
                         {{-- LOGIKA TOMBOL DESKTOP --}}
 
-                        {{-- 1. SUDAH LUNAS / AKTIF --}}
-                        @if($hasActivePackage)
+                        @if(auth()->user()->role === 'admin')
+                            <a class="btn btn-primary" href="{{ route('admin.dashboard') }}"
+                                style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg>
+                                Dashboard
+                            </a>
+                        @elseif(auth()->user()->role === 'tutor')
+                            <a class="btn btn-primary" href="{{ route('tutor.dashboard') }}"
+                                style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                Ayo Mengajar
+                            </a>
+                            {{-- 1. SUDAH LUNAS / AKTIF --}}
+                        @elseif($hasActivePackage)
                             <a class="btn btn-primary" href="{{ route('student.dashboard') }}"
                                 style="background: #0f766e; border-color: #0f766e; color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2418,9 +2686,11 @@
 
                             {{-- 3. BELUM ADA TRANSAKSI (Default) --}}
                         @else
-                            <a class="btn btn-primary" href="{{ route('packages.index') }}">
-                                Beli Paket Belajar
-                            </a>
+                            @if(in_array(auth()->user()->role, ['student', 'visitor']))
+                                <a class="btn btn-primary" href="{{ route('packages.index') }}">
+                                    Beli Paket Sekarang
+                                </a>
+                            @endif
                         @endif
 
                         <a class="nav-profile" href="{{ $profileLink ?? route('student.profile') }}"
@@ -2445,7 +2715,18 @@
         </nav>
         @php
             $heroContent = $landingContents->get('hero')?->first();
-            $heroBg = $heroContent && $heroContent->image ? asset($heroContent->image) : '/images/stis_contoh.jpeg';
+            $heroImage = $heroContent?->image ?? null;
+
+            // Gunakan AvatarResolver untuk Base64 embedding (bypass hosting URL issues)
+            if ($heroImage) {
+                $heroBg = \App\Support\AvatarResolver::resolve([$heroImage]);
+                // Fallback ke asset jika AvatarResolver gagal
+                if (!$heroBg) {
+                    $heroBg = asset($heroImage);
+                }
+            } else {
+                $heroBg = asset('images/stis_contoh.jpeg');
+            }
         @endphp
         <div class="hero" id="beranda"
             style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65)), url('{{ $heroBg }}');">
@@ -2544,31 +2825,117 @@
                     </p>
                 </div>
 
-                <div
-                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 40px;">
-                    @foreach($documentations as $doc)
-                        <div data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
-                            style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;"
-                            onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
-                            <div style="position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f8fafc;">
-                                <img src="{{ asset('storage/' . $doc->photo_path) }}"
-                                    alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
-                                    style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
-                                <div
-                                    style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                    {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
+                <style>
+                    .doc-scroll-wrapper {
+                        max-height: 520px;
+                        overflow-y: auto;
+                        scroll-behavior: smooth;
+                        margin-top: 40px;
+                        padding-right: 8px;
+                    }
+
+                    /* Scrollbar styling */
+                    .doc-scroll-wrapper::-webkit-scrollbar {
+                        width: 6px;
+                    }
+
+                    .doc-scroll-wrapper::-webkit-scrollbar-track {
+                        background: rgba(0, 0, 0, 0.05);
+                        border-radius: 3px;
+                    }
+
+                    .doc-scroll-wrapper::-webkit-scrollbar-thumb {
+                        background: rgba(63, 166, 126, 0.4);
+                        border-radius: 3px;
+                    }
+
+                    .doc-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+                        background: rgba(63, 166, 126, 0.6);
+                    }
+
+                    .doc-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                        gap: 24px;
+                    }
+
+                    @media (max-width: 768px) {
+                        .doc-scroll-wrapper {
+                            max-height: 420px;
+                            margin-top: 20px;
+                        }
+
+                        .doc-grid {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 0;
+                            scroll-snap-type: y mandatory;
+                        }
+
+                        .doc-card {
+                            width: 100% !important;
+                            max-width: 100% !important;
+                            min-width: 0 !important;
+                            flex-shrink: 0;
+                            scroll-snap-align: start;
+                            margin-bottom: 16px !important;
+                        }
+
+                        .doc-card>div:first-child {
+                            aspect-ratio: auto !important;
+                            height: 160px !important;
+                        }
+
+                        .doc-card img {
+                            aspect-ratio: auto !important;
+                        }
+
+                        .doc-card .doc-desc {
+                            font-size: 0.9rem !important;
+                            padding: 16px !important;
+                        }
+
+                        .doc-card .doc-badge {
+                            font-size: 0.6rem !important;
+                            padding: 4px 8px !important;
+                        }
+                    }
+                </style>
+                <div class="doc-scroll-wrapper">
+                    <div class="doc-grid">
+                        @foreach($documentations as $doc)
+                            <div class="doc-card" data-reveal data-reveal-delay="{{ $loop->index * 50 }}"
+                                style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;"
+                                onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.15)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)'">
+                                <div style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #f8fafc;">
+                                    @php
+                                        // Gunakan AvatarResolver untuk mengubah gambar jadi Base64
+                                        // Ini mem-bypass masalah hosting/symlink/https link
+                                        $docImage = \App\Support\AvatarResolver::resolve([
+                                            $doc->photo_path,
+                                            'uploads/' . $doc->photo_path
+                                        ]);
+                                    @endphp
+                                    <img src="{{ $docImage ?? asset('storage/' . $doc->photo_path) }}"
+                                        alt="Dokumentasi {{ $doc->activity_date->format('d M Y') }}"
+                                        style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"
+                                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.9rem;\'>Gambar tidak tersedia</div>'">
+                                    <div class="doc-badge"
+                                        style="position: absolute; top: 12px; right: 12px; background: rgba(15, 118, 110, 0.9); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                        {{ $doc->activity_date->locale('id')->translatedFormat('d M') }}
+                                    </div>
+                                </div>
+                                <div class="doc-desc" style="padding: 16px;">
+                                    <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
+                                        {{ Str::limit($doc->description, 100) }}
+                                    </p>
                                 </div>
                             </div>
-                            <div style="padding: 16px;">
-                                <p style="margin: 0; color: #1e293b; font-size: 0.9rem; line-height: 1.6;">
-                                    {{ Str::limit($doc->description, 100) }}
-                                </p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
 
+                </div>
                 <div style="text-align: center; margin-top: 32px;" data-reveal data-reveal-delay="300">
                     <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
                         <strong>{{ $documentations->count() }} dokumentasi</strong> dari minggu ini • Auto-reset setiap
@@ -2605,8 +2972,6 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                     style="display: none;">
-                    <div class="filter-option" :class="{ 'active': selectedLevel === 'Semua Jenjang' }"
-                        @click="selectedLevel = 'Semua Jenjang'; openDropdown = false">Semua Jenjang</div>
                     <div class="filter-option" :class="{ 'active': selectedLevel === 'SD' }"
                         @click="selectedLevel = 'SD'; openDropdown = false">Jenjang SD</div>
                     <div class="filter-option" :class="{ 'active': selectedLevel === 'SMP' }"
@@ -2669,8 +3034,7 @@
                 @php($hasAnyPackage = true)
                 @foreach ($levelGroup['items'] as $package)
                 @php($features = collect($package['card_features'] ?? $package['features'] ?? [])->take(3))
-                <article class="pricing-card"
-                    x-show="selectedLevel === 'Semua Jenjang' || selectedLevel === '{{ $key }}'"
+                <article class="pricing-card" x-show="selectedLevel === '{{ $key }}'"
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 transform scale-95"
                     x-transition:enter-end="opacity-100 transform scale-100" data-reveal>
@@ -2819,33 +3183,22 @@
             <!-- Swiper Mentors -->
             <div class="swiper mentor-slider" data-reveal>
                 <div class="swiper-wrapper">
-                    @forelse($landingContents['mentor'] ?? [] as $mentor)
+                    @forelse($activeTutors as $mentor)
                         <div class="swiper-slide">
                             <article class="mentor-profile">
                                 <div class="mentor-avatar">
-                                    <img src="{{ asset($mentor->image ?? 'images/avatar-placeholder.svg') }}"
-                                        alt="{{ $mentor->content['name'] }}"
-                                        onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor->content['name']) }}&background=random'" />
+                                    <img src="{{ $mentor['avatar'] }}" alt="{{ $mentor['name'] }}"
+                                        onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mentor['name']) }}&background=random'" />
                                 </div>
                                 <div class="mentor-info">
-                                    <strong>{{ $mentor->content['name'] }}</strong>
-                                    <span class="mentor-role">{{ $mentor->content['role'] }}</span>
+                                    <strong>{{ $mentor['name'] }}</strong>
+                                    <span class="mentor-role">{{ $mentor['role'] }}</span>
                                 </div>
-                                <p class="mentor-saying">“{{ $mentor->content['quote'] }}”</p>
+                                <p class="mentor-saying">“{{ $mentor['quote'] }}”</p>
                                 <div class="mentor-meta">
-                                    @if(isset($mentor->content['meta']) && is_array($mentor->content['meta']))
-                                        @foreach($mentor->content['meta'] as $meta)
-                                            <span>{{ $meta }}</span>
-                                        @endforeach
-                                    @else
-                                        {{-- Legacy Fallback --}}
-                                        @if(!empty($mentor->content['meta_1']))
-                                            <span>{{ $mentor->content['meta_1'] }}</span>
-                                        @endif
-                                        @if(!empty($mentor->content['meta_2']))
-                                            <span>{{ $mentor->content['meta_2'] }}</span>
-                                        @endif
-                                    @endif
+                                    @foreach($mentor['meta'] as $meta)
+                                        <span>{{ $meta }}</span>
+                                    @endforeach
                                 </div>
                             </article>
                         </div>
@@ -2908,13 +3261,27 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Footer logo styling */
+        .footer-logo {
+            height: 120px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-logo {
+                height: 90px;
+            }
+        }
     </style>
     <footer>
         <div class="container">
             <div class="footer-top">
                 <div class="footer-brand-col">
-                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" class="footer-logo"
-                        style="margin-left: 80px;" />
+                    <img src="{{ asset('images/Logo_MayClass.png') }}" alt="Logo MayClass" class="footer-logo" />
                     <p class="footer-desc">
                         MayClass adalah platform bimbingan belajar premium yang menggabungkan materi berkualitas, mentor
                         berpengalaman, dan teknologi terkini untuk mengantarkan siswa menuju prestasi akademik terbaik.
@@ -3352,7 +3719,7 @@
 
                         // Show next photo
                         photos[currentIndex].classList.add('active');
-                    }, 3000); // Switch every 3 seconds
+                    }, 3000); // Switchevery 3 seconds
                 }
             });
         });
@@ -3368,9 +3735,9 @@
                 </svg>
             </button>
 
-            <div style="padding: 32px; max-width: 900px; width: 100%;">
+            <div class="modal-body">
 
-                <div style="display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: start;">
+                <div class="modal-content-grid">
                     <!-- LEFT COLUMN -->
                     <div>
                         <!-- Badge Program -->
@@ -3379,8 +3746,7 @@
                             x-show="pkg.tag" x-text="pkg.tag ?? 'PROGRAM'"></span>
 
                         <!-- Title -->
-                        <h2 style="font-size: 2.2rem; margin: 0 0 12px; line-height: 1.2; font-weight: 800; color: var(--text-main);"
-                            x-text="pkg.detail_title"></h2>
+                        <h2 class="modal-title" x-text="pkg.detail_title"></h2>
 
                         <!-- Description -->
                         <div style="margin-bottom: 24px; color: var(--text-muted); line-height: 1.6; font-size: 1rem;"
@@ -3566,7 +3932,7 @@
 
     <script>
         // Simple greeting popup
-        (function() {
+        (function () {
             const popup = document.getElementById('simpleGreeting');
             const titleEl = document.getElementById('greetingTitle');
 

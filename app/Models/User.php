@@ -35,6 +35,10 @@ class User extends Authenticatable
         'avatar_path',
         'bank_name',
         'account_number',
+        // Login throttle fields
+        'failed_login_attempts',
+        'locked_until',
+        'last_failed_login_at',
     ];
 
     /**
@@ -58,6 +62,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            // Login throttle casts
+            'locked_until' => 'datetime',
+            'last_failed_login_at' => 'datetime',
+            'failed_login_attempts' => 'integer',
         ];
     }
 

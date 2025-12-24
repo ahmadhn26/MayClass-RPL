@@ -70,7 +70,7 @@
         }
 
         .brand img {
-            height: 110px;
+            height: 56px;
             width: auto;
         }
 
@@ -481,6 +481,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -571,6 +572,8 @@
                 @if($hasActivePackage ?? false)
                     <a href="{{ route('student.dashboard') }}" class="btn-nav-back">Kembali ke Dashboard</a>
                 @else
+                    <a href="{{ route('packages.index') }}" class="btn-nav-back" style="background: #10b981;">Beli Paket
+                        Sekarang</a>
                     <a href="/" class="btn-nav-back">Kembali ke Beranda</a>
                 @endif
                 <form method="post" action="{{ route('logout') }}" style="margin:0">
@@ -589,7 +592,8 @@
             <div class="avatar-wrapper">
                 <div data-avatar-preview style="width: 100%; height: 100%;">
                     @if($avatarUrl)
-                        <img src="{{ $avatarUrl }}" alt="Foto profil" class="avatar-img" data-avatar-image data-original="{{ $avatarUrl }}" />
+                        <img src="{{ $avatarUrl }}" alt="Foto profil" class="avatar-img" data-avatar-image
+                            data-original="{{ $avatarUrl }}" />
                     @else
                         <div class="avatar-placeholder" data-avatar-placeholder>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -800,20 +804,20 @@
                     // Handle placeholders: hide them and create img if needed
                     placeholders.forEach(ph => {
                         const parent = ph.parentElement;
-                        
+
                         // Hide placeholder
                         ph.style.display = 'none';
-                        
+
                         // Check if parent already has an img element
                         let img = parent.querySelector('img[data-avatar-image]');
-                        
+
                         // If not, create one
                         if (!img) {
                             img = document.createElement('img');
                             img.setAttribute('data-avatar-image', '');
                             img.src = url;
                             img.alt = 'Preview';
-                            
+
                             // Apply appropriate styles based on parent context
                             if (parent.closest('.avatar-wrapper')) {
                                 // Sidebar avatar
@@ -824,7 +828,7 @@
                                 img.style.height = '100%';
                                 img.style.objectFit = 'cover';
                             }
-                            
+
                             parent.appendChild(img);
                         }
                     });
@@ -840,7 +844,7 @@
         let activeLogoutForm = null;
 
         if (logoutButton) {
-            logoutButton.addEventListener('click', function(e) {
+            logoutButton.addEventListener('click', function (e) {
                 e.preventDefault();
                 activeLogoutForm = this.closest('form');
                 logoutModal.classList.add('active');
@@ -848,20 +852,20 @@
         }
 
         // Cancel logout
-        cancelLogoutBtn.addEventListener('click', function() {
+        cancelLogoutBtn.addEventListener('click', function () {
             logoutModal.classList.remove('active');
             activeLogoutForm = null;
         });
 
         // Confirm logout
-        confirmLogoutBtn.addEventListener('click', function() {
+        confirmLogoutBtn.addEventListener('click', function () {
             if (activeLogoutForm) {
                 activeLogoutForm.submit();
             }
         });
 
         // Close modal when clicking outside
-        logoutModal.addEventListener('click', function(e) {
+        logoutModal.addEventListener('click', function (e) {
             if (e.target === logoutModal) {
                 logoutModal.classList.remove('active');
                 activeLogoutForm = null;
@@ -874,16 +878,20 @@
         <div class="logout-modal__content">
             <div class="logout-modal__header">
                 <div class="logout-modal__icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                 </div>
                 <h3 class="logout-modal__title">Konfirmasi Logout</h3>
                 <p class="logout-modal__message">Apakah Anda yakin ingin log out?</p>
             </div>
             <div class="logout-modal__actions">
-                <button type="button" class="logout-modal__button logout-modal__button--cancel" id="cancelLogout">Batal</button>
-                <button type="button" class="logout-modal__button logout-modal__button--confirm" id="confirmLogout">Ya, Log Out</button>
+                <button type="button" class="logout-modal__button logout-modal__button--cancel"
+                    id="cancelLogout">Batal</button>
+                <button type="button" class="logout-modal__button logout-modal__button--confirm" id="confirmLogout">Ya,
+                    Log Out</button>
             </div>
         </div>
     </div>

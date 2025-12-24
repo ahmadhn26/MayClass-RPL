@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\LoginThrottleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -134,7 +135,7 @@ class AuthController extends Controller
             return redirect()->route('register')->with('status', __('Silakan lengkapi data diri terlebih dahulu.'));
         }
 
-        // ✅ Validasi data profile yang ada di session (tanpa recaptcha)
+        // âœ… Validasi data profile yang ada di session (tanpa recaptcha)
         $profileValidator = Validator::make($profile, [
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'alpha_dash', 'min:4', 'max:50', Rule::unique(User::class, 'username')],
@@ -151,9 +152,86 @@ class AuthController extends Controller
                 ->withInput($profile);
         }
 
-        // ✅ Validasi password + reCAPTCHA dari form password step
+        // âœ… Validasi password + reCAPTCHA dari form password step
         $passwordData = $request->validate([
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'g-recaptcha-response' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $secret = config('services.recaptcha.secret');
+
+                    // ðŸ”§ BYPASS: Skip validation di development jika reCAPTCHA tidak dikonfigurasi
+                    if (!$secret) {
+                        if (app()->environment('local', 'development')) {
+                            Log::info('reCAPTCHA validation skipped (development mode, no credentials configured).');
+                            return; // Skip validation
+                        }
+
+                        Log::warning('Google reCAPTCHA secret key tidak dikonfigurasi.');
+                        $fail(__('Konfigurasi reCAPTCHA belum benar. Hubungi admin.'));
+
+                        return;
+                    }
+
+                    // Jika kredensial ada, validasi harus required
+                    if (empty($value)) {
+                        $fail(__('Silakan selesaikan verifikasi reCAPTCHA.'));
+                        return;
+                    }
+
+                    try {
+                        $response = Http::withoutVerifying()->asForm()->post(
+                            'https://www.google.com/recaptcha/api/siteverify',
+                            [
+                                'secret' => $secret,
+                                'response' => $value,
+                                'remoteip' => $request->ip(),
+                            ]
+                        );
+
+                        $body = $response->json();
+
+                        if (!($body['success'] ?? false)) {
+                            $fail(__('Verifikasi reCAPTCHA gagal. Silakan coba lagi.'));
+                        }
+                    } catch (Throwable $e) {
+                        Log::error('Gagal memverifikasi reCAPTCHA.', [
+                            'message' => $e->getMessage(),
+                        ]);
+
+                        $fail(__('Terjadi kesalahan saat memverifikasi reCAPTCHA. Silakan coba lagi.'));
+                    }
+                },
+            ],
+        ]);
+
+        // âœ… Buat user baru
+        User::create([
+            'name' => $profile['name'],
+            'username' => $profile['username'],
+            'email' => $profile['email'],
+            'password' => Hash::make($passwordData['password']),
+            'role' => 'visitor',
+            'phone' => $profile['phone'] ?? null,
+            'parent_phone' => $profile['parent_phone'] ?? null,
+            'gender' => $profile['gender'] ?? null,
+        ]);
+
+        $request->session()->forget('register.profile');
+
+        return redirect()
+            ->route('login')
+            ->with('register_success', true)
+            ->with('status', __('Akun berhasil dibuat. Silakan login untuk mulai belajar.'))
+            ->withInput(['username' => $profile['username']]);
+    }
+
+    public function login(Request $request): RedirectResponse
+    {
+        $this->ensureUsernameSupport();
+
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
             'g-recaptcha-response' => [
                 function ($attribute, $value, $fail) use ($request) {
                     $secret = config('services.recaptcha.secret');
@@ -203,41 +281,16 @@ class AuthController extends Controller
             ],
         ]);
 
-        // ✅ Buat user baru
-        User::create([
-            'name' => $profile['name'],
-            'username' => $profile['username'],
-            'email' => $profile['email'],
-            'password' => Hash::make($passwordData['password']),
-            'role' => 'visitor',
-            'phone' => $profile['phone'] ?? null,
-            'parent_phone' => $profile['parent_phone'] ?? null,
-            'gender' => $profile['gender'] ?? null,
-        ]);
+        unset($credentials['g-recaptcha-response']);
 
-        $request->session()->forget('register.profile');
-
-        return redirect()
-            ->route('login')
-            ->with('register_success', true)
-            ->with('status', __('Akun berhasil dibuat. Silakan login untuk mulai belajar.'))
-            ->withInput(['username' => $profile['username']]);
-    }
-
-    public function login(Request $request): RedirectResponse
-    {
-        $this->ensureUsernameSupport();
-
-        $credentials = $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ]);
+        // Initialize throttle service
+        $throttleService = new LoginThrottleService();
 
         try {
             // 1. Cek apakah user ada di database
-            $userExists = User::where('username', $credentials['username'])->exists();
+            $user = User::where('username', $credentials['username'])->first();
 
-            if (!$userExists) {
+            if (!$user) {
                 // Notifikasi: Pengguna belum memiliki akun, arahkan ke registrasi
                 return redirect()
                     ->route('register')
@@ -245,13 +298,57 @@ class AuthController extends Controller
                     ->with('error', __('Anda belum memiliki akun MayClass. Silakan daftar terlebih dahulu.'));
             }
 
-            // 2. Coba otentikasi
-            if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-                // Notifikasi: Username atau Password salah (jika user ada, tapi password salah)
+            // 2. Cek apakah akun sedang dikunci (brute force protection)
+            if ($throttleService->isLocked($user)) {
+                $remainingMinutes = $throttleService->getRemainingLockMinutes($user);
+                $remainingSeconds = $throttleService->getRemainingLockSeconds($user);
+
+                Log::warning('Login attempt on locked account.', [
+                    'user_id' => $user->id,
+                    'username' => $user->username,
+                    'ip' => $request->ip(),
+                    'remaining_minutes' => $remainingMinutes,
+                ]);
+
                 return back()
                     ->withInput($request->only('username'))
-                    ->with('error', __('Username atau Password salah.'));
+                    ->with('error', __('Akun Anda dikunci sementara karena terlalu banyak percobaan login gagal.'))
+                    ->with('lock_remaining_minutes', $remainingMinutes)
+                    ->with('lock_remaining_seconds', $remainingSeconds);
             }
+
+            // 3. Coba otentikasi
+            if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+                // Record failed attempt
+                $throttleService->recordFailedAttempt($user);
+
+                // Cek apakah baru saja dikunci
+                if ($throttleService->isLocked($user)) {
+                    $remainingMinutes = $throttleService->getRemainingLockMinutes($user);
+                    $remainingSeconds = $throttleService->getRemainingLockSeconds($user);
+
+                    return back()
+                        ->withInput($request->only('username'))
+                        ->with('error', __('Akun Anda dikunci sementara karena terlalu banyak percobaan login gagal.'))
+                        ->with('lock_remaining_minutes', $remainingMinutes)
+                        ->with('lock_remaining_seconds', $remainingSeconds);
+                }
+
+                // Tampilkan warning jika sudah mendekati batas
+                $remainingAttempts = $throttleService->getRemainingAttempts($user);
+                $errorMessage = __('Kredensial yang Anda masukkan tidak valid.');
+
+                if ($throttleService->shouldShowWarning($user)) {
+                    $errorMessage .= ' ' . __('Tersisa :count percobaan sebelum akun dikunci.', ['count' => $remainingAttempts]);
+                }
+
+                return back()
+                    ->withInput($request->only('username'))
+                    ->with('error', $errorMessage);
+            }
+
+            // 4. Login berhasil - reset throttle counter
+            $throttleService->resetAttempts($user);
 
             $user = Auth::user();
 
@@ -321,8 +418,8 @@ class AuthController extends Controller
             $hasActivePackage = $user->enrollments()
                 ->where('is_active', true)
                 ->where(function ($query) {
-                     $query->whereNull('ends_at')
-                           ->orWhere('ends_at', '>', now());
+                    $query->whereNull('ends_at')
+                        ->orWhere('ends_at', '>', now());
                 })
                 ->exists();
 
@@ -350,10 +447,10 @@ class AuthController extends Controller
     {
         $first = random_int(2, 9);
         $second = random_int(1, 8);
-        $operators = ['+', '−'];
+        $operators = ['+', 'âˆ’'];
         $operator = $operators[array_rand($operators)];
 
-        if ($operator === '−' && $second > $first) {
+        if ($operator === 'âˆ’' && $second > $first) {
             [$first, $second] = [$second, $first];
         }
 

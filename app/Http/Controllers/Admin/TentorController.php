@@ -72,15 +72,20 @@ class TentorController extends BaseAdminController
             ]);
 
         $stats = $this->tentorStats();
+        $subjectsByLevel = $this->getSubjectsByLevel();
+
+        if ($request->ajax()) {
+            return view('admin.tentors._table_rows', compact('tentors'));
+        }
 
         return $this->render('admin.tentors.index', [
             'tentors' => $tentors,
             'stats' => $stats,
             'filters' => [
-                'query' => $queryTerm,
                 'status' => in_array($status, ['all', 'active', 'inactive'], true) ? $status : 'all',
+                'query' => $queryTerm,
             ],
-            'subjectsByLevel' => $this->getSubjectsByLevel(),
+            'subjectsByLevel' => $subjectsByLevel
         ]);
     }
 

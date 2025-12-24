@@ -116,6 +116,28 @@ class FinanceController extends BaseAdminController
         return redirect()->back()->with('status', __('Pembayaran ditolak dan menunggu klarifikasi siswa.'));
     }
 
+    public function refund(Order $order): RedirectResponse
+    {
+        if ($order->status === 'refunded') {
+            return redirect()->back()->with('status', __('Pembayaran sudah direfund.'));
+        }
+
+        $order->forceFill([
+            'status' => 'refunded',
+            'paid_at' => null,
+        ])->save();
+
+        CheckoutSession::where('order_id', $order->id)
+            ->latest('id')
+            ->first()?->forceFill(['status' => 'failed'])->save();
+
+        if (Schema::hasTable('enrollments')) {
+            Enrollment::where('order_id', $order->id)->update(['is_active' => false]);
+        }
+
+        return redirect()->back()->with('status', __('Pembayaran telah direfund dan pesanan dibatalkan.'));
+    }
+
     private function sumPaidOrders(?int $year = null): float
     {
         if (!Schema::hasTable('orders')) {
@@ -230,12 +252,14 @@ class FinanceController extends BaseAdminController
         }
 
         return Order::with(['user', 'package'])
-            ->where('status', '!=', 'initiated')
+            // Removed filter: ->where('status', '!=', 'initiated') to allow seeing checkout progress
             ->latest('created_at')
             ->get()
             ->map(function (Order $order) {
                 $status = $order->status ?? 'pending';
-                $badge = $this->statusBadge($status);
+                $hasProof = !empty($order->payment_proof_path);
+
+                $badge = $this->statusBadge($status, $hasProof);
 
                 return [
                     'id' => $order->id,
@@ -251,19 +275,26 @@ class FinanceController extends BaseAdminController
                     'payment_method' => $order->payment_method,
                     'cardholder_name' => $order->cardholder_name,
                     'cancellation_reason' => $order->cancellation_reason,
-                    'canApprove' => $status === 'pending',
+                    'student_phone' => $order->user?->phone ?? '-',
+                    // Can only approve if pending (awaiting verification) AND has proof. Initiated is not approvable.
+                    'canApprove' => $status === 'pending' && $hasProof,
                     'canReject' => $status === 'pending',
                 ];
             });
     }
 
-    private function statusBadge(string $status): array
+    private function statusBadge(string $status, bool $hasProof = false): array
     {
         return match ($status) {
-            'paid' => ['label' => __('Verified'), 'class' => 'status-pill status-pill--paid'],
-            'rejected', 'failed' => ['label' => __('Rejected'), 'class' => 'status-pill status-pill--rejected'],
-            'cancelled' => ['label' => __('Dibatalkan Siswa'), 'class' => 'status-pill status-pill--rejected'], // Reusing rejected style or create new one
-            default => ['label' => __('Pending'), 'class' => 'status-pill status-pill--pending'],
+            'paid' => ['label' => __('Verified'), 'class' => 'status-paid'],
+            'rejected', 'failed' => ['label' => __('Rejected'), 'class' => 'status-rejected'],
+            'refunded' => ['label' => __('Refunded'), 'class' => 'status-rejected'],
+            'cancelled' => ['label' => __('Dibatalkan Siswa'), 'class' => 'status-rejected'],
+            'initiated' => ['label' => __('Masih Checkout'), 'class' => 'status-checkout'],
+            'pending' => $hasProof
+            ? ['label' => __('Menunggu Verifikasi'), 'class' => 'status-pending']
+            : ['label' => __('Masih Checkout'), 'class' => 'status-checkout'],
+            default => ['label' => __('Pending'), 'class' => 'status-pending'],
         };
     }
 

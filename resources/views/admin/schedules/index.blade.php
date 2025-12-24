@@ -358,8 +358,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideUp {
@@ -367,6 +372,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -636,6 +642,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -727,7 +734,8 @@
             <div class="metric-card">
                 <span class="metric-label">Pola Aktif</span>
                 <div class="metric-value" style="color: var(--primary);">
-                    {{ number_format($schedule['metrics']['templates']) }}</div>
+                    {{ number_format($schedule['metrics']['templates']) }}
+                </div>
             </div>
         </div>
 
@@ -755,7 +763,8 @@
                                 <div class="error-alert">
                                     <div class="error-header">
                                         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <strong>Gagal menyimpan jadwal!</strong>
                                     </div>
@@ -772,27 +781,25 @@
                                 <select name="package_id" id="package-select" class="form-control" required>
                                     <option value="">Pilih Paket</option>
                                     @foreach ($schedule['packages'] as $package)
-                                                        <option value="{{ $package->id }}" data-level="{{ $package->level }}"
-                                                            data-subjects="{{ $package->subjects->map(function ($s) {
+                                                        <option value="{{ $package->id }}" data-level="{{ $package->level }}" data-subjects="{{ $package->subjects->map(function ($s) {
                                         return $s->id . ':' . $s->name . ':' . $s->level; })->join('|') }}">
-                                                            {{ $package->detail_title }}</option>
+                                                            {{ $package->detail_title }}
+                                                        </option>
                                     @endforeach
                                 </select>
                             </div>
 
                             {{-- Judul Sesi & Mata Pelajaran --}}
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label>Judul Sesi</label>
-                                    <input type="text" name="title" class="form-control" placeholder="Contoh: Pertemuan 1"
-                                        required>
+                                    <input type="text" name="title" class="form-control"
+                                        placeholder="Contoh: Pertemuan Rutin Matematika" required>
                                 </div>
+
                                 <div class="form-group">
                                     <label>Mata Pelajaran</label>
-                                    <!-- Hidden field for subject_id (for validation) -->
-                                    <input type="hidden" name="subject_id" id="subject-id-hidden">
-                                    <!-- Visible select for category (for display) -->
-                                    <select name="category" id="subject-select" class="form-control" required disabled>
+                                    <select name="subject_id" id="subject-select" class="form-control" disabled required>
                                         <option value="">Pilih Mata Pelajaran</option>
                                     </select>
                                 </div>
@@ -844,7 +851,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn-primary">✓ Simpan Jadwal</button>
+                            <button type="submit" class="btn-primary" id="submit-schedule-btn">✓ Simpan Jadwal</button>
                         </form>
                     @endif
                 </div>
@@ -1228,6 +1235,82 @@
         };
 
         document.addEventListener('DOMContentLoaded', function () {
+            // ========== CHECK FOR ERRORS ==========
+            @if($errors->any())
+                console.error('VALIDATION ERRORS DETECTED:', @json($errors->all()));
+            @else
+                console.log('No validation errors');
+            @endif
+            
+            // ========== SWEETALERT ERROR NOTIFICATION ==========
+            @if($errors->any())
+                try {
+                    console.log('Showing error notification');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menyimpan Jadwal!',
+                        html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
+                                @foreach($errors->all() as $error)
+                                    <li style="margin-bottom: 8px;">{{ $error }}</li>
+                                @endforeach
+                            </ul>`,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'Mengerti'
+                    });
+                } catch (error) {
+                    console.error('SweetAlert error:', error);
+                }
+            @endif
+
+            // ========== SUCCESS NOTIFICATION FROM QUERY PARAMETER ==========
+            // Check URL for success parameter (more reliable than session flash)
+            const urlParams = new URLSearchParams(window.location.search);
+            const successParam = urlParams.get('success');
+            const messageParam = urlParams.get('message');
+            
+            if (successParam === '1') {
+                try {
+                    const successMessage = messageParam || 'Jadwal berhasil ditambahkan!';
+                    console.log('Success parameter detected:', successMessage);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: decodeURIComponent(successMessage),
+                        confirmButtonColor: '#0f766e',
+                        confirmButtonText: 'OK',
+                        timer: 3000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Remove success parameter from URL after showing notification
+                        const cleanUrl = window.location.pathname + '?tutor_id=' + urlParams.get('tutor_id');
+                        window.history.replaceState({}, '', cleanUrl);
+                    });
+                } catch (error) {
+                    console.error('SweetAlert error:', error);
+                }
+            }
+            
+            // Fallback: Check session (for backward compatibility)
+            @if(session('success') || session('status'))
+                try {
+                    const successMessage = '{{ session('success') ?? session('status') }}';
+                    console.log('Session success detected:', successMessage);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: successMessage,
+                        confirmButtonColor: '#0f766e',
+                        confirmButtonText: 'OK',
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                } catch (error) {
+                    console.error('SweetAlert error:', error);
+                }
+            @endif
+
             const packageSelect = document.getElementById('package-select');
             const subjectSelect = document.getElementById('subject-select');
             const locationSelect = document.getElementById('location-select');
@@ -1236,9 +1319,9 @@
 
             // ========== ZOOM LINK CONDITIONAL DISPLAY ==========
             // Show/hide Zoom link input based on location selection
-            locationSelect.addEventListener('change', function() {
+            locationSelect.addEventListener('change', function () {
                 const isOnline = this.value.toLowerCase().includes('online');
-                
+
                 if (isOnline) {
                     zoomLinkContainer.classList.add('show');
                     zoomLinkInput.setAttribute('required', 'required');
@@ -1253,21 +1336,17 @@
             packageSelect.addEventListener('change', function () {
                 const selectedOption = this.options[this.selectedIndex];
                 const subjectsData = selectedOption.getAttribute('data-subjects') || '';
-                const subjectIdHidden = document.getElementById('subject-id-hidden');
 
-                // Populate subjects dropdown
+                // Populate subjects dropdown with ID as value
                 subjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
-                if (subjectIdHidden) subjectIdHidden.value = '';
 
                 if (subjectsData) {
                     const subjects = subjectsData.split('|');
                     subjects.forEach(function (subjectStr) {
                         const [id, name, level] = subjectStr.split(':');
                         const option = document.createElement('option');
-                        // Send subject NAME as value (stored in 'category' field)
-                        option.value = name;
-                        option.setAttribute('data-id', id);  // Store ID for hidden field
-                        option.setAttribute('data-level', level);
+                        // IMPORTANT: Use ID as value for direct submission
+                        option.value = id;
                         option.textContent = name + ' (' + level + ')';
                         subjectSelect.appendChild(option);
                     });
@@ -1277,16 +1356,56 @@
                 }
             });
 
-            // Update hidden subject_id when subject is selected
-            subjectSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                const subjectId = selectedOption.getAttribute('data-id');
-                const subjectIdHidden = document.getElementById('subject-id-hidden');
+            // ========== COMPREHENSIVE FORM VALIDATION ==========
+            const scheduleForm = document.querySelector('form[action*="schedule/template"]');
+            if (scheduleForm) {
+                console.log('✓ Form validation handler attached');
                 
-                if (subjectIdHidden && subjectId) {
-                    subjectIdHidden.value = subjectId;
-                }
-            });
+                scheduleForm.addEventListener('submit', function(e) {
+                    console.log('=== FORM SUBMIT ATTEMPT ===');
+                    
+                    // Get all form data
+                    const formData = new FormData(scheduleForm);
+                    const data = {};
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+                    
+                    console.log('Form data:', data);
+                    
+                    // Check required fields
+                    const requiredFields = {
+                        'user_id': 'Tutor ID',
+                        'package_id': 'Paket Belajar',
+                        'title': 'Judul Sesi',
+                        'subject_id': 'Mata Pelajaran',
+                        'location': 'Lokasi',
+                        'reference_date': 'Tanggal',
+                        'start_time': 'Jam Mulai',
+                        'duration_minutes': 'Durasi',
+                        'student_count': 'Jumlah Siswa'
+                    };
+                    
+                    const missing = [];
+                    for (let [field, label] of Object.entries(requiredFields)) {
+                        if (!data[field] || data[field].trim() === '') {
+                            missing.push(label);
+                            console.error('Missing field:', label, '(' + field + ')');
+                        }
+                    }
+                    
+                    if (missing.length > 0) {
+                        e.preventDefault();
+                        console.error('SUBMIT BLOCKED - Missing fields:', missing);
+                        alert('Field yang harus diisi:\n- ' + missing.join('\n- '));
+                        return false;
+                    }
+                    
+                    console.log('✓ All validations passed, submitting...');
+                });
+            } else {
+                console.error('✗ Schedule form not found!');
+            }
         });
 
         // Edit Modal Functions
@@ -1430,15 +1549,15 @@
         }
 
         // Handle delete template with SweetAlert
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Use click event on button instead of form submit
             document.querySelectorAll('.btn-delete-schedule').forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     const form = this.closest('form');
-                    
+
                     Swal.fire({
                         title: 'Hapus Pola Jadwal?',
                         text: 'Pola jadwal ini akan dihapus dan sesi mendatang akan dibatalkan.',

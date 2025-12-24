@@ -48,6 +48,10 @@ class SubjectController extends BaseAdminController
 
         $stats = $this->subjectStats();
 
+        if ($request->ajax()) {
+            return view('admin.subjects._table_rows', compact('subjects'));
+        }
+
         return $this->render('admin.subjects.index', [
             'subjects' => $subjects,
             'stats' => $stats,
