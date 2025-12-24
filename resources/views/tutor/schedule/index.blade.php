@@ -611,8 +611,14 @@
                                                 $now = \Carbon\Carbon::now();
                                                 $hasStarted = $session['start_at'] && $session['start_at']->lte($now);
                                             @endphp
-                                            <div style="margin-top: 12px;">
-                                                @if($hasStarted)
+                                            <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+                                                {{-- Logic: Enabled only if H-5 hours --}}
+                                                @php
+                                                    $joinableTime = $session['start_at']->copy()->subHours(5);
+                                                    $isJoinable = $now->greaterThanOrEqualTo($joinableTime);
+                                                @endphp
+
+                                                @if($isJoinable)
                                                     <a href="{{ $session['zoom_link'] }}" target="_blank" rel="noopener" class="zoom-btn">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -624,17 +630,26 @@
                                                         </svg>
                                                         Join Zoom
                                                     </a>
+                                                    
+                                                    {{-- Copy Link Button --}}
+                                                    <button type="button" class="zoom-btn" onclick="copyToClipboard('{{ $session['zoom_link'] }}')" 
+                                                        style="background: white; color: #2d8cff; border: 1px solid #2d8cff; padding: 10px;" title="Salin Link">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                        </svg>
+                                                    </button>
                                                 @else
                                                     <button disabled class="zoom-btn"
-                                                        style="background: #cbd5e1; color: #64748b; cursor: not-allowed; opacity: 0.6;"
-                                                        title="Sesi belum dimulai">
+                                                        style="background: #cbd5e1; color: #64748b; cursor: not-allowed; opacity: 0.8;"
+                                                        title="Link Zoom akan aktif 5 jam sebelum sesi dimulai">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                             stroke-linejoin="round">
                                                             <circle cx="12" cy="12" r="10"></circle>
                                                             <polyline points="12 6 12 12 16 14"></polyline>
                                                         </svg>
-                                                        Dimulai {{ $session['start_at']->locale('id')->diffForHumans() }}
+                                                        Zoom Aktif {{ $joinableTime->locale('id')->diffForHumans() }}
                                                     </button>
                                                 @endif
                                             </div>
@@ -829,6 +844,35 @@
                 const hiddenCount = totalSessions - 10;
                 btn.textContent = `Tampilkan Lebih Banyak (${hiddenCount} sesi lagi)`;
             }
+        }
+    </script>
+    <script>
+        function toggleFutureSessions() {
+            const sessions = document.querySelectorAll('#future-sessions-list .session-card');
+            const btn = document.getElementById('toggle-future-btn');
+            let isShowingAll = btn.textContent.includes('Lebih Sedikit');
+
+            sessions.forEach((el, index) => {
+                if (index >= 10) {
+                    el.style.display = isShowingAll ? 'none' : 'grid'; // grid because that's the display type
+                }
+            });
+
+            if (isShowingAll) {
+                const hiddenCount = sessions.length - 10;
+                btn.textContent = `Tampilkan Lebih Banyak (${hiddenCount} sesi lagi)`;
+            } else {
+                btn.textContent = 'Tampilkan Lebih Sedikit';
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // You might want to use a toast here later, for now just a simple alert or console
+                // alert('Link Zoom berhasil disalin!'); // Removed as requested
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+            });
         }
     </script>
 @endsection

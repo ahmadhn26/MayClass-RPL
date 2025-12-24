@@ -429,6 +429,12 @@
             border: none;
             font-size: 1rem;
             transition: all 0.3s;
+            flex: 1; /* Make buttons consistent width */
+        }
+
+        .modal-footer .btn-primary {
+            width: auto; /* Reset global width */
+            margin-top: 0; /* Reset global margin */
         }
 
         .modal-footer .btn-cancel {
@@ -679,7 +685,7 @@
 
 @section('content')
     <div class="schedule-container">
-
+        
         {{-- 1. Header & Filter --}}
         <div class="header-panel">
             <div class="header-content">
@@ -738,7 +744,7 @@
                     @if (!$schedule['selectedTutorId'])
                         <div class="empty-state">Silakan pilih tutor pada filter di atas untuk menambahkan jadwal.</div>
                     @elseif ($schedule['packages']->isEmpty())
-                        <div class="empty-state">Tutor ini belum memiliki paket belajar aktif.</div>
+                        <div class="empty-state">Tutor ini belum memiliki paket belajar aktif. Silahkan buka Manajemen Paket dan tambahkan tutor pengampuhnya</div>
                     @else
                         <form method="POST" action="{{ route('admin.schedule.templates.store') }}" class="form-stack">
                             @csrf
@@ -965,7 +971,7 @@
                                             <span class="time-range">{{ $session['time_range'] }}</span>
                                             <div style="display: flex; gap: 4px; margin-top: 6px;">
                                                 <button type="button" class="btn-sm btn-save" style="flex: 1;"
-                                                    onclick="openEditModal({{ json_encode($session) }})">Edit</button>
+                                                    onclick="openEditModal('{{ base64_encode(json_encode($session)) }}')">Edit</button>
                                                 <form method="POST"
                                                     action="{{ route('admin.schedule.sessions.cancel', $session['id']) }}"
                                                     onsubmit="return confirm('Batalkan sesi ini?');" style="flex: 1;">
@@ -1106,16 +1112,121 @@
                             </select>
                         </div>
                     @endif
+
+                {{-- Zoom Link (Hidden by default, shown via JS if location is Online) --}}
+                <div class="form-group" id="edit-zoom-container" style="display: none;">
+                    <label>Link Meeting / Zoom (Opsional - kosongkan jika tidak ingin mengubah)</label>
+                    <input type="url" name="zoom_link" id="edit_zoom_link" class="form-control" placeholder="https://zoom.us/j/...">
+                </div>
+
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Batal</button>
-                    <button type="submit" class="btn-save">Simpan Perubahan</button>
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Batal</button>
+                    <button type="submit" class="btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        // Base64 Helper
+        const Base64 = {
+            _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+            encode: function(e) {
+                var t = "";
+                var n, r, i, s, o, u, a;
+                var f = 0;
+                e = Base64._utf8_encode(e);
+                while (f < e.length) {
+                    n = e.charCodeAt(f++);
+                    r = e.charCodeAt(f++);
+                    i = e.charCodeAt(f++);
+                    s = n >> 2;
+                    o = (n & 3) << 4 | r >> 4;
+                    u = (r & 15) << 2 | i >> 6;
+                    a = i & 63;
+                    if (isNaN(r)) {
+                        u = a = 64
+                    } else if (isNaN(i)) {
+                        a = 64
+                    }
+                    t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
+                }
+                return t
+            },
+            decode: function(e) {
+                var t = "";
+                var n, r, i;
+                var s, o, u, a;
+                var f = 0;
+                e = e.replace(/[^A-Za-z0-9\+\/=]/g, "");
+                while (f < e.length) {
+                    s = this._keyStr.indexOf(e.charAt(f++));
+                    o = this._keyStr.indexOf(e.charAt(f++));
+                    u = this._keyStr.indexOf(e.charAt(f++));
+                    a = this._keyStr.indexOf(e.charAt(f++));
+                    n = s << 2 | o >> 4;
+                    r = (o & 15) << 4 | u >> 2;
+                    i = (u & 3) << 6 | a;
+                    t = t + String.fromCharCode(n);
+                    if (u != 64) {
+                        t = t + String.fromCharCode(r)
+                    }
+                    if (a != 64) {
+                        t = t + String.fromCharCode(i)
+                    }
+                }
+                t = Base64._utf8_decode(t);
+                return t
+            },
+            _utf8_encode: function(e) {
+                e = e.replace(/\r\n/g, "\n");
+                var t = "";
+                for (var n = 0; n < e.length; n++) {
+                    var r = e.charCodeAt(n);
+                    if (r < 128) {
+                        t += String.fromCharCode(r)
+                    } else if (r > 127 && r < 2048) {
+                        t += String.fromCharCode(r >> 6 | 192);
+                        t += String.fromCharCode(r & 63 | 128)
+                    } else {
+                        t += String.fromCharCode(r >> 12 | 224);
+                        t += String.fromCharCode(r >> 6 & 63 | 128);
+                        t += String.fromCharCode(r & 63 | 128)
+                    }
+                }
+                return t
+            },
+            _utf8_decode: function(e) {
+                var t = "";
+                var n = 0;
+                var r = c1 = c2 = 0;
+                while (n < e.length) {
+                    r = e.charCodeAt(n);
+                    if (r < 128) {
+                        t += String.fromCharCode(r);
+                        n++
+                    } else if (r > 191 && r < 224) {
+                        c2 = e.charCodeAt(n + 1);
+                        t += String.fromCharCode((r & 31) << 6 | c2 & 63);
+                        n += 2
+                    } else {
+                        c2 = e.charCodeAt(n + 1);
+                        c3 = e.charCodeAt(n + 2);
+                        t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+                        n += 3
+                    }
+                }
+                return t
+            },
+            encodeJson: function(data) {
+                return this.encode(JSON.stringify(data));
+            },
+            decodeJson: function(str) {
+                return JSON.parse(this.decode(str));
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
             const packageSelect = document.getElementById('package-select');
             const subjectSelect = document.getElementById('subject-select');
@@ -1179,12 +1290,30 @@
         });
 
         // Edit Modal Functions
-        function openEditModal(session) {
+        function openEditModal(encodedSession) {
+            // Check if input is string (Base64) or object (legacy/direct)
+            let session;
+            try {
+                if (typeof encodedSession === 'string') {
+                    // Decide if it's base64 (no space, usually)
+                     session = Base64.decodeJson(encodedSession);
+                } else {
+                    session = encodedSession;
+                }
+            } catch (e) {
+                console.error("Error decoding session data", e);
+                alert("Gagal memuat data sesi.");
+                return;
+            }
+
             const modal = document.getElementById('editModal');
             const form = document.getElementById('editSessionForm');
+            const zoomContainer = document.getElementById('edit-zoom-container');
+            const zoomInput = document.getElementById('edit_zoom_link');
 
             // Set form action
             form.action = `/admin/schedule/${session.id}`;
+            form.setAttribute('data-action', `/admin/schedule/${session.id}`); // Store for JS use
 
             // Parse the start_iso to get date and time
             if (session.start_iso) {
@@ -1201,9 +1330,70 @@
             if (tutorSelect) {
                 tutorSelect.value = '';
             }
+            
+            // Handle Zoom Link & Location
+            if (session.location && session.location.includes('Online')) {
+                zoomContainer.style.display = 'block';
+                zoomInput.value = session.zoom_link || ''; // Populate if exists
+            } else {
+                zoomContainer.style.display = 'none';
+                zoomInput.value = '';
+            }
 
             modal.classList.add('active');
         }
+
+        // Handle Edit Form Submission with Base64
+        document.getElementById('editSessionForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Encode Payload
+            const payload = Base64.encodeJson(data);
+            const actionUrl = this.getAttribute('data-action');
+
+            fetch(actionUrl, {
+                method: 'POST', // Method spoofing for PUT
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    _method: 'PUT',
+                    payload: payload 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response) {
+                    const decoded = Base64.decodeJson(data.response);
+                    if (decoded.status === 'success') {
+                        window.location.reload(); // Reload to show changes
+                    } else {
+                        alert('Gagal: ' + (decoded.message || 'Terjadi kesalahan'));
+                    }
+                } else {
+                    // Fallback for non-base64 error responses
+                     alert('Terjadi kesalahan pada server.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal menyimpan perubahan.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            });
+        });
 
         function closeEditModal() {
             const modal = document.getElementById('editModal');

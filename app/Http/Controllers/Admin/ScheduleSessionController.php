@@ -9,12 +9,21 @@ use Illuminate\Support\Facades\Schema;
 
 class ScheduleSessionController extends BaseAdminController
 {
-    public function update(Request $request, ScheduleSession $session): RedirectResponse
+    public function update(Request $request, ScheduleSession $session)
     {
+        // Handle Base64 Payload
+        if ($request->has('payload')) {
+            $decoded = json_decode(base64_decode($request->input('payload')), true);
+            if (is_array($decoded)) {
+                $request->merge($decoded);
+            }
+        }
+
         $data = $request->validate([
             'start_date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i'],
             'user_id' => ['nullable', 'exists:users,id'],
+            'zoom_link' => ['nullable', 'url'],
         ]);
 
         $startAt = \Carbon\Carbon::parse($data['start_date'] . ' ' . $data['start_time']);
@@ -27,7 +36,21 @@ class ScheduleSessionController extends BaseAdminController
             $payload['user_id'] = $data['user_id'];
         }
 
+        if (!empty($data['zoom_link'])) {
+            $payload['zoom_link'] = $data['zoom_link'];
+        }
+
         $session->update($payload);
+
+        // Return JSON for AJAX
+        if ($request->has('payload')) {
+             session()->flash('status', __('Jadwal berhasil diperbarui.'));
+             return $this->jsonResponse([
+                'status' => 'success',
+                'message' => __('Jadwal berhasil diperbarui.'),
+                'redirect' => route('admin.schedules.index', ['tutor_id' => $session->user_id])
+            ]);
+        }
 
         return $this->redirectToDashboard($request, $session->user_id, __('Jadwal berhasil diperbarui.'));
     }
@@ -70,5 +93,12 @@ class ScheduleSessionController extends BaseAdminController
 
         return redirect()->route('admin.schedules.index', $routeParameters)
             ->with('status', $message);
+    }
+
+    private function jsonResponse($data, $status = 200)
+    {
+        $json = json_encode($data);
+        $encoded = base64_encode($json);
+        return response()->json(['response' => $encoded], $status);
     }
 }

@@ -795,16 +795,22 @@
                 <span>{{ $schedule['highlight']['category'] }}</span>
             </div>
             @if (!empty($schedule['highlight']['zoom_link']))
-                <div style="margin-top: 16px;">
+                <div style="margin-top: 16px; display: flex; gap: 10px; align-items: center;">
                     <a href="{{ $schedule['highlight']['zoom_link'] }}" 
                        target="_blank" 
                        class="btn-primary zoom-button time-restricted"
                        data-start-time="{{ $schedule['highlight']['start_at_iso'] ?? '' }}"
                        data-duration="{{ $schedule['highlight']['duration_minutes'] ?? 90 }}"
-                       style="background: #2d8cff; display: inline-flex; align-items: center; gap: 8px;">
+                       style="background: #2d8cff; display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 10px 24px; justify-content: center;">
                         <span class="button-text">Join Zoom Meeting</span>
                         <span class="countdown-text" style="display: none; font-size: 0.85rem; opacity: 0.9;"></span>
                     </a>
+                    <button type="button" class="btn-icon copy-link-btn" 
+                        onclick="copyToClipboard('{{ $schedule['highlight']['zoom_link'] }}')"
+                        style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                        title="Salin Link Zoom">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    </button>
                 </div>
             @endif
         </div>
@@ -826,17 +832,25 @@
                             <div class="session-cat">{{ $session['category'] }}</div>
                             <h3 class="session-title">{{ $session['title'] }}</h3>
                             @if (!empty($session['zoom_link']))
-                                <a href="{{ $session['zoom_link'] }}" 
-                                   target="_blank"
-                                   class="zoom-button time-restricted"
-                                   data-start-time="{{ $session['start_at_iso'] ?? '' }}"
-                                   data-duration="{{ $session['duration_minutes'] ?? 90 }}"
-                                   style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 16px; background: #2d8cff; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;"
-                                   onmouseover="if(!this.classList.contains('disabled')) this.style.background='#1a73e8'" 
-                                   onmouseout="if(!this.classList.contains('disabled')) this.style.background='#2d8cff'">
-                                    <span class="button-text">Join Online</span>
-                                    <span class="countdown-text" style="display: none; font-size: 0.8rem;"></span>
-                                </a>
+                                <div style="display: flex; gap: 8px; margin-top: 12px; align-items: stretch;">
+                                    <a href="{{ $session['zoom_link'] }}" 
+                                       target="_blank"
+                                       class="zoom-button time-restricted"
+                                       data-start-time="{{ $session['start_at_iso'] ?? '' }}"
+                                       data-duration="{{ $session['duration_minutes'] ?? 90 }}"
+                                       style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; background: #2d8cff; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;"
+                                       onmouseover="if(!this.classList.contains('disabled')) this.style.background='#1a73e8'" 
+                                       onmouseout="if(!this.classList.contains('disabled')) this.style.background='#2d8cff'">
+                                        <span class="button-text">Join Online</span>
+                                        <span class="countdown-text" style="display: none; font-size: 0.8rem;"></span>
+                                    </a>
+                                    <button type="button" class="btn-icon copy-link-btn" 
+                                        onclick="copyToClipboard('{{ $session['zoom_link'] }}')"
+                                        style="padding: 0 12px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                                        title="Salin Link Zoom">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    </button>
+                                </div>
                             @endif
 
                         </div>
@@ -951,5 +965,75 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/zoom-button-control.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateZoomButtons() {
+                const buttons = document.querySelectorAll('.zoom-button.time-restricted');
+                const now = new Date();
+
+                buttons.forEach(btn => {
+                    const startIso = btn.getAttribute('data-start-time');
+                    const textSpan = btn.querySelector('.button-text');
+                    const countdownSpan = btn.querySelector('.countdown-text');
+                    const copyBtn = btn.nextElementSibling; // The copy button next to it
+
+                    if (!startIso) return;
+
+                    const startTime = new Date(startIso);
+                    const timeDiff = startTime - now;
+                    const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+                    // Logic: Enable if within 5 hours before start (H-5)
+                    // Or if session already started (timeDiff < 0)
+                    if (hoursDiff <= 5) {
+                        // ACTIVE
+                        btn.classList.remove('disabled');
+                        btn.style.opacity = '1';
+                        btn.style.pointerEvents = 'auto';
+                        btn.style.filter = 'none';
+                        if (copyBtn) {
+                            copyBtn.disabled = false;
+                            copyBtn.style.opacity = '1';
+                            copyBtn.style.cursor = 'pointer';
+                        }
+                        
+                        if (textSpan) textSpan.style.display = 'inline';
+                        if (countdownSpan) countdownSpan.style.display = 'none';
+                    } else {
+                        // DISABLED (More than 5 hours to go)
+                        btn.classList.add('disabled');
+                        btn.style.opacity = '0.6';
+                        btn.style.pointerEvents = 'none';
+                        btn.style.filter = 'grayscale(100%)';
+                        
+                        // Disable copy button too based on requirements ("ikut aturan H-5")
+                        if (copyBtn) {
+                            copyBtn.disabled = true;
+                            copyBtn.style.opacity = '0.5';
+                            copyBtn.style.cursor = 'not-allowed';
+                        }
+
+                        if (textSpan) textSpan.style.display = 'none';
+                        if (countdownSpan) {
+                            countdownSpan.style.display = 'inline';
+                            const hours = Math.floor(hoursDiff);
+                            countdownSpan.textContent = `Zoom Aktif ${hours} jam lagi`;
+                        }
+                    }
+                });
+            }
+
+            // Run immediately and every minute
+            updateZoomButtons();
+            setInterval(updateZoomButtons, 60000);
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Visual feedback - popup removed as requested
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
 @endpush
