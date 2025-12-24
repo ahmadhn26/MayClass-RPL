@@ -454,35 +454,30 @@
             .steps-grid { grid-template-columns: 1fr; }
 
             /* Horizontal scroll for cards on mobile/tablet */
+            /* FIX: Vertical Stacking for Cards (Materials/Quizzes) */
             .cards-grid {
                 display: flex !important;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                gap: 20px;
-                padding: 8px 0px 24px;
-                scrollbar-width: thin;
-                scrollbar-color: rgba(15, 118, 110, 0.3) rgba(0, 0, 0, 0.05);
+                flex-direction: column !important;
+                overflow-x: visible !important;
+                overflow-y: visible !important;
+                scroll-snap-type: none !important;
+                gap: 16px !important;
+                padding: 0 !important;
             }
 
             .cards-grid::-webkit-scrollbar {
-                height: 6px;
-            }
-
-            .cards-grid::-webkit-scrollbar-track {
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 10px;
-            }
-
-            .cards-grid::-webkit-scrollbar-thumb {
-                background: rgba(15, 118, 110, 0.4);
-                border-radius: 10px;
+                display: none;
             }
 
             .content-card {
-                flex: 0 0 85%;
-                scroll-snap-align: start;
-                max-width: 85%;
+                flex: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                display: flex;
+                flex-direction: column;
+                /* Mimic Image 2 style (Left Border Accent) */
+                border-left: 4px solid var(--primary);
+                padding: 20px !important;
             }
         }
 
@@ -496,94 +491,74 @@
 
         /* Mobile specific optimizations */
         @media (max-width: 768px) {
-            .dashboard-container { padding: 0 16px; }
+            .dashboard-container { padding: 0 20px !important; }
 
             .hero-card { 
-                padding: 24px; 
-                margin-bottom: 24px;
+                padding: 24px !important; 
+                margin-bottom: 24px !important;
             }
 
             .hero-title { 
-                font-size: 1.5rem; 
+                font-size: 1.5rem !important; 
+                line-height: 1.3 !important;
             }
 
             .hero-desc {
-                font-size: 0.95rem;
+                font-size: 0.95rem !important;
+                margin-bottom: 20px !important;
             }
 
             .hero-actions { 
-                flex-direction: column; 
-                gap: 12px;
+                flex-direction: column !important; 
+                gap: 12px !important;
             }
 
             .btn-hero { 
-                width: 100%; 
-                justify-content: center;
-                min-height: 44px;
-                padding: 14px 24px;
+                width: 100% !important; 
+                justify-content: center !important;
+                min-height: 48px !important;
             }
 
+            /* FIX: Vertical Stacking for Stats */
             .stats-grid { 
-                grid-template-columns: 1fr; 
-                gap: 16px;
-                margin-bottom: 20px;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 16px !important; 
+                margin-bottom: 32px !important;
+                grid-template-columns: none !important; /* Reset grid */
             }
 
             .stat-card {
-                padding: 20px;
+                padding: 24px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                width: 100% !important;
             }
 
             .stat-value {
-                font-size: 1.5rem;
+                font-size: 1.75rem !important;
+                order: 2 !important;
+                margin: 0 !important;
             }
 
             .stat-label {
-                font-size: 0.85rem;
+                font-size: 1rem !important;
+                order: 1 !important;
             }
 
             .section-header {
-                margin-top: 28px;
-                margin-bottom: 16px;
+                margin-top: 32px !important;
+                margin-bottom: 20px !important;
             }
 
             .section-title {
-                font-size: 1.1rem;
+                font-size: 1.2rem !important;
             }
-
-            .card-title {
-                font-size: 1rem;
-            }
-
-            .card-desc {
-                font-size: 0.85rem;
-            }
-
-            .sidebar-card {
-                padding: 20px;
-            }
-
-            .inactive-card {
-                padding: 32px 24px;
-            }
-
-            .inactive-card h1 {
-                font-size: 1.75rem !important;
-            }
-
-            .inactive-card p {
-                font-size: 0.95rem !important;
-            }
-
-            .step-num {
-                font-size: 1.5rem !important;
-            }
-
-            .step-title {
-                font-size: 0.95rem;
-            }
-
-            .step-desc {
-                font-size: 0.8rem !important;
+            
+            /* Sidebar adjustments for mobile if hidden/moved */
+            .sidebar-content {
+                display: none !important; 
             }
         }
 

@@ -64,6 +64,7 @@
             padding: 8px 16px;
             border-radius: 99px;
             border: 1px solid var(--border-color);
+            max-width: 100%; /* Fix overflow */
         }
 
         .filter-box label {
@@ -82,6 +83,8 @@
             cursor: pointer;
             outline: none;
             min-width: 150px;
+            max-width: 100%; /* Fix overflow */
+            text-overflow: ellipsis;
         }
 
         /* --- 2. METRICS --- */
@@ -614,6 +617,16 @@
             .header-panel {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+            /* Mobile tweaks for filter */
+            .filter-box {
+                width: 100%;
+                margin-top: 12px;
+                justify-content: space-between;
+            }
+            .filter-select {
+                flex: 1;
+                width: 100%;
             }
 
             .session-item {
