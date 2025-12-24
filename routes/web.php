@@ -340,6 +340,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/schedule/template', [AdminScheduleTemplateController::class, 'store'])->name('schedule.templates.store');
     Route::put('/schedule/template/{template}', [AdminScheduleTemplateController::class, 'update'])->name('schedule.templates.update');
     Route::delete('/schedule/template/{template}', [AdminScheduleTemplateController::class, 'destroy'])->name('schedule.templates.destroy');
+    Route::delete('/schedule/templates/all', [AdminScheduleTemplateController::class, 'destroyAll'])->name('schedule.templates.destroyAll');
     Route::put('/schedule/{session}', [AdminScheduleSessionController::class, 'update'])->name('schedule.sessions.update');
     Route::post('/schedule/{session}/cancel', [AdminScheduleSessionController::class, 'cancel'])->name('schedule.sessions.cancel');
     Route::post('/schedule/{session}/restore', [AdminScheduleSessionController::class, 'restore'])->name('schedule.sessions.restore');

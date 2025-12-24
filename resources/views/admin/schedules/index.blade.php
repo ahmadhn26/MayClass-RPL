@@ -339,6 +339,39 @@
             color: #15803d;
         }
 
+        /* Modern Delete All Button */
+        .btn-delete-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+            white-space: nowrap;
+        }
+
+        .btn-delete-all:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-delete-all:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-delete-all svg {
+            flex-shrink: 0;
+        }
+
         /* Modal Styles */
         .modal-overlay {
             display: none;
@@ -438,12 +471,15 @@
             border: none;
             font-size: 1rem;
             transition: all 0.3s;
-            flex: 1; /* Make buttons consistent width */
+            flex: 1;
+            /* Make buttons consistent width */
         }
 
         .modal-footer .btn-primary {
-            width: auto; /* Reset global width */
-            margin-top: 0; /* Reset global margin */
+            width: auto;
+            /* Reset global width */
+            margin-top: 0;
+            /* Reset global margin */
         }
 
         .modal-footer .btn-cancel {
@@ -705,7 +741,7 @@
 
 @section('content')
     <div class="schedule-container">
-        
+
         {{-- 1. Header & Filter --}}
         <div class="header-panel">
             <div class="header-content">
@@ -765,7 +801,8 @@
                     @if (!$schedule['selectedTutorId'])
                         <div class="empty-state">Silakan pilih tutor pada filter di atas untuk menambahkan jadwal.</div>
                     @elseif ($schedule['packages']->isEmpty())
-                        <div class="empty-state">Tutor ini belum memiliki paket belajar aktif. Silahkan buka Manajemen Paket dan tambahkan tutor pengampuhnya</div>
+                        <div class="empty-state">Tutor ini belum memiliki paket belajar aktif. Silahkan buka Manajemen Paket dan
+                            tambahkan tutor pengampuhnya</div>
                     @else
                         <form method="POST" action="{{ route('admin.schedule.templates.store') }}" class="form-stack">
                             @csrf
@@ -872,9 +909,32 @@
 
             {{-- Right Column: Active Templates Table --}}
             <div class="content-card">
-                <div class="card-head">
-                    <h4>Pola Jadwal Aktif</h4>
-                    <span>Daftar jadwal berulang yang sedang berjalan</span>
+                <div class="card-head"
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h4>Pola Jadwal Aktif</h4>
+                        <span>Daftar jadwal berulang yang sedang berjalan</span>
+                    </div>
+                    @if ($schedule['templates']->isNotEmpty() && $schedule['selectedTutorId'])
+                        <form method="POST" action="{{ route('admin.schedule.templates.destroyAll') }}"
+                            id="delete-all-templates-form">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="user_id" value="{{ $schedule['selectedTutorId'] }}">
+                            <input type="hidden" name="redirect_tutor_id" value="{{ $schedule['activeFilter'] }}">
+                            <button type="button" class="btn-delete-all" id="btn-delete-all-templates">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                                Hapus Semua Jadwal
+                            </button>
+                        </form>
+                    @endif
                 </div>
                 @if ($schedule['templates']->isNotEmpty())
                         <div class="table-responsive">
@@ -1133,11 +1193,12 @@
                         </div>
                     @endif
 
-                {{-- Zoom Link (Hidden by default, shown via JS if location is Online) --}}
-                <div class="form-group" id="edit-zoom-container" style="display: none;">
-                    <label>Link Meeting / Zoom (Opsional - kosongkan jika tidak ingin mengubah)</label>
-                    <input type="url" name="zoom_link" id="edit_zoom_link" class="form-control" placeholder="https://zoom.us/j/...">
-                </div>
+                    {{-- Zoom Link (Hidden by default, shown via JS if location is Online) --}}
+                    <div class="form-group" id="edit-zoom-container" style="display: none;">
+                        <label>Link Meeting / Zoom (Opsional - kosongkan jika tidak ingin mengubah)</label>
+                        <input type="url" name="zoom_link" id="edit_zoom_link" class="form-control"
+                            placeholder="https://zoom.us/j/...">
+                    </div>
 
                 </div>
                 <div class="modal-footer">
@@ -1152,7 +1213,7 @@
         // Base64 Helper
         const Base64 = {
             _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-            encode: function(e) {
+            encode: function (e) {
                 var t = "";
                 var n, r, i, s, o, u, a;
                 var f = 0;
@@ -1174,7 +1235,7 @@
                 }
                 return t
             },
-            decode: function(e) {
+            decode: function (e) {
                 var t = "";
                 var n, r, i;
                 var s, o, u, a;
@@ -1199,7 +1260,7 @@
                 t = Base64._utf8_decode(t);
                 return t
             },
-            _utf8_encode: function(e) {
+            _utf8_encode: function (e) {
                 e = e.replace(/\r\n/g, "\n");
                 var t = "";
                 for (var n = 0; n < e.length; n++) {
@@ -1217,7 +1278,7 @@
                 }
                 return t
             },
-            _utf8_decode: function(e) {
+            _utf8_decode: function (e) {
                 var t = "";
                 var n = 0;
                 var r = c1 = c2 = 0;
@@ -1239,10 +1300,10 @@
                 }
                 return t
             },
-            encodeJson: function(data) {
+            encodeJson: function (data) {
                 return this.encode(JSON.stringify(data));
             },
-            decodeJson: function(str) {
+            decodeJson: function (str) {
                 return JSON.parse(this.decode(str));
             }
         };
@@ -1254,7 +1315,7 @@
             @else
                 console.log('No validation errors');
             @endif
-            
+
             // ========== SWEETALERT ERROR NOTIFICATION ==========
             @if($errors->any())
                 try {
@@ -1263,10 +1324,10 @@
                         icon: 'error',
                         title: 'Gagal Menyimpan Jadwal!',
                         html: `<ul style="text-align: left; margin: 0; padding-left: 20px;">
-                                @foreach($errors->all() as $error)
-                                    <li style="margin-bottom: 8px;">{{ $error }}</li>
-                                @endforeach
-                            </ul>`,
+                                                                        @foreach($errors->all() as $error)
+                                                                            <li style="margin-bottom: 8px;">{{ $error }}</li>
+                                                                        @endforeach
+                                                                    </ul>`,
                         confirmButtonColor: '#ef4444',
                         confirmButtonText: 'Mengerti'
                     });
@@ -1275,17 +1336,17 @@
                 }
             @endif
 
-            // ========== SUCCESS NOTIFICATION FROM QUERY PARAMETER ==========
-            // Check URL for success parameter (more reliable than session flash)
-            const urlParams = new URLSearchParams(window.location.search);
+                                // ========== SUCCESS NOTIFICATION FROM QUERY PARAMETER ==========
+                                // Check URL for success parameter (more reliable than session flash)
+                                const urlParams = new URLSearchParams(window.location.search);
             const successParam = urlParams.get('success');
             const messageParam = urlParams.get('message');
-            
+
             if (successParam === '1') {
                 try {
                     const successMessage = messageParam || 'Jadwal berhasil ditambahkan!';
                     console.log('Success parameter detected:', successMessage);
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
@@ -1303,13 +1364,13 @@
                     console.error('SweetAlert error:', error);
                 }
             }
-            
+
             // Fallback: Check session (for backward compatibility)
             @if(session('success') || session('status'))
                 try {
                     const successMessage = '{{ session('success') ?? session('status') }}';
                     console.log('Session success detected:', successMessage);
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
@@ -1324,7 +1385,7 @@
                 }
             @endif
 
-            const packageSelect = document.getElementById('package-select');
+                                const packageSelect = document.getElementById('package-select');
             const subjectSelect = document.getElementById('subject-select');
             const locationSelect = document.getElementById('location-select');
             const zoomLinkContainer = document.getElementById('zoom-link-container');
@@ -1369,23 +1430,24 @@
                 }
             });
 
-            // ========== COMPREHENSIVE FORM VALIDATION ==========
+            // ========== BASE64 AJAX FORM SUBMISSION ==========
             const scheduleForm = document.querySelector('form[action*="schedule/template"]');
             if (scheduleForm) {
-                console.log('✓ Form validation handler attached');
-                
-                scheduleForm.addEventListener('submit', function(e) {
-                    console.log('=== FORM SUBMIT ATTEMPT ===');
-                    
+                console.log('✓ Base64 form submission handler attached');
+
+                scheduleForm.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Always prevent default - we'll submit via AJAX
+                    console.log('=== FORM SUBMIT ATTEMPT (Base64 AJAX) ===');
+
                     // Get all form data
                     const formData = new FormData(scheduleForm);
                     const data = {};
                     for (let [key, value] of formData.entries()) {
                         data[key] = value;
                     }
-                    
+
                     console.log('Form data:', data);
-                    
+
                     // Check required fields
                     const requiredFields = {
                         'user_id': 'Tutor ID',
@@ -1395,26 +1457,125 @@
                         'location': 'Lokasi',
                         'reference_date': 'Tanggal',
                         'start_time': 'Jam Mulai',
-                        'duration_minutes': 'Durasi',
-                        'student_count': 'Jumlah Siswa'
+                        'duration_minutes': 'Durasi'
                     };
-                    
+
                     const missing = [];
                     for (let [field, label] of Object.entries(requiredFields)) {
-                        if (!data[field] || data[field].trim() === '') {
+                        if (!data[field] || data[field].toString().trim() === '') {
                             missing.push(label);
                             console.error('Missing field:', label, '(' + field + ')');
                         }
                     }
-                    
+
                     if (missing.length > 0) {
-                        e.preventDefault();
                         console.error('SUBMIT BLOCKED - Missing fields:', missing);
-                        alert('Field yang harus diisi:\n- ' + missing.join('\n- '));
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Data Belum Lengkap',
+                            html: '<ul style="text-align: left; margin: 0; padding-left: 20px;">' +
+                                missing.map(f => '<li>' + f + '</li>').join('') +
+                                '</ul>',
+                            confirmButtonColor: '#f59e0b',
+                            confirmButtonText: 'OK'
+                        });
                         return false;
                     }
-                    
-                    console.log('✓ All validations passed, submitting...');
+
+                    // Disable button and show loading
+                    const submitBtn = document.getElementById('submit-schedule-btn');
+                    const originalBtnText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '⏳ Menyimpan...';
+
+                    // Encode data to Base64
+                    const payload = Base64.encodeJson(data);
+                    console.log('Base64 payload created, sending...');
+
+                    // Submit via AJAX
+                    fetch(scheduleForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': data._token,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ payload: payload })
+                    })
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            return response.json();
+                        })
+                        .then(result => {
+                            console.log('Response received:', result);
+
+                            if (result.response) {
+                                const decoded = Base64.decodeJson(result.response);
+                                console.log('Decoded response:', decoded);
+
+                                if (decoded.status === 'success') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: decoded.message || 'Jadwal berhasil ditambahkan!',
+                                        confirmButtonColor: '#0f766e',
+                                        confirmButtonText: 'OK',
+                                        timer: 2000,
+                                        timerProgressBar: true
+                                    }).then(() => {
+                                        // Redirect to success URL
+                                        if (decoded.redirect) {
+                                            window.location.href = decoded.redirect;
+                                        } else {
+                                            window.location.reload();
+                                        }
+                                    });
+                                } else {
+                                    // Show error
+                                    let errorHtml = decoded.message || 'Terjadi kesalahan';
+                                    if (decoded.errors && decoded.errors.length > 0) {
+                                        errorHtml = '<ul style="text-align: left; margin: 0; padding-left: 20px;">' +
+                                            decoded.errors.map(err => '<li style="margin-bottom: 8px;">' + err + '</li>').join('') +
+                                            '</ul>';
+                                    }
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal Menyimpan Jadwal!',
+                                        html: errorHtml,
+                                        confirmButtonColor: '#ef4444',
+                                        confirmButtonText: 'Mengerti'
+                                    });
+
+                                    // Re-enable button
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerHTML = originalBtnText;
+                                }
+                            } else {
+                                // Unexpected response format
+                                console.error('Unexpected response format:', result);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Format respons tidak dikenali',
+                                    confirmButtonColor: '#ef4444'
+                                });
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalBtnText;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fetch error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Koneksi Gagal',
+                                text: 'Gagal menghubungi server. Silakan coba lagi.',
+                                confirmButtonColor: '#ef4444',
+                                confirmButtonText: 'OK'
+                            });
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+                        });
                 });
             } else {
                 console.error('✗ Schedule form not found!');
@@ -1428,7 +1589,7 @@
             try {
                 if (typeof encodedSession === 'string') {
                     // Decide if it's base64 (no space, usually)
-                     session = Base64.decodeJson(encodedSession);
+                    session = Base64.decodeJson(encodedSession);
                 } else {
                     session = encodedSession;
                 }
@@ -1462,7 +1623,7 @@
             if (tutorSelect) {
                 tutorSelect.value = '';
             }
-            
+
             // Handle Zoom Link & Location
             if (session.location && session.location.includes('Online')) {
                 zoomContainer.style.display = 'block';
@@ -1476,9 +1637,9 @@
         }
 
         // Handle Edit Form Submission with Base64
-        document.getElementById('editSessionForm')?.addEventListener('submit', function(e) {
+        document.getElementById('editSessionForm')?.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const btn = this.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.disabled = true;
@@ -1486,7 +1647,7 @@
 
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
-            
+
             // Encode Payload
             const payload = Base64.encodeJson(data);
             const actionUrl = this.getAttribute('data-action');
@@ -1498,33 +1659,33 @@
                     'X-CSRF-TOKEN': "{{ csrf_token() }}",
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     _method: 'PUT',
-                    payload: payload 
+                    payload: payload
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.response) {
-                    const decoded = Base64.decodeJson(data.response);
-                    if (decoded.status === 'success') {
-                        window.location.reload(); // Reload to show changes
+                .then(response => response.json())
+                .then(data => {
+                    if (data.response) {
+                        const decoded = Base64.decodeJson(data.response);
+                        if (decoded.status === 'success') {
+                            window.location.reload(); // Reload to show changes
+                        } else {
+                            alert('Gagal: ' + (decoded.message || 'Terjadi kesalahan'));
+                        }
                     } else {
-                        alert('Gagal: ' + (decoded.message || 'Terjadi kesalahan'));
+                        // Fallback for non-base64 error responses
+                        alert('Terjadi kesalahan pada server.');
                     }
-                } else {
-                    // Fallback for non-base64 error responses
-                     alert('Terjadi kesalahan pada server.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal menyimpan perubahan.');
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.textContent = originalText;
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal menyimpan perubahan.');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                });
         });
 
         function closeEditModal() {
@@ -1588,6 +1749,34 @@
                     });
                 });
             });
+
+            // Handle delete ALL templates button
+            const deleteAllBtn = document.getElementById('btn-delete-all-templates');
+            if (deleteAllBtn) {
+                deleteAllBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const form = document.getElementById('delete-all-templates-form');
+                    const templateCount = {{ $schedule['templates']->count() ?? 0 }};
+
+                    Swal.fire({
+                        title: 'Hapus Semua Pola Jadwal?',
+                        html: `<p>Anda akan menghapus <strong>${templateCount} pola jadwal</strong> untuk tutor ini.</p>
+                                           <p style="color: #ef4444; font-size: 0.9rem; margin-top: 12px;">⚠️ Semua sesi mendatang juga akan dibatalkan!</p>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Ya, Hapus Semua!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            }
         });
 
     </script>
