@@ -522,6 +522,9 @@ CREATE TABLE `users` (
   `avatar_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `bank_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `account_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `failed_login_attempts` int unsigned NOT NULL DEFAULT '0',
+  `locked_until` timestamp NULL DEFAULT NULL,
+  `last_failed_login_at` timestamp NULL DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -591,3 +594,66 @@ INSERT INTO `users` (`name`, `username`, `email`, `password`, `role`, `phone`, `
 VALUES ('Admin Utama MayClass', 'admin_utama', 'admin@gmail.com', '$2y$12$ajEXHoFqlo3.bQwmTNOHouVfJGPNQecChoG0WwSsJulcbSoiWaXVK', 'admin', '0812-7777-1234', 'other', 'Jl. Pengelola Pendidikan No. 1, Bandung', NOW(), NOW());
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (47,'2025_12_01_120804_create_material_items_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (48,'2025_12_01_125817_create_quiz_items_table',1);
+
+DROP TABLE IF EXISTS `email_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `email_logs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `schedule_session_id` bigint unsigned DEFAULT NULL,
+  `type` enum('schedule_created','schedule_updated','reminder_h1') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subject` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('pending','sent','failed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `attempts` tinyint unsigned NOT NULL DEFAULT '0',
+  `last_attempt_at` timestamp NULL DEFAULT NULL,
+  `provider_message_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `error_message` text COLLATE utf8mb4_unicode_ci,
+  `sent_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_logs_unique` (`user_id`,`schedule_session_id`,`type`),
+  KEY `email_logs_schedule_session_id_foreign` (`schedule_session_id`),
+  KEY `email_logs_status_index` (`status`),
+  CONSTRAINT `email_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `email_logs_schedule_session_id_foreign` FOREIGN KEY (`schedule_session_id`) REFERENCES `schedule_sessions` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` tinyint unsigned NOT NULL,
+  `reserved_at` int unsigned DEFAULT NULL,
+  `available_at` int unsigned NOT NULL,
+  `created_at` int unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `jobs_queue_index` (`queue`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (49,'2025_12_24_100000_create_email_logs_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (50,'2025_12_24_100001_create_jobs_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (51,'2025_12_24_100002_create_failed_jobs_table',1);
+

@@ -37,6 +37,15 @@ class AppServiceProvider extends ServiceProvider
         $this->guardSessionDriverFallback();
         // $this->ensureDemoAccounts(); <-- Dihapus
         $this->shareStudentAccessState();
+        $this->registerObservers();
+    }
+
+    /**
+     * Register model observers.
+     */
+    private function registerObservers(): void
+    {
+        \App\Models\ScheduleSession::observe(\App\Observers\ScheduleSessionObserver::class);
     }
 
     private function guardSessionDriverFallback(): void
