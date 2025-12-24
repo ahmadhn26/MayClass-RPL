@@ -5,13 +5,13 @@ namespace App\Observers;
 use App\Jobs\SendScheduleEmailToUser;
 use App\Models\ScheduleSession;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ScheduleSessionObserver
 {
     /**
      * Fields that are relevant for triggering email updates.
-     * Only changes to these fields will trigger a schedule_updated email.
      */
     private const RELEVANT_FIELDS = [
         'start_at',
@@ -25,68 +25,119 @@ class ScheduleSessionObserver
 
     /**
      * Handle the ScheduleSession "created" event.
+     * Only sends email for sessions within 7 days from now.
      */
     public function created(ScheduleSession $session): void
     {
-        $this->dispatchToRecipients($session, 'schedule_created');
-    }
+        Log::info('ScheduleSessionObserver::created triggered', [
+            'session_id' => $session->id,
+            'title' => $session->title,
+            'start_at' => $session->start_at,
+            'package_id' => $session->package_id,
+        ]);
 
-    /**
-     * Handle the ScheduleSession "updated" event.
-     * Only triggers if relevant fields were changed.
-     */
-    public function updated(ScheduleSession $session): void
-    {
-        // Only trigger if relevant fields were changed
-        if (!$session->wasChanged(self::RELEVANT_FIELDS)) {
-            Log::debug('ScheduleSessionObserver: No relevant fields changed, skipping email', [
+        // Check if session is within next 7 days
+        if (!$this->isWithinSevenDays($session)) {
+            Log::debug('ScheduleSessionObserver: Session not within 7 days, skipping', [
                 'session_id' => $session->id,
-                'dirty' => $session->getDirty(),
             ]);
             return;
         }
 
-        // Don't send update email for cancelled sessions
+        $this->sendEmailsToRecipients($session, 'schedule_created');
+    }
+
+    /**
+     * Handle the ScheduleSession "updated" event.
+     */
+    public function updated(ScheduleSession $session): void
+    {
+        if (!$session->wasChanged(self::RELEVANT_FIELDS)) {
+            return;
+        }
+
         if ($session->status === 'cancelled') {
             return;
         }
 
-        $this->dispatchToRecipients($session, 'schedule_updated');
+        $this->sendEmailsToRecipients($session, 'schedule_updated');
     }
 
     /**
-     * Dispatch email jobs to all relevant recipients.
+     * Check if session is within next 7 days
      */
-    private function dispatchToRecipients(ScheduleSession $session, string $type): void
+    private function isWithinSevenDays(ScheduleSession $session): bool
     {
-        $recipients = $this->getUniqueRecipients($session);
+        if (!$session->start_at) {
+            return false;
+        }
 
-        Log::info("ScheduleSessionObserver: Dispatching {$type} emails", [
+        $sessionDate = Carbon::parse($session->start_at)->startOfDay();
+        $today = Carbon::now()->startOfDay();
+        $sevenDaysLater = Carbon::now()->addDays(7)->endOfDay();
+
+        return $sessionDate->gte($today) && $sessionDate->lte($sevenDaysLater);
+    }
+
+    /**
+     * Send emails directly (no queue) for shared hosting compatibility.
+     */
+    private function sendEmailsToRecipients(ScheduleSession $session, string $type): void
+    {
+        $recipients = $this->getRecipients($session);
+
+        Log::info("ScheduleSessionObserver: Sending {$type} emails", [
             'session_id' => $session->id,
             'recipient_count' => $recipients->count(),
+            'recipients' => $recipients->pluck('email')->toArray(),
         ]);
 
+        if ($recipients->isEmpty()) {
+            Log::warning('ScheduleSessionObserver: No recipients found', [
+                'session_id' => $session->id,
+                'package_id' => $session->package_id,
+            ]);
+            return;
+        }
+
         foreach ($recipients as $user) {
-            SendScheduleEmailToUser::dispatch($session->id, $user->id, $type)
-                ->afterCommit();
+            try {
+                Log::info("ScheduleSessionObserver: Sending email to {$user->email}");
+
+                // Send synchronously - no queue needed
+                SendScheduleEmailToUser::dispatchSync($session->id, $user->id, $type);
+
+                Log::info("ScheduleSessionObserver: Email sent successfully to {$user->email}");
+            } catch (\Exception $e) {
+                // Log error but don't break - continue sending to other recipients
+                Log::error("ScheduleSessionObserver: Failed to send email to {$user->email}", [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+            }
         }
     }
 
     /**
-     * Get unique recipients (students enrolled in package + tutor).
+     * Get all recipients (enrolled students + tutor).
      */
-    private function getUniqueRecipients(ScheduleSession $session)
+    private function getRecipients(ScheduleSession $session)
     {
         $recipients = collect();
 
-        // Get students enrolled in the package
+        // Get active students enrolled in this package
         if ($session->package_id) {
             $students = User::where('role', 'student')
-                ->whereHas('enrollments', function ($query) use ($session) {
-                    $query->where('package_id', $session->package_id)
+                ->whereHas('enrollments', function ($q) use ($session) {
+                    $q->where('package_id', $session->package_id)
                         ->where('is_active', true);
                 })
                 ->get();
+
+            Log::debug('ScheduleSessionObserver: Found students', [
+                'package_id' => $session->package_id,
+                'count' => $students->count(),
+            ]);
 
             $recipients = $recipients->merge($students);
         }
@@ -99,7 +150,6 @@ class ScheduleSessionObserver
             }
         }
 
-        // Return unique recipients by ID
         return $recipients->unique('id');
     }
 }
