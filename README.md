@@ -205,6 +205,6 @@ This project is conducted for academic purposes. Any use of the data or code pro
 
 **Have questions or want to discuss further?**
 
-Reach out to me via:
+Reach out to us via:
 * 📧 **Email:** [222313427@stis.ac.id](mailto:222313427@stis.ac.id)
 * 💬 **WhatsApp:** [+62 812-8112-3487](https://wa.me/6281281123487)
