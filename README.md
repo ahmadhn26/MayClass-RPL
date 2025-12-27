@@ -8,7 +8,7 @@ Proyek ini dikembangkan oleh Tim 1 3SD2 sebagai bagian dari pemenuhan tugas mata
 
 Klien (Bimbel MayClass) saat ini mengelola seluruh operasional secara manual. Informasi seperti jadwal, materi, dan data siswa masih tersebar dalam bentuk file PDF atau tautan Google Drive. Proses ini tidak efisien, menyulitkan siswa dan orang tua untuk mendapatkan informasi terpusat, dan menghambat pendokumentasian progres belajar bagi siswa.
 
-## 💡 Solusi
+## Solusi
 
 Website MayClass ini hadir sebagai platform terintegrasi yang berfungsi sebagai:
 
@@ -17,7 +17,7 @@ Website MayClass ini hadir sebagai platform terintegrasi yang berfungsi sebagai:
 3. **Platform E-Learning:** Memfasilitasi siswa untuk mengakses materi, mengerjakan kuis/tugas, dan melihat progres belajar.
 4. **Alat Branding:** Menampilkan testimoni dan foto kegiatan untuk meningkatkan kepercayaan calon siswa.
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 Sistem ini memiliki 5 peran pengguna utama:
 
@@ -44,22 +44,22 @@ Sistem ini memiliki 5 peran pengguna utama:
   * Mengelola tagihan siswa.
   * Memverifikasi pembayaran yang masuk.
 
-## 🛠️ Tumpukan Teknologi (Technology Stack)
+## Technology Stack
 
 * **Backend:** Laravel (PHP Framework)
 * **Frontend:** Vue.js & Blade Templates
 * **Styling:** Tailwind CSS
 * **Database:** MySQL
 
-## 🎨 Desain & Wireframe
+## Desain & Wireframe
 
 Rancangan antarmuka (UI/UX) dan prototipe interaktif untuk proyek ini dibuat menggunakan Figma.
 
-* **Tautan Utama Desain:** [Lihat Desain Lengkap di Figma](https://www.figma.com/design/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id=134-348&t=359dHXDoq8JX47xF-1)
-* **Prototipe Alur Siswa:** [Coba Alur Siswa](https://www.figma.com/proto/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id-1-188&p=f&t=UEcMAvLIo68NX2km-1&scaling-min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A188)
-* **Prototipe Alur Tentor:** [Coba Alur Tentor](https://www.figma.com/proto/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id=134-1161&p=f&t=2VXB CyG9sHr6oUd-1&scaling-min-zoom&content-scaling=fixed&page-id=134%3A348)
+* **Tautan Utama Desain:** (https://www.figma.com/design/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id=134-348&t=359dHXDoq8JX47xF-1)
+* **Prototipe Alur Siswa:** (https://www.figma.com/proto/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id-1-188&p=f&t=UEcMAvLIo68NX2km-1&scaling-min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A188)
+* **Prototipe Alur Tentor:** (https://www.figma.com/proto/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id=134-1161&p=f&t=2VXB CyG9sHr6oUd-1&scaling-min-zoom&content-scaling=fixed&page-id=134%3A348)
 
-## 🚀 Instalasi dan Menjalankan Proyek
+## Instalasi dan Menjalankan Proyek
 
 Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
@@ -116,7 +116,7 @@ Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
      ```
 9. Buka aplikasi di `http://localhost:8000`.
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Error `HY000/1045` saat login MySQL atau phpMyAdmin
 
@@ -185,7 +185,7 @@ menjalankan migrasi, perintah provisioning akun demo pada saat `php artisan serv
 3. Setelah migrasi selesai, jalankan ulang `php artisan serve`. Aplikasi akan berjalan normal dan kolom `is_active` siap
    digunakan untuk mengatur status aktif/nonaktif tentor dari panel admin.
 
-## 👥 Tim Developer (Kelompok 1 - 3SD2)
+## Tim Developer (Kelompok 1 - 3SD2)
 
 Proyek ini dikerjakan oleh:
 
@@ -198,3 +198,13 @@ Proyek ini dikerjakan oleh:
 | Triangga Hafid Rifa'i        | 222313408 |
 | Xavier Yubin Raditio         | 222313427 |
 | Yudha Putra Tiara            | 222313433 |
+
+This project is conducted for academic purposes. Any use of the data or code provided herein should be properly credited. Thank you.
+
+---
+
+**Have questions or want to discuss further?**
+
+Reach out to me via:
+* 📧 **Email:** [222313427@stis.ac.id](mailto:222313427@stis.ac.id)
+* 💬 **WhatsApp:** [+62 812-8112-3487](https://wa.me/6281281123487)
