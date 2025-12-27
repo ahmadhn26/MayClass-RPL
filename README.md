@@ -80,7 +80,7 @@ Rancangan antarmuka (UI/UX) dan prototipe interaktif untuk proyek ini dibuat men
 
 ## Preview Sistem
 
-### Halaman Landing Page
+### Landing Page
 ![Landing Page](screenshots/landing-page.png)
 
 ### Dashboard Siswa
