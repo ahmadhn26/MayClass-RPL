@@ -78,6 +78,21 @@ Rancangan antarmuka (UI/UX) dan prototipe interaktif untuk proyek ini dibuat men
 * **Prototipe Alur Siswa:** (https://www.figma.com/proto/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id-1-188&p=f&t=UEcMAvLIo68NX2km-1&scaling-min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A188)
 * **Prototipe Alur Tentor:** (https://www.figma.com/proto/FYcvU8p4W8qNuyghlN4VFk/WIREFRAME?node-id=134-1161&p=f&t=2VXB)
 
+## Preview Sistem
+
+### Halaman Landing Page
+![Landing Page](screenshots/landing-page.png)
+
+### Dashboard Siswa
+![Dashboard Siswa](screenshots/dashboard-siswa.png)
+
+### Dashboard Admin
+![Dashboard Admin](screenshots/dashboard-admin.png)
+
+### Dashboard Tentor
+![Dashboard Tentor](screenshots/dashboard-tentor.png)
+
+
 ## Instalasi dan Menjalankan Proyek
 
 Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
