@@ -21,6 +21,11 @@
             --radius: 12px;
         }
 
+        /* SweetAlert z-index fix - make it appear above modal */
+        .swal2-container {
+            z-index: 99999 !important;
+        }
+
         .page-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -262,6 +267,143 @@
 
         .btn-delete:hover {
             background: #fee2e2;
+        }
+
+        /* Reset Password Button */
+        .btn-reset-password {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35);
+        }
+
+        .btn-reset-password:hover {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.45);
+        }
+
+        .btn-reset-password:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset-password:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset-password svg {
+            flex-shrink: 0;
+        }
+
+        /* Password Alert */
+        .password-alert {
+            display: none;
+            background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+        }
+
+        .password-alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .password-alert-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #92400e;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .password-value {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            border: 1px solid #fcd34d;
+        }
+
+        .password-value code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            letter-spacing: 1px;
+            flex: 1;
+        }
+
+        .btn-copy-password {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #0f766e;
+            color: white;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy-password:hover {
+            background: #115e59;
+        }
+
+        .btn-copy-password.copied {
+            background: #10b981;
+        }
+
+        .password-alert-note {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #78350f;
+        }
+
+        /* Password Actions Section */
+        .password-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .password-section h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 16px 0;
         }
 
         /* WhatsApp Counseling Button */
@@ -619,6 +761,46 @@
                     </div>
                 </div>
 
+                {{-- Password Section --}}
+                <div class="password-section">
+                    <h3>Manajemen Password</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Generate password baru jika
+                        siswa lupa password atau membutuhkan reset akses login.</p>
+                    <button type="button" class="btn-reset-password" id="btn_generate_password"
+                        onclick="generateNewPassword()">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z">
+                            </path>
+                        </svg>
+                        <span>Generate Password Baru</span>
+                    </button>
+
+                    <div class="password-alert" id="password_alert">
+                        <div class="password-alert-header">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                </path>
+                            </svg>
+                            Password Baru Berhasil Dibuat!
+                        </div>
+                        <div class="password-value">
+                            <code id="generated_password_text">-</code>
+                            <button type="button" class="btn-copy-password" onclick="copyPassword()">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <span id="copy_btn_text">Salin</span>
+                            </button>
+                        </div>
+                        <p class="password-alert-note">⚠️ Simpan dan bagikan password ini ke siswa melalui kanal resmi.
+                            Password tidak akan ditampilkan lagi setelah modal ditutup.</p>
+                    </div>
+                </div>
+
                 {{-- Timeline Section --}}
                 <div class="timeline-section">
                     <h3>Riwayat Paket & Pembayaran</h3>
@@ -822,13 +1004,22 @@
                         text: "{{ session('error') }}",
                     });
                 @endif
-                });
+                            });
 
             // ========== MODAL FUNCTIONS ==========
+            let currentStudentId = null;
+
             function openDetailModal(studentId) {
+                currentStudentId = studentId;
                 const modal = document.getElementById('studentDetailModal');
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
+
+                // Reset password alert state
+                document.getElementById('password_alert').classList.remove('show');
+                document.getElementById('generated_password_text').textContent = '-';
+                document.getElementById('copy_btn_text').textContent = 'Salin';
+                document.querySelector('.btn-copy-password').classList.remove('copied');
 
                 // Fetch student data
                 fetch(`/admin/students/${studentId}`, {
@@ -856,6 +1047,10 @@
                 const modal = document.getElementById('studentDetailModal');
                 modal.classList.remove('active');
                 document.body.style.overflow = 'auto';
+                currentStudentId = null;
+
+                // Reset password alert when modal closes
+                document.getElementById('password_alert').classList.remove('show');
             }
 
             function populateModal(data) {
@@ -872,13 +1067,13 @@
                 const packageSummary = document.getElementById('modal_package_summary');
                 if (data.summary) {
                     packageSummary.innerHTML = `
-                                                                                                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
-                                                                                                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
-                                                                                                            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
-                                                                                                            <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
-                                                                                                            <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
-                                                                                                        </div>
-                                                                                                    `;
+                                        <div style="padding: 16px; background: rgba(255,255,255,0.7); border-radius: 12px;">
+                                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Paket Terbaru</div>
+                                            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;">${data.summary.package}</div>
+                                            <div style="font-size: 0.9rem; color: var(--text-muted);">Aktif hingga ${data.summary.expires}</div>
+                                            <span class="status-pill" data-state="${data.summary.status_state}" style="margin-top: 12px;">${data.summary.status}</span>
+                                        </div>
+                                    `;
                 } else {
                     packageSummary.innerHTML = '<p style="color: var(--text-muted);">Tidak ada paket aktif</p>';
                 }
@@ -894,17 +1089,17 @@
                 const timelineContainer = document.getElementById('modal_timeline');
                 if (data.timeline && data.timeline.length > 0) {
                     timelineContainer.innerHTML = data.timeline.map(entry => `
-                                                                                                        <div class="timeline-item">
-                                                                                                            <div class="timeline-item-header">${entry.package}</div>
-                                                                                                            <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
-                                                                                                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
-                                                                                                                Periode: ${entry.period}
-                                                                                                            </div>
-                                                                                                            <div class="timeline-meta">
-                                                                                                                Invoice #${entry.invoice || '-'} · Total ${entry.total}
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    `).join('');
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-header">${entry.package}</div>
+                                            <span class="status-pill" data-state="${entry.status_state}">${entry.status}</span>
+                                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
+                                                Periode: ${entry.period}
+                                            </div>
+                                            <div class="timeline-meta">
+                                                Invoice #${entry.invoice || '-'} · Total ${entry.total}
+                                            </div>
+                                        </div>
+                                    `).join('');
                 } else {
                     timelineContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Belum ada riwayat paket untuk siswa ini.</p>';
                 }
@@ -920,6 +1115,120 @@
                 if (event.target === modal) {
                     closeDetailModal();
                 }
+            }
+
+            // ========== PASSWORD FUNCTIONS ==========
+            function generateNewPassword() {
+                if (!currentStudentId) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Tidak dapat menemukan ID siswa.'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Generate Password Baru?',
+                    html: 'Password lama siswa akan dihapus dan diganti dengan password baru.<br><br><strong>Lanjutkan?</strong>',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f97316',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Generate!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const btn = document.getElementById('btn_generate_password');
+                        const originalHtml = btn.innerHTML;
+                        btn.disabled = true;
+                        btn.innerHTML = `
+                                            <svg class="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span>Memproses...</span>
+                                        `;
+
+                        fetch(`/admin/students/${currentStudentId}/reset-password`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                btn.disabled = false;
+                                btn.innerHTML = originalHtml;
+
+                                if (data.success) {
+                                    document.getElementById('generated_password_text').textContent = data.password;
+                                    document.getElementById('password_alert').classList.add('show');
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: data.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    throw new Error(data.error || 'Terjadi kesalahan');
+                                }
+                            })
+                            .catch(error => {
+                                btn.disabled = false;
+                                btn.innerHTML = originalHtml;
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: error.message || 'Gagal generate password baru.'
+                                });
+                            });
+                    }
+                });
+            }
+
+            function copyPassword() {
+                const passwordText = document.getElementById('generated_password_text').textContent;
+                if (!passwordText || passwordText === '-') {
+                    return;
+                }
+
+                navigator.clipboard.writeText(passwordText).then(() => {
+                    const btn = document.querySelector('.btn-copy-password');
+                    const btnText = document.getElementById('copy_btn_text');
+
+                    btn.classList.add('copied');
+                    btnText.textContent = 'Tersalin!';
+
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btnText.textContent = 'Salin';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = passwordText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+
+                    const btn = document.querySelector('.btn-copy-password');
+                    const btnText = document.getElementById('copy_btn_text');
+                    btn.classList.add('copied');
+                    btnText.textContent = 'Tersalin!';
+
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btnText.textContent = 'Salin';
+                    }, 2000);
+                });
             }
         </script>
     @endpush

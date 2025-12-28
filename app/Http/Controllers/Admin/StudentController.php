@@ -160,9 +160,12 @@ class StudentController extends BaseAdminController
         ]);
     }
 
-    public function resetPassword(User $student): RedirectResponse
+    public function resetPassword(Request $request, User $student)
     {
         if ($student->role !== 'student') {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'Pengguna tersebut bukan siswa.'], 400);
+            }
             return redirect()->route('admin.students.index')->with('status', __('Pengguna tersebut bukan siswa.'));
         }
 
@@ -171,6 +174,15 @@ class StudentController extends BaseAdminController
         $student->forceFill([
             'password' => Hash::make($newPassword),
         ])->save();
+
+        // Return JSON for AJAX requests
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'password' => $newPassword,
+                'message' => 'Password baru berhasil dibuat. Segera bagikan ke siswa melalui kanal resmi.'
+            ]);
+        }
 
         return redirect()
             ->route('admin.students.show', $student)
