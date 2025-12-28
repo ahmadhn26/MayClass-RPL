@@ -59,7 +59,157 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        nav {
+        /* --- Standard Mobile Menu Styles (Copied from layouts/app) --- */
+        .student-mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            padding: 80px 24px 24px;
+            gap: 24px;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1003;
+            overflow-y: auto;
+        }
+
+        .student-mobile-menu.active {
+            right: 0;
+        }
+
+
+
+        .student-navbar__link {
+            font-size: 1.1rem;
+            padding: 8px 0;
+            width: 100%;
+            font-weight: 500;
+            color: #5d6e75;
+            position: relative;
+        }
+
+        .student-navbar__link.is-active {
+            color: #2b9083;
+        }
+        
+        .student-navbar__link.is-active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0px;
+            height: 4px;
+            border-radius: 999px;
+            background: #2b9083;
+        }
+
+        .student-mobile-menu__actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .student-navbar__profile {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(47, 152, 140, 0.12);
+            color: #2b9083;
+            font-size: 0.92rem;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .student-navbar__avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .student-navbar__logout {
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 999px;
+            background: rgba(47, 152, 140, 0.18);
+            color: #2b9083;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            width: 100%;
+        }
+
+        /* Overlay */
+        .student-navbar__overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .student-navbar__overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Hamburger Button Style */
+        .student-navbar__hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1005;
+            margin-left: auto;
+        }
+
+        .student-navbar__hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #2b9083;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .student-navbar__hamburger.active {
+            position: fixed;
+            right: 20px;
+            top: 24px;
+        }
+
+        .student-navbar__hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .student-navbar__hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .student-navbar__hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        header nav {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 24px;
@@ -67,6 +217,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .student-mobile-menu__links {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            height: auto; /* Ensure it's not constrained by global nav styles */
+            margin: 0;
+            padding: 0;
         }
 
         .brand img {
@@ -413,6 +573,16 @@
         @media (max-width: 900px) {
             .container {
                 grid-template-columns: 1fr;
+                margin-top: 20px;
+            }
+
+            /* Hide Desktop Nav on Mobile, SHOW hamburger */
+            .nav-actions {
+                display: none;
+            }
+
+            .student-navbar__hamburger {
+                display: flex;
             }
 
             .profile-sidebar {
@@ -441,10 +611,8 @@
             .avatar-wrapper {
                 margin: 0 auto 16px;
             }
-
-            .nav-actions {
-                display: none;
-            }
+            
+            /* .nav-actions already hidden by header nav display:none */
         }
 
         /* Logout Confirmation Modal */
@@ -563,6 +731,34 @@
 
 <body>
 
+    @php($user = auth()->user())
+    @php($navAvatar = \App\Support\ProfileAvatar::forUser($user))
+
+    <div class="student-navbar__overlay" id="navOverlay"></div>
+
+    <div class="student-mobile-menu" id="mobileMenu">
+        <nav class="student-mobile-menu__links">
+            <a href="{{ route('student.dashboard') }}"
+                class="student-navbar__link">Beranda</a>
+            @if($hasActivePackage ?? false)
+                <a href="{{ route('student.materials') }}" class="student-navbar__link">Materi</a>
+                <a href="{{ route('student.quiz') }}" class="student-navbar__link">Quiz</a>
+                <a href="{{ route('student.schedule') }}" class="student-navbar__link">Jadwal</a>
+            @endif
+        </nav>
+
+        <div class="student-mobile-menu__actions">
+            <a class="student-navbar__profile" href="#">
+                <img class="student-navbar__avatar" src="{{ $navAvatar }}" alt="Foto profil" />
+                <span>{{ $user?->name ?? 'Siswa' }}</span>
+            </a>
+            <form method="post" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="student-navbar__logout">Keluar</button>
+            </form>
+        </div>
+    </div>
+
     <header>
         <nav>
             <a href="/" class="brand">
@@ -581,6 +777,13 @@
                     <button type="submit" class="btn-logout">Keluar</button>
                 </form>
             </div>
+            
+            <!-- Standard Hamburger -->
+            <button class="student-navbar__hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </nav>
     </header>
 
@@ -781,97 +984,132 @@
     </main>
 
     {{-- Script Preview Avatar --}}
+    {{-- Script Preview Avatar --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- Avatar Preview Logic ---
             const input = document.getElementById('avatar');
             const imagePreviews = document.querySelectorAll('[data-avatar-image]');
             const placeholders = document.querySelectorAll('[data-avatar-placeholder]');
 
-            if (!input) return;
+            if (input) {
+                input.addEventListener('change', function () {
+                    const file = input.files && input.files[0];
 
-            input.addEventListener('change', function () {
-                const file = input.files && input.files[0];
+                    if (file) {
+                        const url = URL.createObjectURL(file);
 
-                if (file) {
-                    const url = URL.createObjectURL(file);
-
-                    // Update all existing image previews
-                    imagePreviews.forEach(img => {
-                        img.style.display = 'block';
-                        img.src = url;
-                    });
-
-                    // Handle placeholders: hide them and create img if needed
-                    placeholders.forEach(ph => {
-                        const parent = ph.parentElement;
-
-                        // Hide placeholder
-                        ph.style.display = 'none';
-
-                        // Check if parent already has an img element
-                        let img = parent.querySelector('img[data-avatar-image]');
-
-                        // If not, create one
-                        if (!img) {
-                            img = document.createElement('img');
-                            img.setAttribute('data-avatar-image', '');
+                        // 1. Update existing images
+                        const existingImages = document.querySelectorAll('[data-avatar-image]');
+                        existingImages.forEach(img => {
+                            img.style.display = 'block';
                             img.src = url;
-                            img.alt = 'Preview';
+                        });
 
-                            // Apply appropriate styles based on parent context
-                            if (parent.closest('.avatar-wrapper')) {
-                                // Sidebar avatar
-                                img.className = 'avatar-img';
+                        // 2. Handle placeholders (hide them and ensure img exists)
+                        placeholders.forEach(ph => {
+                            const parent = ph.parentElement;
+                            
+                            // Hide placeholder
+                            ph.style.display = 'none';
+
+                            // Check if this container already has an image (we might have just updated it above)
+                            // But if the user started with NO avatar, the image might not exist in the DOM yet.
+                            let img = parent.querySelector('img[data-avatar-image]');
+
+                            if (!img) {
+                                // Create new image element
+                                img = document.createElement('img');
+                                img.setAttribute('data-avatar-image', '');
+                                img.src = url;
+                                img.alt = 'Preview';
+                                
+                                // Styles
+                                if (parent.closest('.avatar-wrapper')) {
+                                    img.className = 'avatar-img';
+                                } else {
+                                    img.style.width = '100%';
+                                    img.style.height = '100%';
+                                    img.style.objectFit = 'cover';
+                                }
+                                
+                                parent.appendChild(img);
                             } else {
-                                // Form upload area avatar
-                                img.style.width = '100%';
-                                img.style.height = '100%';
-                                img.style.objectFit = 'cover';
+                                // Ensure it's visible if it was hidden
+                                img.style.display = 'block';
+                                img.src = url;
                             }
-
-                            parent.appendChild(img);
-                        }
-                    });
-                }
-            });
-        });
-
-        // Logout Confirmation Handler
-        const logoutModal = document.getElementById('logoutModal');
-        const logoutButton = document.querySelector('.btn-logout');
-        const cancelLogoutBtn = document.getElementById('cancelLogout');
-        const confirmLogoutBtn = document.getElementById('confirmLogout');
-        let activeLogoutForm = null;
-
-        if (logoutButton) {
-            logoutButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                activeLogoutForm = this.closest('form');
-                logoutModal.classList.add('active');
-            });
-        }
-
-        // Cancel logout
-        cancelLogoutBtn.addEventListener('click', function () {
-            logoutModal.classList.remove('active');
-            activeLogoutForm = null;
-        });
-
-        // Confirm logout
-        confirmLogoutBtn.addEventListener('click', function () {
-            if (activeLogoutForm) {
-                activeLogoutForm.submit();
+                        });
+                    }
+                });
             }
-        });
+            
+            // --- Mobile Menu Toggle (Standard App Style) ---
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const navOverlay = document.getElementById('navOverlay');
 
-        // Close modal when clicking outside
-        logoutModal.addEventListener('click', function (e) {
-            if (e.target === logoutModal) {
-                logoutModal.classList.remove('active');
-                activeLogoutForm = null;
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                navOverlay.classList.toggle('active');
+                
+                if (mobileMenu.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (hamburger) {
+                hamburger.addEventListener('click', toggleMenu);
+            }
+            if (navOverlay) {
+                navOverlay.addEventListener('click', toggleMenu);
+            }
+
+            // --- Logout Confirmation ---
+            const logoutModal = document.getElementById('logoutModal');
+            // Select all logout buttons (desktop nav, mobile menu, etc)
+            const logoutButtons = document.querySelectorAll('.btn-logout'); 
+            const cancelLogoutBtn = document.getElementById('cancelLogout');
+            const confirmLogoutBtn = document.getElementById('confirmLogout');
+            let activeLogoutForm = null;
+
+            logoutButtons.forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    activeLogoutForm = this.closest('form');
+                    logoutModal.classList.add('active');
+                });
+            });
+
+            if (cancelLogoutBtn) {
+                cancelLogoutBtn.addEventListener('click', function () {
+                    logoutModal.classList.remove('active');
+                    activeLogoutForm = null;
+                });
+            }
+
+            if (confirmLogoutBtn) {
+                confirmLogoutBtn.addEventListener('click', function () {
+                    if (activeLogoutForm) {
+                        activeLogoutForm.submit();
+                    }
+                });
+            }
+
+            if (logoutModal) {
+                logoutModal.addEventListener('click', function (e) {
+                    if (e.target === logoutModal) {
+                        logoutModal.classList.remove('active');
+                        activeLogoutForm = null;
+                    }
+                });
             }
         });
     </script>
+
 
     <!-- Logout Confirmation Modal -->
     <div class="logout-modal" id="logoutModal">

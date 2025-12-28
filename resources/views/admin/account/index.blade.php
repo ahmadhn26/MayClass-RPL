@@ -96,6 +96,17 @@
             box-shadow: 0 4px 8px rgba(15, 118, 110, 0.2);
         }
 
+        @media (max-width: 768px) {
+            .btn-nav-back {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                line-height: 1.2;
+                text-align: center;
+                max-width: 100px;
+                white-space: normal; /* Allow wrapping */
+            }
+        }
+
         /* --- Main Layout --- */
         .container {
             max-width: 1100px;
